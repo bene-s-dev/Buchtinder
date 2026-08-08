@@ -539,15 +539,35 @@
       const dragStart = useRef({ x: 0, y: 0 });
 
       const startSwipingThemes = () => {
-        let pool = STORY_THEMES.filter(st => st.genreIds.some(gId => selectedGenres.includes(gId)));
-        
-        if (pool.length < 5) {
-          const extra = STORY_THEMES.filter(st => !st.genreIds.some(gId => selectedGenres.includes(gId)));
-          pool = [...pool, ...extra];
+        // Erstelle pro gewähltem Genre zufällig sortierte Listen
+        const genrePools = selectedGenres.map(gId => 
+          STORY_THEMES.filter(st => st.genreIds.includes(gId)).sort(() => 0.5 - Math.random())
+        );
+
+        let pool = [];
+        const maxLen = Math.max(...genrePools.map(p => p.length), 0);
+
+        // Abwechselnd Motive aus den gewählten Genres ziehen für faire Mischung
+        for (let i = 0; i < maxLen; i++) {
+          for (let p of genrePools) {
+            if (p[i] && !pool.some(item => item.id === p[i].id)) {
+              pool.push(p[i]);
+            }
+          }
         }
 
-        const shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 8);
-        setThemesToSwipe(shuffled);
+        // Falls noch zu wenige Motive vorhanden sind, aus restlichen Genres auffüllen
+        if (pool.length < 12) {
+          const remaining = STORY_THEMES
+            .filter(st => !pool.some(p => p.id === st.id))
+            .sort(() => 0.5 - Math.random());
+          pool = [...pool, ...remaining];
+        }
+
+        // Exakt 12 Swipecards auswählen und für zufällige Reihenfolge nochmals durchmischen
+        const finalSelection = pool.slice(0, 12).sort(() => 0.5 - Math.random());
+
+        setThemesToSwipe(finalSelection);
         setCurrentIndex(0);
         setLikedThemes([]);
         setDislikedThemes([]);
