@@ -215,6 +215,16 @@
       </svg>
     );
 
+    const REPORT_REASONS = [
+      "Falscher Buchtitel",
+      "Falscher Autor",
+      "Falsches Genre / Subgenre zugeordnet",
+      "Inhaltsangabe fehlerhaft oder unverständlich",
+      "Falsches Erscheinungsjahr / Epoche",
+      "Passt überhaupt nicht zur gewählten Stimmung",
+      "Sonstiger Fehler in den Buchdaten"
+    ];
+
     const STORY_THEMES = [
       { id: 'st-f1', genreIds: ['fantasy', 'romantasy'], icon: '🧙‍♂️', category: 'Magie & System', title: 'Komplexe Magiesysteme & Alte Artefakte', description: 'Die Geschichte beinhaltet ein ausgeklügeltes Zaubersystem mit klaren Regeln, Magieschulen und uralten Relikten. Zauberei erfordert Opfer, Studium oder Vorbereitung und wirkt logisch durchdacht.' },
       { id: 'st-f2', genreIds: ['fantasy', 'romantasy'], icon: '🏰', category: 'Epik & Macht', title: 'Düstere High-Fantasy & Thronkämpfe', description: 'Epische Machtkämpfe um mächtige Königreiche, Allianzen, Hofintrigen und Schlachten. Die Welt ist vielschichtig, oft düster und voller politischer Ränkespiele verschiedener Fraktionen.' },
@@ -375,6 +385,13 @@
       const [exitDirection, setExitDirection] = useState(null);
       const [isAnimatingExit, setIsAnimatingExit] = useState(false);
 
+      // STATE FÜR BUCH-MELDUNG (REPORT MODAL) MIT KOMMENTARFELD
+      const [reportingBook, setReportingBook] = useState(null);
+      const [selectedReasons, setSelectedReasons] = useState([]);
+      const [reportComment, setReportComment] = useState('');
+      const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+      const [reportSuccess, setReportSuccess] = useState(false);
+
       const [favorites, setFavorites] = useState(() => {
         try {
           const saved = localStorage.getItem('buchtinder_favorites');
@@ -394,7 +411,7 @@
       });
 
       const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
-      const [drawerTab, setDrawerTab] = useState('favorites'); // 'favorites' or 'alreadyRead'
+      const [drawerTab, setDrawerTab] = useState('favorites');
       const [isDrawerClosing, setIsDrawerClosing] = useState(false);
       const [popHeartKey, setPopHeartKey] = useState(null);
       const [popBookKey, setPopBookKey] = useState(null);
@@ -419,7 +436,7 @@
       }, [step, currentIndex]);
 
       useEffect(() => {
-        if (isFavoritesOpen) {
+        if (isFavoritesOpen || reportingBook) {
           document.body.style.overflow = 'hidden';
         } else {
           document.body.style.overflow = '';
@@ -427,7 +444,7 @@
         return () => {
           document.body.style.overflow = '';
         };
-      }, [isFavoritesOpen]);
+      }, [isFavoritesOpen, reportingBook]);
 
       useEffect(() => {
         try {
@@ -545,6 +562,54 @@
         }
       };
 
+      // LOGIK FÜR BUCH-MELDUNG
+      const handleToggleReportReason = (reason) => {
+        setSelectedReasons(prev => 
+          prev.includes(reason) ? prev.filter(r => r !== reason) : [...prev, reason]
+        );
+      };
+
+      const handleSubmitReport = async () => {
+        if (!reportingBook || (selectedReasons.length === 0 && !reportComment.trim())) return;
+        setIsSubmittingReport(true);
+
+        try {
+          let client = supabaseClient;
+          if (!client) {
+            const res = await fetch('/api/config');
+            const cfg = await res.json();
+            if (cfg.url && cfg.key && window.supabase) {
+              client = window.supabase.createClient(cfg.url, cfg.key);
+              setSupabaseClient(client);
+            }
+          }
+
+          if (client) {
+            const { error } = await client.from('reports').insert([{
+              book_title: reportingBook.title,
+              book_author: reportingBook.author,
+              book_isbn: reportingBook.isbn || null,
+              reasons: selectedReasons,
+              comment: reportComment.trim() || null
+            }]);
+            if (error) throw error;
+          }
+
+          setReportSuccess(true);
+          setTimeout(() => {
+            setReportingBook(null);
+            setSelectedReasons([]);
+            setReportComment('');
+            setReportSuccess(false);
+          }, 1800);
+        } catch (err) {
+          console.error("Fehler beim Senden der Meldung:", err);
+          alert("Fehler beim Absenden der Meldung. Bitte versuche es später noch einmal.");
+        } finally {
+          setIsSubmittingReport(false);
+        }
+      };
+
       const [aiRecommendations, setAiRecommendations] = useState(null);
       const [isLoadingAi, setIsLoadingAi] = useState(false);
       const [aiError, setAiError] = useState('');
@@ -629,16 +694,14 @@
         setLoadingPhraseIndex(0);
 
         const startTime = Date.now();
-        const DURATION = 7000; // Exakt 7 Sekunden
+        const DURATION = 7000;
 
-        // Smooth Progress von 0 auf 100% über exakt 7 Sekunden
         const progressInterval = setInterval(() => {
           const elapsedTime = Date.now() - startTime;
           const progress = Math.min(Math.floor((elapsedTime / DURATION) * 100), 100);
           setLoadingProgress(progress);
         }, 50);
 
-        // Textwechsel alle ~1.75 Sekunden während der 7 Sekunden
         const phraseInterval = setInterval(() => {
           setLoadingPhraseIndex(prev => (prev + 1) % LOADING_PHRASES.length);
         }, 1750);
@@ -658,22 +721,15 @@
 
           let query = client.from('books').select('*');
 
-          // Filter nach Genre
           if (selectedGenres.length > 0) {
             query = query.in('genre', selectedGenres);
           }
-
-          // Filter nach Umfang (Length)
           if (selectedLength !== 'Egal') {
             query = query.eq('length', selectedLength);
           }
-
-          // Filter nach Erscheinungszeitraum (Era)
           if (selectedEra !== 'Egal') {
             query = query.eq('era', selectedEra);
           }
-
-          // Gelesene Bücher ausschließen (falls gewünscht)
           if (excludeAlreadyRead && alreadyRead.length > 0) {
             const excludeIsbns = alreadyRead.map(b => b.isbn).filter(Boolean);
             if (excludeIsbns.length > 0) {
@@ -692,7 +748,6 @@
             return;
           }
 
-          // Stimmungs-Filterung clientseitig (Moods)
           let filteredBooks = data;
           if (selectedMoods.length > 0) {
             const moodMatched = data.filter(book => 
@@ -703,7 +758,6 @@
             }
           }
 
-          // Bücher zufällig mischen & genau 6 auswählen
           const shuffled = filteredBooks.sort(() => 0.5 - Math.random());
           const selectedBooks = shuffled.slice(0, 6).map(b => ({
             title: b.title,
@@ -715,14 +769,13 @@
             isbn: b.isbn
           }));
 
-          // Verbleibende Zeit berechnen, damit exakt 7 Sekunden abgewartet werden
           const elapsedSoFar = Date.now() - startTime;
           const remainingTime = Math.max(DURATION - elapsedSoFar, 0);
 
           await new Promise(r => setTimeout(r, remainingTime));
 
           setLoadingProgress(100);
-          await new Promise(r => setTimeout(r, 250)); // Kurzer Übergangseffekt
+          await new Promise(r => setTimeout(r, 250));
           setAiRecommendations({ books: selectedBooks });
 
         } catch (err) {
@@ -1186,65 +1239,83 @@
                         return (
                           <div 
                             key={idx}
-                            className="bg-white border border-paper-300 hover:border-burgundy-600/50 rounded-2xl p-5 shadow-md space-y-3 transition duration-200 relative"
+                            className="bg-white border border-paper-300 hover:border-burgundy-600/50 rounded-2xl p-5 shadow-md space-y-3 transition duration-200 relative flex flex-col justify-between"
                           >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-grow">
-                                <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
-                                  Empfehlung #{idx + 1} &bull; {book.genre} ({book.year})
+                            <div className="space-y-3">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex-grow">
+                                  <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
+                                    Empfehlung #{idx + 1} &bull; {book.genre} ({book.year})
+                                  </span>
+                                  <h3 className="font-literary font-bold text-lg text-ink-900 leading-tight mt-0.5">
+                                    {book.title}
+                                  </h3>
+                                  <p className="text-xs text-ink-700 font-medium">
+                                    von {book.author}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center space-x-1.5 flex-shrink-0">
+                                  <button
+                                    onClick={() => toggleAlreadyRead(book)}
+                                    className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                                      isPoppingRead ? 'animate-heart-pop' : ''
+                                    } ${
+                                      read
+                                        ? 'bg-amber-100 text-amber-700 border-amber-300 shadow-sm'
+                                        : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-amber-600/40 hover:text-amber-700'
+                                    }`}
+                                    title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
+                                  >
+                                    <BookIcon filled={read} className="w-5 h-5" />
+                                  </button>
+
+                                  <button
+                                    onClick={() => toggleFavorite(book)}
+                                    className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                                      isPoppingFav ? 'animate-heart-pop' : ''
+                                    } ${
+                                      fav
+                                        ? 'bg-burgundy-700 text-white border-burgundy-800 shadow-sm'
+                                        : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-burgundy-600/40 hover:text-burgundy-700'
+                                    }`}
+                                    title={fav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                  >
+                                    <HeartIcon filled={fav} className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl text-xs text-burgundy-900 flex items-start space-x-2">
+                                <span>🎯</span>
+                                <span><strong>Warum es passt:</strong> {book.matchReason}</span>
+                              </div>
+
+                              <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl space-y-1">
+                                <span className="text-[10px] font-bold text-ink-700 uppercase tracking-wider block">
+                                  Kurzbeschreibung
                                 </span>
-                                <h3 className="font-literary font-bold text-lg text-ink-900 leading-tight mt-0.5">
-                                  {book.title}
-                                </h3>
-                                <p className="text-xs text-ink-700 font-medium">
-                                  von {book.author}
+                                <p className="text-xs text-ink-800 leading-relaxed font-normal">
+                                  "{book.description}"
                                 </p>
                               </div>
-
-                              <div className="flex items-center space-x-1.5 flex-shrink-0">
-                                <button
-                                  onClick={() => toggleAlreadyRead(book)}
-                                  className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
-                                    isPoppingRead ? 'animate-heart-pop' : ''
-                                  } ${
-                                    read
-                                      ? 'bg-amber-100 text-amber-700 border-amber-300 shadow-sm'
-                                      : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-amber-600/40 hover:text-amber-700'
-                                  }`}
-                                  title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
-                                >
-                                  <BookIcon filled={read} className="w-5 h-5" />
-                                </button>
-
-                                <button
-                                  onClick={() => toggleFavorite(book)}
-                                  className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
-                                    isPoppingFav ? 'animate-heart-pop' : ''
-                                  } ${
-                                    fav
-                                      ? 'bg-burgundy-700 text-white border-burgundy-800 shadow-sm'
-                                      : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-burgundy-600/40 hover:text-burgundy-700'
-                                  }`}
-                                  title={fav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
-                                >
-                                  <HeartIcon filled={fav} className="w-5 h-5" />
-                                </button>
-                              </div>
                             </div>
 
-                            <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl text-xs text-burgundy-900 flex items-start space-x-2">
-                              <span>🎯</span>
-                              <span><strong>Warum es passt:</strong> {book.matchReason}</span>
+                            {/* UNTEN RECHTS: MELDEN BUTTON */}
+                            <div className="flex justify-end pt-2 border-t border-paper-200/60 mt-1">
+                              <button
+                                onClick={() => {
+                                  setReportingBook(book);
+                                  setSelectedReasons([]);
+                                  setReportComment('');
+                                  setReportSuccess(false);
+                                }}
+                                className="text-[11px] font-medium text-ink-700 hover:text-rose-700 flex items-center space-x-1 transition"
+                              >
+                                <span>⚠️ Fehler melden</span>
+                              </button>
                             </div>
 
-                            <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl space-y-1">
-                              <span className="text-[10px] font-bold text-ink-700 uppercase tracking-wider block">
-                                Kurzbeschreibung
-                              </span>
-                              <p className="text-xs text-ink-800 leading-relaxed font-normal">
-                                "{book.description}"
-                              </p>
-                            </div>
                           </div>
                         );
                       })}
@@ -1277,6 +1348,102 @@
             )}
 
           </main>
+
+          {/* REPORT MODAL (BUCH MELDEN MIT KOMMENTARFELD) */}
+          {reportingBook && (
+            <div 
+              onClick={(e) => { if (e.target === e.currentTarget) setReportingBook(null); }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/40 backdrop-blur-sm animate-backdrop-in"
+            >
+              <div className="bg-white border border-paper-300 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 max-h-[90vh] flex flex-col justify-between">
+                
+                {reportSuccess ? (
+                  <div className="py-8 text-center space-y-2">
+                    <div className="text-4xl">✅</div>
+                    <h3 className="font-literary font-bold text-lg text-ink-900">Vielen Dank!</h3>
+                    <p className="text-xs text-ink-700">Deine Meldung wurde erfolgreich gespeichert.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3 overflow-y-auto custom-scrollbar pr-1">
+                      <div className="flex items-start justify-between border-b border-paper-200 pb-3">
+                        <div>
+                          <span className="text-[10px] font-bold text-rose-700 uppercase tracking-wider block">Eintrag melden</span>
+                          <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{reportingBook.title}</h3>
+                          <p className="text-xs text-ink-700">von {reportingBook.author}</p>
+                        </div>
+                        <button 
+                          onClick={() => setReportingBook(null)}
+                          className="text-ink-700 hover:text-ink-900 font-bold text-sm p-1"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-ink-800 font-medium">Was stimmt mit diesem Bucheintrag nicht?</p>
+
+                      <div className="space-y-1.5">
+                        {REPORT_REASONS.map((reason, i) => {
+                          const checked = selectedReasons.includes(reason);
+                          return (
+                            <label 
+                              key={i} 
+                              onClick={() => handleToggleReportReason(reason)}
+                              className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition ${
+                                checked 
+                                  ? 'bg-burgundy-50 border-burgundy-300 text-burgundy-900 font-semibold' 
+                                  : 'bg-paper-50 border-paper-200 text-ink-800 hover:bg-paper-100'
+                              }`}
+                            >
+                              <input 
+                                type="checkbox" 
+                                checked={checked} 
+                                onChange={() => {}} 
+                                className="rounded text-burgundy-700 focus:ring-burgundy-700 h-4 w-4"
+                              />
+                              <span>{reason}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+
+                      <div className="space-y-1 pt-1">
+                        <label className="text-xs font-medium text-ink-800 block">Zusätzliche Anmerkung (optional):</label>
+                        <textarea
+                          rows="2"
+                          value={reportComment}
+                          onChange={(e) => setReportComment(e.target.value)}
+                          placeholder="z. B. Der Titel heißt eigentlich..."
+                          className="w-full p-2.5 rounded-xl border border-paper-300 bg-paper-50 text-xs text-ink-900 focus:outline-none focus:border-burgundy-700 resize-none font-sans"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-paper-200 flex items-center space-x-2">
+                      <button
+                        onClick={() => setReportingBook(null)}
+                        className="flex-1 py-2.5 bg-paper-100 hover:bg-paper-200 text-ink-800 text-xs font-bold rounded-xl border border-paper-300 transition"
+                      >
+                        Abbrechen
+                      </button>
+                      <button
+                        onClick={handleSubmitReport}
+                        disabled={(selectedReasons.length === 0 && !reportComment.trim()) || isSubmittingReport}
+                        className={`flex-1 py-2.5 text-xs font-bold rounded-xl shadow-sm transition ${
+                          (selectedReasons.length === 0 && !reportComment.trim()) || isSubmittingReport
+                            ? 'bg-paper-300 text-paper-400 cursor-not-allowed'
+                            : 'bg-burgundy-700 hover:bg-burgundy-800 text-white active:scale-95'
+                        }`}
+                      >
+                        {isSubmittingReport ? 'Sende...' : 'Meldung absenden'}
+                      </button>
+                    </div>
+                  </>
+                )}
+
+              </div>
+            </div>
+          )}
 
           {/* DRAWER (FAVORITES & ALREADY READ) */}
           {isFavoritesOpen && (
