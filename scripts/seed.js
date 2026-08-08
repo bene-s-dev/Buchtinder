@@ -3,6 +3,7 @@ const WebSocket = require('ws');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const GOOGLE_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error("Fehler: SUPABASE_URL oder SUPABASE_KEY fehlen!");
@@ -29,19 +30,29 @@ const GENRE_QUERIES = {
   klassiker: 'subject:classics OR Klassiker der Weltliteratur'
 };
 
+// Pause einlegen (Rate Limit / ToS Schutz)
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function seed() {
   for (const [genre, query] of Object.entries(GENRE_QUERIES)) {
     console.log(`Lade Bücher für Genre: ${genre}...`);
     let booksForGenre = [];
 
     for (const startIndex of [0, 40, 80]) {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40&startIndex=${startIndex}&langRestrict=de`;
+      const keyParam = GOOGLE_KEY ? `&key=${GOOGLE_KEY}` : '';
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40&startIndex=${startIndex}&langRestrict=de${keyParam}`;
       
       try {
         const res = await fetch(url, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+          headers: { 'User-Agent': 'BuchKompass-Seeder/1.0' }
         });
+        
         const data = await res.json();
+
+        if (data.error) {
+          console.error(`Google API Fehler bei ${genre}:`, data.error.message);
+          break;
+        }
 
         if (!data.items) continue;
 
@@ -73,6 +84,9 @@ async function seed() {
       } catch (err) {
         console.error(`Fehler bei ${genre}:`, err.message);
       }
+
+      // ToS-konforme Pause zwischen den Anfragen
+      await delay(500);
     }
 
     if (booksForGenre.length > 0) {
