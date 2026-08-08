@@ -1,0 +1,25 @@
+name: Seed Books to Supabase
+
+on:
+  workflow_dispatch: # Erlaubt das manuelle Starten per Button auf GitHub
+
+jobs:
+  run-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Supabase Client installieren
+        run: npm install @supabase/supabase-js
+
+      - name: Seeder-Skript ausführen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: node scripts/seed.js
