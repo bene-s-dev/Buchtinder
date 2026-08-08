@@ -168,11 +168,6 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // --- SUPABASE CONFIGURATION ---
-    const SUPABASE_URL = 'DEINE_SUPABASE_URL'; // Bitte mit deiner URL ersetzen
-    const SUPABASE_KEY = 'DEIN_SUPABASE_ANON_KEY'; // Bitte mit deinem anon/public Key ersetzen
-    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
     const HeartIcon = ({ filled = false, className = "w-5 h-5" }) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -347,6 +342,23 @@
     const ERA_OPTIONS = ['Egal', 'Vor 2000', 'Nach 2000', 'Nach 2015'];
 
     function App() {
+      const [supabaseClient, setSupabaseClient] = useState(null);
+
+      // --- SUPABASE DYNAMISCH ÜBER VERCEL ENV LADEN ---
+      useEffect(() => {
+        fetch('/api/config')
+          .then(res => res.json())
+          .then(cfg => {
+            if (cfg.url && cfg.key && window.supabase) {
+              const client = window.supabase.createClient(cfg.url, cfg.key);
+              setSupabaseClient(client);
+            } else {
+              console.error("Incomplete Supabase Configuration via /api/config");
+            }
+          })
+          .catch(err => console.error("Konnte Supabase Config von Vercel nicht abrufen:", err));
+      }, []);
+
       const [step, setStep] = useState(1);
       const [selectedGenres, setSelectedGenres] = useState(['fantasy']);
       const [selectedMoods, setSelectedMoods] = useState([MOODS[0]]);
@@ -504,7 +516,7 @@
       const toggleGenre = (genreId) => {
         setSelectedGenres(prev => {
           if (prev.includes(genreId)) {
-            if (prev.length === 1) return prev; // Mindestens ein Genre ausgewählt lassen
+            if (prev.length === 1) return prev;
             return prev.filter(id => id !== genreId);
           } else {
             return [...prev, genreId];
@@ -515,7 +527,7 @@
       const toggleMood = (mood) => {
         setSelectedMoods(prev => {
           if (prev.includes(mood)) {
-            if (prev.length === 1) return prev; // Mindestens eine Stimmung ausgewählt lassen
+            if (prev.length === 1) return prev;
             return prev.filter(m => m !== mood);
           } else {
             return [...prev, mood];
@@ -609,7 +621,7 @@
         }, 280);
       };
 
-      // --- SUPABASE DIRECT QUERY INSTEAD OF GEMINI API ---
+      // --- SUPABASE DIRECT QUERY ---
       const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, excludeAlreadyRead = false) => {
         setIsLoadingAi(true);
         setAiError('');
@@ -618,7 +630,7 @@
 
         try {
           if (!supabaseClient) {
-            throw new Error("Supabase Client wurde nicht initialisiert. Prüfe SUPABASE_URL und SUPABASE_KEY.");
+            throw new Error("Supabase-Verbindung wird noch aufgebaut oder Umgebungsvariablen in Vercel fehlen.");
           }
 
           let query = supabaseClient.from('books').select('*');
@@ -667,7 +679,7 @@
             }
           }
 
-          // Bücher zufällig mischen & maximal 6 auswählen
+          // Bücher zufällig mischen & genau 6 auswählen
           const shuffled = filteredBooks.sort(() => 0.5 - Math.random());
           const selectedBooks = shuffled.slice(0, 6).map(b => ({
             title: b.title,
