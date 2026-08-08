@@ -656,14 +656,13 @@ ${excludeText}
 
 Antworte mir ausschließlich im folgenden JSON-Format ohne zusätzlichen Fließtext drumherum:
 {
-  "summary": "Ein eleganter, begeisternder Satz des Lektors über das Leseprofil des Nutzers.",
   "books": [
     {
       "title": "Echter Buchtitel",
       "author": "Echter Autor",
       "year": "Erscheinungsjahr",
       "genre": "Genre",
-      "description": "Ausführlicher, echter Klappentext des Buches (3-4 Sätze auf Deutsch).",
+      "description": "Prägnanter, echter Klappentext des Buches (maximal 2 kurze Sätze auf Deutsch).",
       "matchReason": "Warum dieses Buch perfekt zu den gewischten Themen passt."
     }
   ]
@@ -1130,13 +1129,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
                 {aiRecommendations && !isLoadingAi && (
                   <div className="space-y-5">
-                    {aiRecommendations.summary && (
-                      <div className="bg-paper-50 border border-paper-300 p-4 rounded-xl text-xs text-ink-800 font-literary leading-relaxed shadow-sm flex items-start space-x-3">
-                        <span className="text-lg flex-shrink-0">📜</span>
-                        <p>{aiRecommendations.summary}</p>
-                      </div>
-                    )}
-
                     <div className="space-y-4">
                       {aiRecommendations.books?.map((book, idx) => {
                         const fav = isFavorite(book);
@@ -1170,7 +1162,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                                     isPoppingRead ? 'animate-heart-pop' : ''
                                   } ${
                                     read
-                                      ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
+                                      ? 'bg-amber-100 text-amber-700 border-amber-300 shadow-sm'
                                       : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-amber-600/40 hover:text-amber-700'
                                   }`}
                                   title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
