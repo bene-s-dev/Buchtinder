@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
   <title>BuchKompass - Dein intelligenter Buch-Finder</title>
-  <!-- Social Media Vorschau (Open Graph & Twitter Cards) -->
+  {/* Social Media Vorschau (Open Graph & Twitter Cards) */}
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://buchkompass.benedrive.de" />
   <meta property="og:title" content="BuchKompass - Dein intelligenter Buch-Finder" />
   <meta property="og:description" content="Finde dein nächstes Lieblingsbuch." />
   <meta property="og:image" content="https://buchkompass.benedrive.de/preview.png" />
   
-  <!-- Tailwind CSS CDN -->
+  {/* Tailwind CSS CDN */}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -51,12 +51,12 @@
     }
   </script>
 
-  <!-- React & ReactDOM CDN -->
+  {/* React & ReactDOM CDN */}
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Google Fonts for Publishing & Literary Aesthetics -->
+  {/* Google Fonts for Publishing & Literary Aesthetics */}
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     
@@ -72,6 +72,7 @@
       color: #1c1917;
       background-image: radial-gradient(#e5e0d4 1.2px, transparent 1.2px);
       background-size: 28px 28px;
+      overscroll-behavior: none;
     }
 
     .font-literary {
@@ -558,6 +559,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
       const onTouchMove = (e) => {
         if (!isDragging || isAnimatingExit) return;
+        if (e.cancelable) e.preventDefault();
         const touch = e.touches[0];
         const deltaX = touch.clientX - dragStart.current.x;
         const deltaY = touch.clientY - dragStart.current.y;
@@ -723,10 +725,10 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit Button (Dark Gray Style) */}
                 <button
                   onClick={startSwipingThemes}
-                  className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white font-literary font-bold text-base rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 tracking-wide"
+                  className="w-full py-3.5 bg-ink-900 hover:bg-ink-950 text-paper-50 font-literary font-bold text-base rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 tracking-wide"
                 >
                   <span>Los geht's!</span>
                 </button>
