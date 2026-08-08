@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
   if (!apiKey) {
     return res.status(500).json({ 
-      error: 'Leider sind alle Bibliothekare im Urlaub (GEMINI_API_KEY fehlt in Vercel).' 
+      error: 'Der Bibliothekar ist eingeschlafen. Probiere es morgen wieder. (GEMINI_API_KEY fehlt in Vercel).' 
     });
   }
 
@@ -32,14 +32,14 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const detail = data.error?.message || `Status Code ${response.status}`;
       return res.status(response.status).json({ 
-        error: `Leider sind alle Bibliothekare im Urlaub (${detail}).` 
+        error: `Der Bibliothekar ist eingeschlafen. Probiere es morgen wieder. (${detail}).` 
       });
     }
 
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({ 
-      error: `Leider sind alle Bibliothekare im Urlaub (${error.message || 'Verbindungsfehler'}).` 
+      error: `Der Bibliothekar ist eingeschlafen. Probiere es morgen wieder. (${error.message || 'Verbindungsfehler'}).` 
     });
   }
 }
