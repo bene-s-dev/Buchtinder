@@ -361,6 +361,18 @@
         };
       }, [step, currentIndex]);
 
+      // Scrollen der Hauptseite deaktivieren, wenn Favoritenliste / Einstellungen geöffnet sind
+      useEffect(() => {
+        if (isFavoritesOpen) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+        return () => {
+          document.body.style.overflow = '';
+        };
+      }, [isFavoritesOpen]);
+
       useEffect(() => {
         try {
           localStorage.setItem('buchtinder_favorites', JSON.stringify(favorites));
@@ -766,10 +778,10 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             {step === 2 && (
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2 relative">
                 
-                {/* Toast Overlay Notification */}
+                {/* Fixed Toast Overlay Notification under Header */}
                 {showToast && (
-                  <div className="absolute -top-2 z-50 animate-toast pointer-events-none">
-                    <div className="bg-ink-900/90 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur-md flex items-center space-x-2">
+                  <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-toast pointer-events-none">
+                    <div className="bg-ink-900/95 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-xl backdrop-blur-md flex items-center space-x-2">
                       <span>👉</span>
                       <span>Swipe nach rechts oder links!</span>
                     </div>
