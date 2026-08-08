@@ -11,7 +11,6 @@
   <meta property="og:title" content="BuchKompass - Dein intelligenter Buch-Finder" />
   <meta property="og:description" content="Finde dein nächstes Lieblingsbuch." />
   <meta property="og:image" content="https://buchkompass.benedrive.de/preview.png" />
-  
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -51,12 +50,10 @@
     }
   </script>
 
- 
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
- 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     
@@ -128,6 +125,13 @@
       100% { opacity: 1; }
     }
 
+    @keyframes toastFade {
+      0% { opacity: 0; transform: translateY(-12px); }
+      15% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+
     .step-transition {
       animation: fadeInSmooth 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -146,6 +150,10 @@
 
     .animate-backdrop-in {
       animation: backdropFadeIn 0.35s ease-out forwards;
+    }
+
+    .animate-toast {
+      animation: toastFade 2.8s ease-in-out forwards;
     }
   </style>
 </head>
@@ -190,9 +198,8 @@
       </svg>
     );
 
-    // Database of story elements with comprehensive detailed explanations
+    // Database of story elements
     const STORY_THEMES = [
-      // FANTASY & MAGIE
       { id: 'st-f1', genreIds: ['fantasy'], icon: '🧙‍♂️', category: 'Magie & System', title: 'Komplexe Magiesysteme & Alte Artefakte', description: 'Die Geschichte beinhaltet ein ausgeklügeltes Zaubersystem mit klaren Regeln, Magieschulen und uralten Relikten. Zauberei erfordert Opfer, Studium oder Vorbereitung und wirkt logisch durchdacht.' },
       { id: 'st-f2', genreIds: ['fantasy'], icon: '🏰', category: 'Epik & Macht', title: 'Düstere High-Fantasy & Thronkämpfe', description: 'Epische Machtkämpfe um mächtige Königreiche, Allianzen, Hofintrigen und Schlachten. Die Welt ist vielschichtig, oft düster und voller politischer Ränkespiele verschiedener Fraktionen.' },
       { id: 'st-f3', genreIds: ['fantasy'], icon: '🐉', category: 'Kreaturen', title: 'Mythologische Wesen & Fabeltiere', description: 'Im Fokus stehen faszinierende Wesen wie Drachen, Elfen, Dämonen oder eigens erdachte Fabeltiere, die eine zentrale Rolle im Ökosystem und der Handlung der Welt einnehmen.' },
@@ -202,7 +209,6 @@
       { id: 'st-f7', genreIds: ['fantasy'], icon: '🕯️', category: 'Dunkle Künste', title: 'Flüche, Seelenmagie & Schattenkräfte', description: 'Keine reine Wohlfühlmagie: Verbotene Rituale, Nekromantie, Flüche und Moralfragen. Die Nutzung von Kräften bringt spürbare physische oder psychische Konsequenzen mit sich.' },
       { id: 'st-f8', genreIds: ['fantasy'], icon: '🌀', category: 'Dimensionen', title: 'Portal-Fantasy & Fremde Welten', description: 'Der magische Übergang von unserer normalen Alltagswelt in ein völlig fremdes, phantastisches Reich mit eigenen Gesetzen, Weltenbau und unerforschten Gefahren.' },
 
-      // KRIMI & THRILLER
       { id: 'st-t1', genreIds: ['thriller'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Verwirrspiel', description: 'Fokus auf Wahn, unzuverlässige Erzähler, unterdrückte Erinnerungen und täuschende Wahrnehmung. Wer sagt die Wahrheit und was passiert nur im Kopf der Beteiligten?' },
       { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienkiller & Forensische Jagd', description: 'Detaillierte Spurensicherung, Täter-Profiling, Obduktionsberichte und ein packendes Katz-und-Maus-Spiel zwischen Ermittlern und einem hochintelligenten Serienmörder.' },
       { id: 'st-t3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Countdown & Unabwendbare Gefahr', description: 'Ticking-Clock-Szenario: Den Ermittlern oder Protagonisten bleibt nur extrem wenig Zeit, um das nächste Opfer zu retten, eine Explosion zu verhindern oder eine Verschwörung zu stoppen.' },
@@ -212,7 +218,6 @@
       { id: 'st-t7', genreIds: ['thriller'], icon: '💻', category: 'High-Tech', title: 'Techno-Thriller & Cybercrime', description: 'Hackerangriffe, digitale Überwachung, künstliche Intelligenzen als Bedrohung und Verfolgungsjagden in der digitalen Infrastruktur unserer vernetzten Welt.' },
       { id: 'st-t8', genreIds: ['thriller'], icon: '⚖️', category: 'Justiz', title: 'Gerichtsmedizin & Justizdrama', description: 'Packende Gerichtssäle, juristische Schachzüge von Anwälten, Zeugenvernehmungen und der dramatische Kampf um Recht versus Gerechtigkeit.' },
 
-      // SCIENCE FICTION
       { id: 'st-s1', genreIds: ['scifi'], icon: '🚀', category: 'Weltraum', title: 'Deep Space & Raumschiff-Crews', description: 'Leben und Überleben an Bord von Raumschiffen, Erforschung unbekannter Sternensysteme, Begegnungen mit Raumanomalien und Gefahren im interstellaren Raum.' },
       { id: 'st-s2', genreIds: ['scifi'], icon: '🤖', category: 'Technologie', title: 'KI-Bewusstsein & Roboter-Ethik', description: 'Künstliche Intelligenzen entwickeln ein Eigenleben. Das Buch beleuchtet philosophische Fragen nach Bewusstsein, Menschlichkeit, Rechten von Androiden und Schöpferethik.' },
       { id: 'st-s3', genreIds: ['scifi'], icon: '👁️', category: 'Gesellschaft', title: 'Dystopie & Überwachungsstaat', description: 'Ein autoritäres Regime kontrolliert Gedanken, Bürger und Ressourcen. Eine kleine Widerstandsgruppe oder ein Einzelner wagt das lebensgefährliche Aufbegehren.' },
@@ -222,7 +227,6 @@
       { id: 'st-s7', genreIds: ['scifi'], icon: '☣️', category: 'Überleben', title: 'Postapokalypse & Neuanfang', description: 'Die Welt nach einer Katastrophe (Umwelt, Virus, Krieg): Ressourcenknappheit, zerfallene Zivilisationen und der harte Alltag beim Wiederaufbau menschlicher Gemeinschaften.' },
       { id: 'st-s8', genreIds: ['scifi'], icon: '🔬', category: 'Wissenschaft', title: 'Hard Sci-Fi & Astronomie', description: 'Physikalisch fundierte Theorien, echte Astronomie, Schwarze Löcher, Quantenmechanik und wissenschaftlich präzise durchdachte Zukunftsszenarien.' },
 
-      // LIEBE & ROMANTIK
       { id: 'st-r1', genreIds: ['romance'], icon: '🔥', category: 'Dynamik', title: 'Slow Burn & Knisternde Gefühle', description: 'Eine sehr langsame, tiefgründige und intensiv spürbare emotionale Annäherung. Blicke, kleine Gesten und unausgesprochene Spannungen stehen im Mittelpunkt.' },
       { id: 'st-r2', genreIds: ['romance'], icon: '⚔️', category: 'Beziehungs-Trope', title: 'Enemies to Lovers (Feinde zu Liebenden)', description: 'Zwei Figuren beginnen mit tiefen Abneigungen, Rivalität oder Missverständnissen. Durch erzwungene Zusammenarbeit wandelt sich die Wut Schritt für Schritt in Leidenschaft.' },
       { id: 'st-r3', genreIds: ['romance'], icon: '🍂', category: 'Neuanfang', title: 'Second Chance & Alte Liebe', description: 'Das unverhoffte Wiedersehen der ersten Großen Liebe nach vielen Jahren. Das Aufarbeiten alter Wunden, verpasster Chancen und das Entdecken neuer Reife.' },
@@ -232,7 +236,6 @@
       { id: 'st-r7', genreIds: ['romance'], icon: '👑', category: 'Hindernisse', title: 'Verbotene Liebe & Standesunterschiede', description: 'Liebe entgegen gesellschaftlichen Konventionen, Familienfehden, Standesunterschieden oder Regeln, die das Dazwischenkommen unter Strafe stellen.' },
       { id: 'st-r8', genreIds: ['romance'], icon: '☀️', category: 'Kontraste', title: 'Grumpy x Sunshine & Gegensätze', description: 'Ein verschlossener, mürrischer Gemütsmensch trifft auf eine lebensfrohe, optimistische Persönlichkeit. Gegensätze ziehen sich an und ergänzen sich perfekt.' },
 
-      // HUMOR & SATIRE
       { id: 'st-h1', genreIds: ['humor'], icon: '🌀', category: 'Chaos', title: 'Absurder Alltag & Fettnäpfchen', description: 'Schräge Charaktere geraten von einer misslichen Verstrickung in die nächste. Bizarre Missverständnisse und unvorhergesehene Verkettungen führen zu absolutem Chaos.' },
       { id: 'st-h2', genreIds: ['humor'], icon: '☕', category: 'Tonfall', title: 'Trockener Britischer & Schwarzer Humor', description: 'Feine Ironie, makabre Situationskomik, trockener Sarkasmus und spitzzüngige Bemerkungen, die mit feinsinnigem Witz das Absurde des Lebens beleuchten.' },
       { id: 'st-h3', genreIds: ['humor'], icon: '🎭', category: 'Satire', title: 'Gesellschaftskritik & Promi-Kultur', description: 'Überspitzte Parodien auf moderne Trends, Politik, soziale Medien, Konsumwahn oder den Literaturbetrieb selbst. Amüsant, entlarvend und treffsicher.' },
@@ -242,7 +245,6 @@
       { id: 'st-h7', genreIds: ['humor'], icon: '🐾', category: 'Skurril', title: 'Ungewöhnliche Erzähler & Perspektiven', description: 'Geschichten erzählt aus der ungewöhnlichen Sicht von Tieren, außerirdischen Beobachtern oder schrägen Gegenständen mit ganz eigener Logik.' },
       { id: 'st-h8', genreIds: ['humor'], icon: '🏠', category: 'Zusammenleben', title: 'WG-Wahnsinn & Beziehungschaos', description: 'Ungefilterte Komik aus dem alltäglichen Zusammenleben extrem unterschiedlicher Persönlichkeiten mit Eigenarten und Marotten.' },
 
-      // SACHBUCH & WISSEN
       { id: 'st-sb1', genreIds: ['sachbuch'], icon: '🧠', category: 'Psychologie', title: 'Menschliches Verhalten & Hirnforschung', description: 'Fundierte Einblicke in Neurowissenschaften, Denkfehler, Verhaltensmuster und Emotionen. Warum wir handeln, fühlen und entscheiden, wie wir es tun.' },
       { id: 'st-sb2', genreIds: ['sachbuch'], icon: '🔬', category: 'Wissenschaft', title: 'Komplexe Forschung anschaulich erklärt', description: 'Spannende Exkurse in Physik, Biologie, Astronomie oder Medizin – mit verständlichen Vergleichen und packender Erzählweise ohne trockenes Fachchinesisch.' },
       { id: 'st-sb3', genreIds: ['sachbuch'], icon: '📜', category: 'Biografie', title: 'Inspirierende Lebensläufe & Persönlichkeiten', description: 'Eindrückliche Porträts außergewöhnlicher Menschen, Pionierinnen und Entdecker, die durch Mut, Visionen oder Schicksale Geschichte geschrieben haben.' },
@@ -252,7 +254,6 @@
       { id: 'st-sb7', genreIds: ['sachbuch'], icon: '🎯', category: 'Entwicklung', title: 'Produktivität & Gewohnheiten (Habits)', description: 'Praktische Systeme, wissenschaftlich erprobte Methoden zur Persönlichkeitsentwicklung, Zeitmanagement, Fokus und dem nachhaltigen Aufbau von Routinen.' },
       { id: 'st-sb8', genreIds: ['sachbuch'], icon: '🌿', category: 'Natur', title: 'Ökologie, Kosmos & Faszination Erde', description: 'Einsichten in komplexe Systeme des Pflanzen- und Tierreiches, Ökologie, Unterwasserwelten oder die Geheimnisse des Universums.' },
 
-      // HISTORISCHE ROMANE
       { id: 'st-hi1', genreIds: ['historisch'], icon: '👑', category: 'Epoche', title: 'Opulentes Epochenporträt', description: 'Bildgewaltiges Porträt einer Epoche (Mittelalter, Barock, Gründerzeit). Bräuche, Architektur, Mode und Lebensgefühl werden detailliert zum Leben erweckt.' },
       { id: 'st-hi2', genreIds: ['historisch'], icon: '🌹', category: 'Rebellion', title: 'Starke Frauenfiguren gegen Konventionen', description: 'Frauen, die sich den strengen gesellschaftlichen Zwängen ihrer Zeit widersetzen, Berufe ergreifen oder für Selbstbestimmung kämpfen.' },
       { id: 'st-hi3', genreIds: ['historisch'], icon: '⏳', category: 'Zeitstränge', title: 'Dual-Timeline (Zwei Zeitebenen)', description: 'Ein in der Gegenwart entdecktes Artefakt, Tagebuch oder Erbe verwebt die moderne Geschichte schrittweise mit dramatischen Ereignissen der Vergangenheit.' },
@@ -262,7 +263,6 @@
       { id: 'st-hi7', genreIds: ['historisch'], icon: '🔍', category: 'Kriminalfall', title: 'Historische Morde & Alte Ermittlungen', description: 'Kriminalfälle gelöst mit den begrenzten Mitteln vergangener Jahrhunderte. Aberglaube, Medizin der Zeit und Intuition treffen aufeinander.' },
       { id: 'st-hi8', genreIds: ['historisch'], icon: '🌾', category: 'Alltag', title: 'Das harte Leben des einfachen Volkes', description: 'Authentischer Einblick in den Arbeits- und Lebensalltag von Bauern, Dienstmägden, Handwerkern und der Unterschicht fernab des Adelsprunks.' },
 
-      // JUGENDBUCH & BELLETRISTIK
       { id: 'st-j1', genreIds: ['jugend'], icon: '🌱', category: 'Entwicklung', title: 'Coming-of-Age & Selbstfindung', description: 'Der steinige Weg zum Erwachsenwerden, die Suche nach der eigenen Identität, Werten, Berufung und dem eigenen Platz in der Gesellschaft.' },
       { id: 'st-j2', genreIds: ['jugend'], icon: '🏫', category: 'Internat', title: 'Highschool-Geheimnisse & Cliquen', description: 'Freundschaften, Rivalitäten, Campus-Kultur, soziale Dynamiken und dunkle Geheimnisse hinter der perfekten Schulfassade.' },
       { id: 'st-j3', genreIds: ['jugend'], icon: '💓', category: 'Gefühle', title: 'Erste große Liebe & Freundschaft', description: 'Intensives Gefühlschaos, Herzklopfen, Vertrauensproben, Enttäuschungen und die unvergessliche Intensität der ersten tiefen Liebe.' },
@@ -315,6 +315,8 @@
       const [currentIndex, setCurrentIndex] = useState(0);
       const [likedThemes, setLikedThemes] = useState([]);
       const [dislikedThemes, setDislikedThemes] = useState([]);
+
+      const [showToast, setShowToast] = useState(false);
 
       // Card swipe animation state
       const [exitDirection, setExitDirection] = useState(null);
@@ -422,6 +424,8 @@
         setExitDirection(null);
         setIsAnimatingExit(false);
         setStep(2);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2800);
       };
 
       const handleDecision = (liked) => {
@@ -559,10 +563,15 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
       const onTouchMove = (e) => {
         if (!isDragging || isAnimatingExit) return;
-        if (e.cancelable) e.preventDefault();
         const touch = e.touches[0];
         const deltaX = touch.clientX - dragStart.current.x;
         const deltaY = touch.clientY - dragStart.current.y;
+
+        // Vertikales Scrollen während aktiver horizontaler Swipe-Geste verhindern
+        if (Math.abs(deltaX) > Math.abs(deltaY) && e.cancelable) {
+          e.preventDefault();
+        }
+
         setDragOffset({ x: deltaX, y: deltaY });
       };
 
@@ -639,7 +648,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
           </header>
 
           {/* Main Container */}
-          <main className="flex-grow flex flex-col justify-center px-4 py-6 max-w-md mx-auto w-full">
+          <main className="flex-grow flex flex-col justify-center px-4 py-6 max-w-md mx-auto w-full relative">
             
             {/* STEP 1: PREFERENCES */}
             {step === 1 && (
@@ -725,7 +734,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 </div>
 
-                {/* Submit Button (Dark Gray Style) */}
+                {/* Submit Button */}
                 <button
                   onClick={startSwipingThemes}
                   className="w-full py-3.5 bg-ink-900 hover:bg-ink-950 text-paper-50 font-literary font-bold text-base rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 tracking-wide"
@@ -735,9 +744,20 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
               </div>
             )}
 
-            {/* STEP 2: SWIPE MOTIFS (Opaque Stack, Max 2 Loaded) */}
+            {/* STEP 2: SWIPE MOTIFS */}
             {step === 2 && (
-              <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2">
+              <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2 relative">
+                
+                {/* Toast Overlay Notification */}
+                {showToast && (
+                  <div className="absolute -top-2 z-50 animate-toast pointer-events-none">
+                    <div className="bg-ink-900/90 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur-md flex items-center space-x-2">
+                      <span>👉</span>
+                      <span>Swipe nach rechts oder links!</span>
+                    </div>
+                  </div>
+                )}
+
                 {currentIndex < themesToSwipe.length ? (
                   <div className="w-full space-y-4 my-auto flex flex-col items-center">
                     
@@ -748,18 +768,17 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       <p className="text-xs text-ink-700">Soll dieses Motiv in deiner Lektüre vorkommen?</p>
                     </div>
 
-                    {/* Stacked Cards Container - Render ONLY top card and exactly 1 follow-up card */}
+                    {/* Stacked Cards Container */}
                     <div className="relative w-full h-[400px] max-w-sm flex items-center justify-center my-2">
                       {themesToSwipe.slice(currentIndex, currentIndex + 2).map((theme, relativeIdx) => {
                         const isTop = relativeIdx === 0;
                         
-                        // Layering Calculations
                         const offsetY = relativeIdx * 12;
                         const scale = 1 - relativeIdx * 0.04;
                         const zIndex = 20 - relativeIdx * 10;
                         
                         let transform = `translateY(${offsetY}px) scale(${scale})`;
-                        let opacity = 1; // 100% Blickdicht (Kein Durchschimmern)
+                        let opacity = 1;
                         
                         if (isTop) {
                           if (exitDirection === 'right') {
@@ -773,7 +792,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                           }
                         }
 
-                        // Proportional Indicator Opacity
                         const positiveOpacity = isTop ? Math.min(Math.max(dragOffset.x / 75, 0), 1) : 0;
                         const negativeOpacity = isTop ? Math.min(Math.max(-dragOffset.x / 75, 0), 1) : 0;
 
@@ -797,7 +815,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                             onMouseUp={isTop ? onMouseUp : undefined}
                             onMouseLeave={isTop ? onMouseUp : undefined}
                           >
-                            {/* Dynamic Visual Feedback Indicators */}
+                            {/* Visual Feedback Indicators */}
                             {isTop && (
                               <>
                                 <div 
@@ -840,8 +858,8 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </p>
                             </div>
 
-                            {/* Card Footer */}
-                            <div className="text-center text-[10px] text-paper-400 font-medium uppercase tracking-wider pt-1">
+                            {/* Card Footer (Dunklere Schriftfarbe für bessere Lesbarkeit) */}
+                            <div className="text-center text-[11px] text-ink-800 font-bold uppercase tracking-wider pt-1">
                               Wische nach rechts für JA &bull; nach links für NEIN
                             </div>
                           </div>
@@ -893,7 +911,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </h2>
                 </div>
 
-                {/* Loading State with Smooth Progress Bar */}
+                {/* Loading State */}
                 {isLoadingAi && (
                   <div className="bg-white border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-md">
                     <div className="space-y-3">
@@ -905,7 +923,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       </div>
                     </div>
 
-                    {/* Progress Bar & Percentage */}
                     <div className="space-y-2 max-w-xs mx-auto">
                       <div className="flex justify-between items-center text-xs font-medium text-ink-700">
                         <span>Katalogisierung...</span>
@@ -937,8 +954,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 {/* AI Recommendations Display */}
                 {aiRecommendations && !isLoadingAi && (
                   <div className="space-y-5">
-                    
-                    {/* Leseprofil Summary */}
                     {aiRecommendations.summary && (
                       <div className="bg-paper-50 border border-paper-300 p-4 rounded-xl text-xs text-ink-800 font-literary leading-relaxed shadow-sm flex items-start space-x-3">
                         <span className="text-lg flex-shrink-0">📜</span>
@@ -946,7 +961,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       </div>
                     )}
 
-                    {/* Book Cards */}
                     <div className="space-y-4">
                       {aiRecommendations.books?.map((book, idx) => {
                         const fav = isFavorite(book);
@@ -971,7 +985,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                                 </p>
                               </div>
 
-                              {/* Favorite Heart Button */}
                               <button
                                 onClick={() => toggleFavorite(book)}
                                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
@@ -987,13 +1000,11 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </button>
                             </div>
 
-                            {/* Matching Reason */}
                             <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl text-xs text-burgundy-900 flex items-start space-x-2">
                               <span>🎯</span>
                               <span><strong>Warum es passt:</strong> {book.matchReason}</span>
                             </div>
 
-                            {/* Real Blurb */}
                             <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl space-y-1">
                               <span className="text-[10px] font-bold text-ink-700 uppercase tracking-wider block">
                                 Klappentext
@@ -1006,7 +1017,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         );
                       })}
                     </div>
-
                   </div>
                 )}
 
@@ -1040,8 +1050,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   isDrawerClosing ? 'animate-drawer-out' : 'animate-drawer-in'
                 }`}
               >
-                
-                {/* Modal Header */}
                 <div className="flex items-center justify-between pb-4 border-b border-paper-300">
                   <div className="flex items-center space-x-2">
                     <span className="text-xl">📚</span>
@@ -1060,7 +1068,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </button>
                 </div>
 
-                {/* Share Button */}
                 {favorites.length > 0 && (
                   <div className="my-3 space-y-2">
                     <button
@@ -1078,7 +1085,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                {/* LocalStorage Note */}
                 <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl my-1 text-[11px] text-amber-900 flex items-start space-x-2 leading-relaxed">
                   <span className="text-sm flex-shrink-0">ℹ️</span>
                   <p>
@@ -1086,7 +1092,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </p>
                 </div>
 
-                {/* Favorites List */}
                 <div className="flex-grow overflow-y-auto space-y-3 custom-scrollbar my-2 pr-1">
                   {favorites.length === 0 ? (
                     <div className="text-center py-12 space-y-2">
@@ -1133,7 +1138,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   )}
                 </div>
 
-                {/* Modal Footer */}
                 <div className="pt-3 border-t border-paper-300">
                   <button
                     onClick={handleCloseDrawer}
