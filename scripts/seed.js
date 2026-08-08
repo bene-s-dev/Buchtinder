@@ -38,7 +38,9 @@ async function seed() {
       const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40&startIndex=${startIndex}&langRestrict=de`;
       
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+        });
         const data = await res.json();
 
         if (!data.items) continue;
