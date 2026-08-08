@@ -515,7 +515,6 @@ Antworte mir ausschließlich im folgenden JSON-Format ohne zusätzlichen Fließt
 Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
         try {
-          // Server-Aufruf an das eigene Vercel-Backend
           const res = await fetch('/api/gemini', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -526,8 +525,12 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
           const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
           if (responseText) {
-            const cleanJsonText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(cleanJsonText);
+            let jsonStr = responseText.trim();
+            const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              jsonStr = jsonMatch[0];
+            }
+            const parsed = JSON.parse(jsonStr);
             setLoadingProgress(100);
             await new Promise(r => setTimeout(r, 300));
             setAiRecommendations(parsed);
@@ -656,7 +659,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </span>
                   <h2 className="font-literary text-2xl font-bold text-ink-900">
                     Was möchtest du lesen?
-            
+                  </h2>
                 </div>
 
                 {/* Genre Selector */}
@@ -810,25 +813,25 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         </p>
                       </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center justify-center space-x-8 pt-2">
-                      <button
-                        onClick={() => handleDecision(false)}
-                        className="w-14 h-14 rounded-full bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center text-lg shadow-sm transition transform active:scale-95"
-                        title="Ablehnen"
-                      >
-                        ✕
-                      </button>
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-center space-x-8 pt-2">
+                        <button
+                          onClick={() => handleDecision(false)}
+                          className="w-14 h-14 rounded-full bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center text-lg shadow-sm transition transform active:scale-95"
+                          title="Ablehnen"
+                        >
+                          ✕
+                        </button>
 
-                      <button
-                        onClick={() => handleDecision(true)}
-                        className="w-14 h-14 rounded-full bg-burgundy-700 hover:bg-burgundy-800 text-white flex items-center justify-center text-xl font-bold shadow-md transition transform active:scale-95"
-                        title="Gefällt mir!"
-                      >
-                        ♥
-                      </button>
+                        <button
+                          onClick={() => handleDecision(true)}
+                          className="w-14 h-14 rounded-full bg-burgundy-700 hover:bg-burgundy-800 text-white flex items-center justify-center text-xl font-bold shadow-md transition transform active:scale-95"
+                          title="Gefällt mir!"
+                        >
+                          ♥
+                        </button>
+                      </div>
                     </div>
-
                   </div>
                 ) : (
                   <div className="my-auto text-center space-y-4">
@@ -853,7 +856,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   <h2 className="font-literary text-2xl font-bold text-ink-900">
                     Deine Buch-Empfehlungen
                   </h2>
-        
                 </div>
 
                 {/* Loading State with Smooth Progress Bar */}
