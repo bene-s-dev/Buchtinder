@@ -16,20 +16,19 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 });
 
 const GENRE_QUERIES = {
-  romantasy: 'subject:romantasy OR subject:fantasy romance',
-  dark_romance: 'subject:dark romance',
-  new_adult: 'subject:new adult OR subject:coming of age',
-  fantasy: 'subject:fantasy',
-  thriller: 'subject:thriller OR subject:krimi',
-  scifi: 'subject:science fiction',
-  romance: 'subject:romance',
-  humor: 'subject:humor OR subject:satire',
-  sachbuch: 'subject:nonfiction OR subject:biography',
-  historisch: 'subject:historical fiction',
-  jugend: 'subject:young adult',
-  klassiker: 'subject:classics OR Klassiker der Weltliteratur'
+  romantasy: 'romantasy OR "fantasy romance" OR drachen OR magie liebesroman',
+  dark_romance: '"dark romance" OR "mafia romance" OR "bad boy"',
+  new_adult: '"new adult" OR "college romance" OR "große liebe"',
+  fantasy: 'fantasy OR zauberer OR elfen OR "magische welt"',
+  thriller: 'thriller OR krimi OR mord OR psychothriller OR ermittler',
+  scifi: '"science fiction" OR weltall OR zukunft OR raumschiff',
+  romance: 'liebesroman OR romance OR herzschmerz OR verliebt',
+  humor: 'humor OR komödie OR lustig OR satire',
+  sachbuch: 'sachbuch OR biografie OR geschichte OR ratgeber',
+  historisch: '"historischer roman" OR jahrhundert OR kaiser OR mittelalter',
+  jugend: 'jugendbuch OR jugendroman OR internat OR teenager',
+  klassiker: 'klassiker OR "reclam" OR goethe OR schiller OR weltliteratur'
 };
-
 // Pause einlegen (Rate Limit / ToS Schutz)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
