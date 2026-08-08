@@ -14,19 +14,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 });
 
 async function seed() {
-  // 1. Duplikate anhand der ISBN filtern (behält immer das erste Buch mit dieser ISBN)
+  // Filtere doppelte ISBNs heraus, damit Supabase-Upsert nicht abbricht
   const seenIsbns = new Set();
   const books = rawBooks.filter(book => {
-    if (!book.isbn || seenIsbns.has(book.isbn)) {
-      return false;
-    }
+    if (!book.isbn || seenIsbns.has(book.isbn)) return false;
     seenIsbns.add(book.isbn);
     return true;
   });
 
-  console.log(`Starte Import von ${books.length} eindeutigen Büchern (von ${rawBooks.length} insgesamt)...`);
+  console.log(`Starte Import von ${books.length} eindeutigen Büchern aus data/books.json...`);
 
-  // 2. Import in Supabase
   const { error } = await supabase
     .from('books')
     .upsert(books, { onConflict: 'isbn' });
