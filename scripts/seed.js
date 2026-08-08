@@ -15,101 +15,95 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   realtime: { transport: WebSocket }
 });
 
-const GENRE_QUERIES = {
-  romantasy: 'romantasy OR "fantasy romance" OR drachen OR magie liebesroman',
-  dark_romance: '"dark romance" OR "mafia romance" OR "bad boy"',
-  new_adult: '"new adult" OR "college romance" OR "große liebe"',
-  fantasy: 'fantasy OR zauberer OR elfen OR "magische welt"',
-  thriller: 'thriller OR krimi OR mord OR psychothriller OR ermittler',
-  scifi: '"science fiction" OR weltall OR zukunft OR raumschiff',
-  romance: 'liebesroman OR romance OR herzschmerz OR verliebt',
-  humor: 'humor OR komödie OR lustig OR satire',
-  sachbuch: 'sachbuch OR biografie OR geschichte OR ratgeber',
-  historisch: '"historischer roman" OR jahrhundert OR kaiser OR mittelalter',
-  jugend: 'jugendbuch OR jugendroman OR internat OR teenager',
-  klassiker: 'klassiker OR "reclam" OR goethe OR schiller OR weltliteratur'
-};
+const GENRES = [
+  { key: 'romantasy', terms: ['romantasy', 'fantasy romance', 'drachen romance'] },
+  { key: 'dark_romance', terms: ['dark romance', 'mafia romance', 'bad boy romance'] },
+  { key: 'new_adult', terms: ['new adult', 'college romance', 'liebesroman'] },
+  { key: 'fantasy', terms: ['fantasy roman', 'high fantasy', 'magie roman'] },
+  { key: 'thriller', terms: ['thriller', 'kriminalroman', 'psychothriller'] },
+  { key: 'scifi', terms: ['science fiction', 'space opera', 'zukunft roman'] },
+  { key: 'romance', terms: ['liebesroman', 'romantik roman', 'herzschmerz'] },
+  { key: 'humor', terms: ['humor roman', 'komödie buch', 'satire roman'] },
+  { key: 'sachbuch', terms: ['sachbuch', 'biografie', 'ratgeber'] },
+  { key: 'historisch', terms: ['historischer roman', 'mittelalter roman'] },
+  { key: 'jugend', terms: ['jugendbuch', 'jugendroman'] },
+  { key: 'klassiker', terms: ['klassiker der weltliteratur', 'reclam klassiker'] }
+];
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function seed() {
-  // Bestehende ISBNs und Titel aus Supabase abrufen für Duplikat-Check
   const { data: existingData } = await supabase.from('books').select('isbn, title');
   const existingIsbns = new Set((existingData || []).map(b => b.isbn).filter(Boolean));
   const existingTitles = new Set((existingData || []).map(b => b.title ? b.title.toLowerCase().trim() : ''));
 
-  for (const [genre, query] of Object.entries(GENRE_QUERIES)) {
+  for (const { key: genre, terms } of GENRES) {
     console.log(`Lade Bücher für Genre: ${genre}...`);
     let booksForGenre = [];
 
-    // Erhöht auf 8 Seiten (0, 40, 80, 120, 160, 200, 240, 280) -> bis zu 320 Ergebnisse pro Genre
-    for (const startIndex of [0, 40, 80, 120, 160, 200, 240, 280]) {
-      const keyParam = GOOGLE_KEY ? `&key=${GOOGLE_KEY}` : '';
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40&startIndex=${startIndex}&langRestrict=de${keyParam}`;
-      
-      try {
-        const res = await fetch(url, {
-          headers: { 'User-Agent': 'BuchKompass-Seeder/1.0' }
-        });
-        
-        const data = await res.json();
+    for (const term of terms) {
+      for (const startIndex of [0, 40]) {
+        const keyParam = GOOGLE_KEY ? `&key=${GOOGLE_KEY}` : '';
+        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(term)}&langRestrict=de&maxResults=40&startIndex=${startIndex}${keyParam}`;
 
-        if (data.error) {
-          console.error(`Google API Fehler bei ${genre}:`, data.error.message);
-          break;
-        }
+        try {
+          const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+          });
+          const data = await res.json();
 
-        if (!data.items) continue;
+          if (!data.items) continue;
 
-        for (const item of data.items) {
-          const info = item.volumeInfo || {};
-          
-          if (info.language !== 'de') continue;
+          for (const item of data.items) {
+            const info = item.volumeInfo || {};
 
-          const title = info.title;
-          const authors = info.authors ? info.authors.join(', ') : 'Unbekannt';
-          const pubDate = info.publishedDate || '';
-          const year = pubDate.length >= 4 && !isNaN(pubDate.slice(0, 4)) ? parseInt(pubDate.slice(0, 4)) : null;
-          const pages = info.pageCount || null;
-          const description = info.description || '';
-          const coverUrl = info.imageLinks?.thumbnail || null;
-          const isbns = info.industryIdentifiers || [];
-          const isbn = isbns.length > 0 ? isbns[0].identifier : null;
+            if (info.language && info.language !== 'de') continue;
 
-          const normalizedTitle = title ? title.toLowerCase().trim() : '';
+            const title = info.title;
+            const authors = info.authors ? info.authors.join(', ') : 'Unbekannt';
+            const pubDate = info.publishedDate || '';
+            const year = pubDate.length >= 4 && !isNaN(pubDate.slice(0, 4)) ? parseInt(pubDate.slice(0, 4)) : null;
+            const pages = info.pageCount || null;
+            const description = info.description || '';
+            const coverUrl = info.imageLinks?.thumbnail || null;
+            const isbns = info.industryIdentifiers || [];
+            const isbn = isbns.length > 0 ? isbns[0].identifier : null;
 
-          // Duplikat-Prüfung gegen Supabase + aktuellen Durchlauf
-          if (isbn && existingIsbns.has(isbn)) continue;
-          if (normalizedTitle && existingTitles.has(normalizedTitle)) continue;
+            const normalizedTitle = title ? title.toLowerCase().trim() : '';
 
-          if (title && description && description.length > 60) {
-            booksForGenre.push({
-              title,
-              author: authors,
-              year,
-              pages,
-              genre,
-              description: description.slice(0, 600),
-              isbn,
-              cover_url: coverUrl
-            });
+            if (isbn && existingIsbns.has(isbn)) continue;
+            if (normalizedTitle && existingTitles.has(normalizedTitle)) continue;
 
-            // Für spätere Vergleiche merken
-            if (isbn) existingIsbns.add(isbn);
-            if (normalizedTitle) existingTitles.add(normalizedTitle);
+            if (title && description && description.length > 40) {
+              booksForGenre.push({
+                title,
+                author: authors,
+                year,
+                pages,
+                genre,
+                description: description.slice(0, 600),
+                isbn,
+                cover_url: coverUrl
+              });
+
+              if (isbn) existingIsbns.add(isbn);
+              if (normalizedTitle) existingTitles.add(normalizedTitle);
+            }
           }
+        } catch (err) {
+          console.error(`Fehler bei ${genre} (${term}):`, err.message);
         }
-      } catch (err) {
-        console.error(`Fehler bei ${genre}:`, err.message);
-      }
 
-      await delay(300);
+        await delay(250);
+      }
     }
 
     if (booksForGenre.length > 0) {
       const { error } = await supabase.from('books').upsert(booksForGenre, { onConflict: 'isbn' });
       if (error) console.error(`Supabase Error (${genre}):`, error.message);
-      else console.log(`-> ${booksForGenre.length} neue deutsche Bücher für '${genre}' gespeichert.`);
+      else console.log(`-> ${booksForGenre.length} neue Bücher für '${genre}' gespeichert.`);
+    } else {
+      console.log(`-> Keine neuen Bücher für '${genre}' gefunden.`);
     }
   }
   console.log('✅ Import erfolgreich abgeschlossen!');
