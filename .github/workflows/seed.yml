@@ -13,13 +13,10 @@ jobs:
       - name: Node.js einrichten
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
 
-      - name: Supabase Client installieren
-        run: npm install @supabase/supabase-js
-
-      - name: Seeder-Skript ausführen
+      - name: Seeder-Skript direkt ausführen
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: node scripts/seed.js
+        run: npx -p @supabase/supabase-js -p ws node scripts/seed.js
