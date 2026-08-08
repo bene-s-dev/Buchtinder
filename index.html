@@ -882,7 +882,7 @@ const data = await res.json();
                     <div className="space-y-3">
                       <div className="text-3xl animate-bounce">📚</div>
                       <div className="min-h-[44px] flex items-center justify-center px-2">
-                        <p className="font-literary italic text-ink-800 text-xs transition-all duration-300 leading-relaxed">
+                        <p className="font-literary text-ink-800 text-xs transition-all duration-300 leading-relaxed">
                           {LOADING_PHRASES[loadingPhraseIndex]}
                         </p>
                       </div>
@@ -920,13 +920,13 @@ const data = await res.json();
                 {aiRecommendations && !isLoadingAi && (
                   <div className="space-y-5">
                     
-                    {/* Leseprofil Summary */}
-                    {aiRecommendations.summary && (
-                      <div className="bg-paper-50 border border-paper-300 p-4 rounded-xl text-xs text-ink-800 font-literary leading-relaxed shadow-sm flex items-start space-x-3">
-                        <span className="text-lg flex-shrink-0">📜</span>
-                        <p className="italic">{aiRecommendations.summary}</p>
-                      </div>
-                    )}
+                   {/* Leseprofil Summary */}
+{aiRecommendations.summary && (
+  <div className="bg-paper-50 border border-paper-300 p-4 rounded-xl text-xs text-ink-800 font-literary leading-relaxed shadow-sm flex items-start space-x-3">
+    <span className="text-lg flex-shrink-0">📜</span>
+    <p>{aiRecommendations.summary}</p>
+  </div>
+)}
 
                     {/* Book Cards */}
                     <div className="space-y-4">
@@ -978,9 +978,9 @@ const data = await res.json();
                             {/* Real Blurb */}
                             <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl space-y-1">
                               <span className="text-[10px] font-bold text-ink-700 uppercase tracking-wider block">
-                                📖 Echter Klappentext
+                                Klappentext
                               </span>
-                              <p className="text-xs text-ink-800 leading-relaxed italic font-normal">
+                              <p className="text-xs text-ink-800 leading-relaxed font-normal">
                                 "{book.description}"
                               </p>
                             </div>
