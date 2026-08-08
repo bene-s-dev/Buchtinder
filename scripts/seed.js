@@ -1,4 +1,4 @@
-wie? const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('@supabase/supabase-js');
 const books = require('../data/books.json');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
