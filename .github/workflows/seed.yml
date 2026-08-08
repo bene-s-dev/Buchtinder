@@ -1,7 +1,7 @@
 name: Seed Books to Supabase
 
 on:
-  workflow_dispatch: # Erlaubt das manuelle Starten per Button auf GitHub
+  workflow_dispatch:
 
 jobs:
   run-seed:
@@ -13,7 +13,7 @@ jobs:
       - name: Node.js einrichten
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Supabase Client installieren
         run: npm install @supabase/supabase-js
