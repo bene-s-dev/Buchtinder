@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
   <title>BuchKompass - Dein intelligenter Buch-Finder</title>
-  <!-- Social Media Vorschau (Open Graph & Twitter Cards) -->
+  {/* Social Media Vorschau (Open Graph & Twitter Cards) */}
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://buchkompass.benedrive.de" />
   <meta property="og:title" content="BuchKompass - Dein intelligenter Buch-Finder" />
   <meta property="og:description" content="Finde dein nächstes Lieblingsbuch." />
   <meta property="og:image" content="https://buchkompass.benedrive.de/preview.png" />
   
-  <!-- Tailwind CSS CDN -->
+  {/* Tailwind CSS CDN */}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -51,12 +51,12 @@
     }
   </script>
 
-  <!-- React & ReactDOM CDN -->
+  {/* React & ReactDOM CDN */}
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Google Fonts for Publishing & Literary Aesthetics -->
+  {/* Google Fonts for Publishing & Literary Aesthetics */}
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     
@@ -105,17 +105,6 @@
       }
     }
 
-    @keyframes cardAppear {
-      0% {
-        opacity: 0;
-        transform: scale(0.94) translateY(14px);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
     @keyframes heartPop {
       0% { transform: scale(1); }
       30% { transform: scale(1.45) rotate(-12deg); }
@@ -141,10 +130,6 @@
 
     .step-transition {
       animation: fadeInSmooth 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .card-appear {
-      animation: cardAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .animate-heart-pop {
@@ -205,7 +190,7 @@
       </svg>
     );
 
-    // Database of story elements (8 tailored themes for each genre = 64 total)
+    // Database of story elements
     const STORY_THEMES = [
       // FANTASY & MAGIE
       { id: 'st-f1', genreIds: ['fantasy'], icon: '🧙‍♂️', category: 'Magie & System', title: 'Komplexe Magiesysteme & Alte Artefakte', description: 'Klare Regeln der Zauberei, mächtige Relikte und das Erlernen magischer Künste.' },
@@ -566,13 +551,14 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
       };
 
       const onTouchStart = (e) => {
+        if (isAnimatingExit) return;
         setIsDragging(true);
         const touch = e.touches[0];
         dragStart.current = { x: touch.clientX, y: touch.clientY };
       };
 
       const onTouchMove = (e) => {
-        if (!isDragging) return;
+        if (!isDragging || isAnimatingExit) return;
         const touch = e.touches[0];
         const deltaX = touch.clientX - dragStart.current.x;
         const deltaY = touch.clientY - dragStart.current.y;
@@ -607,19 +593,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
         else if (dragOffset.x < -75) handleDecision(false);
         else setDragOffset({ x: 0, y: 0 });
       };
-
-      const currentTheme = themesToSwipe[currentIndex];
-
-      let cardTransform = `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.04}deg)`;
-      let cardOpacity = 1;
-
-      if (exitDirection === 'right') {
-        cardTransform = 'translate(120vw, 30px) rotate(18deg)';
-        cardOpacity = 0;
-      } else if (exitDirection === 'left') {
-        cardTransform = 'translate(-120vw, 30px) rotate(-18deg)';
-        cardOpacity = 0;
-      }
 
       return (
         <div className="flex flex-col min-h-screen">
@@ -761,11 +734,11 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
               </div>
             )}
 
-            {/* STEP 2: SWIPE MOTIFS */}
+            {/* STEP 2: SWIPE MOTIFS (Tinder-Style Stack) */}
             {step === 2 && (
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2">
-                {currentTheme ? (
-                  <div className="w-full space-y-4 my-auto">
+                {currentIndex < themesToSwipe.length ? (
+                  <div className="w-full space-y-4 my-auto flex flex-col items-center">
                     
                     <div className="text-center space-y-1">
                       <span className="inline-block px-3 py-0.5 bg-burgundy-50 border border-burgundy-100 text-burgundy-700 rounded-full text-xs font-semibold tracking-wide uppercase">
@@ -774,80 +747,124 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       <p className="text-xs text-ink-700">Soll dieses Motiv in deiner Lektüre vorkommen?</p>
                     </div>
 
-                    {/* Swipe Card */}
-                    <div 
-                      key={`card-${currentIndex}`}
-                      className="card-appear relative bg-white border border-paper-300 rounded-2xl p-6 shadow-md overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none space-y-5"
-                      style={{
-                        transform: cardTransform,
-                        opacity: cardOpacity,
-                        transition: isDragging 
-                          ? 'none' 
-                          : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                      }}
-                      onTouchStart={onTouchStart}
-                      onTouchMove={onTouchMove}
-                      onTouchEnd={onTouchEnd}
-                      onMouseDown={onMouseDown}
-                      onMouseMove={onMouseMove}
-                      onMouseUp={onMouseUp}
-                      onMouseLeave={onMouseUp}
-                    >
-                      {/* Swipe Visual Feedback */}
-                      {dragOffset.x > 35 && (
-                        <div className="absolute top-5 left-5 z-30 border-2 border-emerald-600 text-emerald-700 font-literary font-bold text-xs px-3 py-1 rounded-lg rotate-[-8deg] bg-white shadow-md">
-                          PASST GUT 👍
-                        </div>
-                      )}
-                      {dragOffset.x < -35 && (
-                        <div className="absolute top-5 right-5 z-30 border-2 border-rose-600 text-rose-700 font-literary font-bold text-xs px-3 py-1 rounded-lg rotate-[8deg] bg-white shadow-md">
-                          LIEBER NICHT 👎
-                        </div>
-                      )}
+                    {/* Stacked Cards Container */}
+                    <div className="relative w-full h-[380px] max-w-sm flex items-center justify-center my-2">
+                      {themesToSwipe.slice(currentIndex, currentIndex + 3).map((theme, relativeIdx) => {
+                        const isTop = relativeIdx === 0;
+                        
+                        // Layering Calculations
+                        const offsetY = relativeIdx * 12;
+                        const scale = 1 - relativeIdx * 0.05;
+                        const zIndex = 30 - relativeIdx * 10;
+                        
+                        let transform = `translateY(${offsetY}px) scale(${scale})`;
+                        let opacity = 1 - relativeIdx * 0.15;
+                        
+                        if (isTop) {
+                          if (exitDirection === 'right') {
+                            transform = 'translate(120vw, 30px) rotate(20deg) scale(1)';
+                            opacity = 0;
+                          } else if (exitDirection === 'left') {
+                            transform = 'translate(-120vw, 30px) rotate(-20deg) scale(1)';
+                            opacity = 0;
+                          } else {
+                            transform = `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.08}deg) scale(1)`;
+                          }
+                        }
 
-                      {/* Card Content Header */}
-                      <div className="flex items-center space-x-3.5 border-b border-paper-200 pb-4">
-                        <div className="w-12 h-12 rounded-xl bg-paper-100 border border-paper-300 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
-                          {currentTheme.icon}
-                        </div>
-                        <div>
-                          <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[10px] font-bold uppercase tracking-wider rounded">
-                            Motiv: {currentTheme.category}
-                          </span>
-                          <h3 className="font-literary font-bold text-lg text-ink-900 leading-snug">
-                            {currentTheme.title}
-                          </h3>
-                        </div>
-                      </div>
+                        // Proportional Indicator Opacity
+                        const positiveOpacity = isTop ? Math.min(Math.max(dragOffset.x / 75, 0), 1) : 0;
+                        const negativeOpacity = isTop ? Math.min(Math.max(-dragOffset.x / 75, 0), 1) : 0;
 
-                      {/* Story Theme Description Text */}
-                      <div className="bg-paper-50 border border-paper-200 p-4 rounded-xl space-y-1.5">
-                        <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
-                          📜 Wie äußert sich das im Buch?
-                        </span>
-                        <p className="text-xs text-ink-800 leading-relaxed font-normal">
-                          {currentTheme.description}
-                        </p>
-                      </div>
+                        return (
+                          <div 
+                            key={theme.id}
+                            className={`absolute inset-0 bg-white border border-paper-300 rounded-2xl p-6 shadow-md overflow-hidden flex flex-col justify-between select-none ${
+                              isTop ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none'
+                            }`}
+                            style={{
+                              zIndex,
+                              transform,
+                              opacity,
+                              transition: isTop && isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease-out',
+                            }}
+                            onTouchStart={isTop ? onTouchStart : undefined}
+                            onTouchMove={isTop ? onTouchMove : undefined}
+                            onTouchEnd={isTop ? onTouchEnd : undefined}
+                            onMouseDown={isTop ? onMouseDown : undefined}
+                            onMouseMove={isTop ? onMouseMove : undefined}
+                            onMouseUp={isTop ? onMouseUp : undefined}
+                            onMouseLeave={isTop ? onMouseUp : undefined}
+                          >
+                            {/* Dynamic Visual Feedback Indicators */}
+                            {isTop && (
+                              <>
+                                <div 
+                                  className="absolute top-5 left-5 z-30 border-2 border-emerald-600 text-emerald-700 font-literary font-bold text-xs px-3 py-1 rounded-lg rotate-[-8deg] bg-white shadow-md pointer-events-none"
+                                  style={{ opacity: positiveOpacity }}
+                                >
+                                  PASST GUT 👍
+                                </div>
+                                <div 
+                                  className="absolute top-5 right-5 z-30 border-2 border-rose-600 text-rose-700 font-literary font-bold text-xs px-3 py-1 rounded-lg rotate-[8deg] bg-white shadow-md pointer-events-none"
+                                  style={{ opacity: negativeOpacity }}
+                                >
+                                  LIEBER NICHT 👎
+                                </div>
+                              </>
+                            )}
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center justify-center space-x-8 pt-2">
-                        <button
-                          onClick={() => handleDecision(false)}
-                          className="w-14 h-14 rounded-full bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center text-lg shadow-sm transition transform active:scale-95"
-                          title="Ablehnen"
-                        >
-                          ✕
-                        </button>
+                            {/* Card Header */}
+                            <div className="flex items-center space-x-3.5 border-b border-paper-200 pb-4">
+                              <div className="w-12 h-12 rounded-xl bg-paper-100 border border-paper-300 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
+                                {theme.icon}
+                              </div>
+                              <div>
+                                <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[10px] font-bold uppercase tracking-wider rounded">
+                                  Motiv: {theme.category}
+                                </span>
+                                <h3 className="font-literary font-bold text-lg text-ink-900 leading-snug">
+                                  {theme.title}
+                                </h3>
+                              </div>
+                            </div>
 
-                        <button
-                          onClick={() => handleDecision(true)}
-                          className="w-14 h-14 rounded-full bg-burgundy-700 hover:bg-burgundy-800 text-white flex items-center justify-center text-xl font-bold shadow-md transition transform active:scale-95"
-                          title="Gefällt mir!"
-                        >
-                          ♥
-                        </button>
-                      </div>
+                            {/* Theme Description */}
+                            <div className="bg-paper-50 border border-paper-200 p-4 rounded-xl space-y-1.5 flex-grow my-3 flex flex-col justify-center">
+                              <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
+                                📜 Wie äußert sich das im Buch?
+                              </span>
+                              <p className="text-xs text-ink-800 leading-relaxed font-normal">
+                                {theme.description}
+                              </p>
+                            </div>
+
+                            {/* Card Footer */}
+                            <div className="text-center text-[10px] text-paper-400 font-medium uppercase tracking-wider">
+                              Wische nach rechts für JA &bull; nach links für NEIN
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-center space-x-8 pt-2 z-40">
+                      <button
+                        onClick={() => handleDecision(false)}
+                        className="w-14 h-14 rounded-full bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center text-lg shadow-sm transition transform active:scale-95"
+                        title="Ablehnen"
+                      >
+                        ✕
+                      </button>
+
+                      <button
+                        onClick={() => handleDecision(true)}
+                        className="w-14 h-14 rounded-full bg-burgundy-700 hover:bg-burgundy-800 text-white flex items-center justify-center text-xl font-bold shadow-md transition transform active:scale-95"
+                        title="Gefällt mir!"
+                      >
+                        ♥
+                      </button>
                     </div>
                   </div>
                 ) : (
@@ -1001,7 +1018,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                     }}
                     className="w-full py-3 bg-white hover:bg-paper-50 text-ink-800 text-xs font-literary font-bold rounded-xl border border-paper-300 transition shadow-sm"
                   >
-                    Neue Empfehlungen suchen
+                    Neue Empfehlungen suchen 🔍
                   </button>
                 </div>
               </div>
