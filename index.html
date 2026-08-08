@@ -667,9 +667,9 @@
             }
           }
 
-          // Bücher zufällig mischen & maximal 4 auswählen
+          // Bücher zufällig mischen & maximal 6 auswählen
           const shuffled = filteredBooks.sort(() => 0.5 - Math.random());
-          const selectedBooks = shuffled.slice(0, 4).map(b => ({
+          const selectedBooks = shuffled.slice(0, 6).map(b => ({
             title: b.title,
             author: b.author,
             year: b.year,
@@ -1208,17 +1208,27 @@
                   </div>
                 )}
 
-                <div className="pt-2 space-y-2">
-                  <button
-                    onClick={() => {
-                      setStep(1);
-                      setAiRecommendations(null);
-                    }}
-                    className="w-full py-3 bg-white hover:bg-paper-50 text-ink-800 text-xs font-literary font-bold rounded-xl border border-paper-300 transition shadow-sm"
-                  >
-                    Neue Empfehlungen suchen
-                  </button>
-                </div>
+                {/* BUTTONS FÜR WEITERE VORSCHLÄGE & NEUE SUCHE */}
+                {aiRecommendations && !isLoadingAi && (
+                  <div className="pt-2 space-y-2.5">
+                    <button
+                      onClick={() => fetchAiBookRecommendations()}
+                      className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-literary font-bold rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2"
+                    >
+                      <span>🔄 Weitere Vorschläge laden</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setStep(1);
+                        setAiRecommendations(null);
+                      }}
+                      className="w-full py-3 bg-white hover:bg-paper-50 text-ink-800 text-xs font-literary font-bold rounded-xl border border-paper-300 transition shadow-sm active:scale-[0.98]"
+                    >
+                      Neue Suche starten
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
