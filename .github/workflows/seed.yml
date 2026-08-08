@@ -17,6 +17,6 @@ jobs:
 
       - name: Seeder-Skript direkt ausführen
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+          SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
         run: npx -p @supabase/supabase-js -p ws node scripts/seed.js
