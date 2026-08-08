@@ -301,11 +301,11 @@
     ];
 
     const MOODS = [
-      '⚡ Fesselnd & Hochspannung',
-      '☕ Gemütlich & Herz erwärmend',
-      '🕯️ Düster & Atmosphärisch',
-      '💡 Tiefgründig & Nachdenklich',
-      '🤣 Amüsant & Locker'
+      'Fesselnd & Hochspannung',
+      'Gemütlich & Herz erwärmend',
+      'Düster & Atmosphärisch',
+      'Tiefgründig & Nachdenklich',
+      'Amüsant & Locker'
     ];
 
     const LENGTHS = ['Egal', 'Kurz (< 300 S.)', 'Mittel (300-500 S.)', 'Wälzer (> 500 S.)'];
@@ -379,11 +379,11 @@
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
         const formattedList = favorites.map((b, i) => `${i + 1}. "${b.title}" von ${b.author} (${b.genre})`).join('\n');
-        const text = `📚 Meine Buch-Favoriten auf BuchTinder:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller!`;
+        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller: https://buchkompass.benedrive.de!`;
 
         if (navigator.share) {
           navigator.share({
-            title: 'Meine BuchTinder Favoriten',
+            title: 'Meine BuchKompass-Favoriten',
             text: text
           }).catch(() => {});
         } else {
@@ -612,10 +612,10 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 </div>
                 <div>
                   <h1 className="font-literary font-bold text-xl tracking-tight text-ink-900">
-                    BuchTinder
+                    BuchKompass
                   </h1>
                   <p className="text-[10px] text-burgundy-700 font-semibold tracking-wider uppercase">
-                    Literarischer Kompass
+                    Finde dein nächstes Buch!
                   </p>
                 </div>
               </div>
@@ -656,10 +656,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </span>
                   <h2 className="font-literary text-2xl font-bold text-ink-900">
                     Was möchtest du lesen?
-                  </h2>
-                  <p className="text-xs text-ink-700 leading-relaxed max-w-xs mx-auto">
-                    Wähle deine bevorzugte Kategorie. Im nächsten Schritt erkundest du typische Handlungen und Narrative.
-                  </p>
+            
                 </div>
 
                 {/* Genre Selector */}
@@ -813,11 +810,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         </p>
                       </div>
 
-                      <p className="text-[11px] text-center text-ink-700 font-literary italic">
-                        👈 Wische nach links (Nein) oder rechts (Ja) 👉
-                      </p>
-                    </div>
-
                     {/* Action Buttons */}
                     <div className="flex items-center justify-center space-x-8 pt-2">
                       <button
@@ -861,9 +853,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   <h2 className="font-literary text-2xl font-bold text-ink-900">
                     Deine Buch-Empfehlungen
                   </h2>
-                  <p className="text-xs text-ink-700 leading-relaxed max-w-xs mx-auto">
-                    Aus deinen Wünschen hat die Redaktion folgende Werke für dich ausgewählt:
-                  </p>
+        
                 </div>
 
                 {/* Loading State with Smooth Progress Bar */}
@@ -996,7 +986,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                     }}
                     className="w-full py-3 bg-white hover:bg-paper-50 text-ink-800 text-xs font-literary font-bold rounded-xl border border-paper-300 transition shadow-sm"
                   >
-                    🔄 Neue Empfehlungen suchen
+                    Neue Empfehlungen suchen
                   </button>
                 </div>
               </div>
@@ -1059,7 +1049,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl my-1 text-[11px] text-amber-900 flex items-start space-x-2 leading-relaxed">
                   <span className="text-sm flex-shrink-0">ℹ️</span>
                   <p>
-                    <strong>Hinweis:</strong> Deine Favoriten werden direkt im lokalen Speicher deines Browsers (LocalStorage) gespeichert.
+                    <strong>Hinweis:</strong> Deine Favoriten werden im Browser gespeichert und gehen verloren, wenn du Browserdaten (z. B. Cookies) löschst.
                   </p>
                 </div>
 
@@ -1126,7 +1116,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
           {/* Footer */}
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary">
-            BuchTinder &bull; Belletristik & Verlags-Edition &bull; Gemini AI
+            BuchKompass &bull; Bene 2026
           </footer>
         </div>
       );
