@@ -621,19 +621,42 @@
         }, 280);
       };
 
-      // --- SUPABASE DIRECT QUERY ---
+      // --- SUPABASE DIRECT QUERY MIT EXAKT 7-SEKUNDEN-TIMER ---
       const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, excludeAlreadyRead = false) => {
         setIsLoadingAi(true);
         setAiError('');
-        setLoadingProgress(15);
+        setLoadingProgress(0);
         setLoadingPhraseIndex(0);
 
+        const startTime = Date.now();
+        const DURATION = 7000; // Exakt 7 Sekunden
+
+        // Smooth Progress von 0 auf 100% über exakt 7 Sekunden
+        const progressInterval = setInterval(() => {
+          const elapsedTime = Date.now() - startTime;
+          const progress = Math.min(Math.floor((elapsedTime / DURATION) * 100), 100);
+          setLoadingProgress(progress);
+        }, 50);
+
+        // Textwechsel alle ~1.75 Sekunden während der 7 Sekunden
+        const phraseInterval = setInterval(() => {
+          setLoadingPhraseIndex(prev => (prev + 1) % LOADING_PHRASES.length);
+        }, 1750);
+
         try {
-          if (!supabaseClient) {
-            throw new Error("Supabase-Verbindung wird noch aufgebaut oder Umgebungsvariablen in Vercel fehlen.");
+          let client = supabaseClient;
+          if (!client) {
+            const res = await fetch('/api/config');
+            const cfg = await res.json();
+            if (cfg.url && cfg.key && window.supabase) {
+              client = window.supabase.createClient(cfg.url, cfg.key);
+              setSupabaseClient(client);
+            } else {
+              throw new Error("Umgebungsvariablen (SUPABASE_URL / SUPABASE_KEY) in Vercel fehlen oder sind leer.");
+            }
           }
 
-          let query = supabaseClient.from('books').select('*');
+          let query = client.from('books').select('*');
 
           // Filter nach Genre
           if (selectedGenres.length > 0) {
@@ -658,12 +681,13 @@
             }
           }
 
-          setLoadingProgress(50);
           const { data, error } = await query;
 
           if (error) throw error;
 
           if (!data || data.length === 0) {
+            clearInterval(progressInterval);
+            clearInterval(phraseInterval);
             setAiError("Keine passenden Bücher in der Datenbank gefunden. Versuche deine Filter zu lockern!");
             return;
           }
@@ -691,14 +715,22 @@
             isbn: b.isbn
           }));
 
+          // Verbleibende Zeit berechnen, damit exakt 7 Sekunden abgewartet werden
+          const elapsedSoFar = Date.now() - startTime;
+          const remainingTime = Math.max(DURATION - elapsedSoFar, 0);
+
+          await new Promise(r => setTimeout(r, remainingTime));
+
           setLoadingProgress(100);
-          await new Promise(r => setTimeout(r, 200));
+          await new Promise(r => setTimeout(r, 250)); // Kurzer Übergangseffekt
           setAiRecommendations({ books: selectedBooks });
 
         } catch (err) {
           console.error("Supabase Error:", err);
           setAiError(`Fehler beim Laden der Bücher aus Supabase (${err.message || 'Verbindungsfehler'}).`);
         } finally {
+          clearInterval(progressInterval);
+          clearInterval(phraseInterval);
           setIsLoadingAi(false);
         }
       };
