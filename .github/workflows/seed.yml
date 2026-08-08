@@ -15,8 +15,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Seeder-Skript direkt ausführen
+      - name: Module installieren
+        run: npm install @supabase/supabase-js ws
+
+      - name: Seeder-Skript ausführen
         env:
           SUPABASE_URL: ${{secrets.SUPABASE_URL}}
           SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
-        run: npx -p @supabase/supabase-js -p ws node scripts/seed.js
+        run: node scripts/seed.js
