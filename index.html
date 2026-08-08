@@ -623,7 +623,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
       return (
         <div className="flex flex-col min-h-screen">
-          <!-- Header in Clean Publishing House Style -->
+          {/* Header in Clean Publishing House Style */}
           <header className="bg-paper-50/90 backdrop-blur-md border-b border-paper-300 sticky top-0 z-40 px-4 py-3.5 shadow-sm">
             <div className="max-w-md mx-auto flex items-center justify-between">
               <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setStep(1)}>
@@ -647,7 +647,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </span>
                 )}
 
-                <!-- Hamburger Menu Button for Favorites -->
+                {/* Hamburger Menu Button for Favorites */}
                 <button 
                   onClick={() => setIsFavoritesOpen(true)}
                   className="p-2.5 rounded-xl bg-paper-100 hover:bg-paper-200 border border-paper-300 text-ink-800 transition-all duration-200 active:scale-95 relative flex items-center justify-center shadow-sm"
@@ -664,10 +664,10 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             </div>
           </header>
 
-          <!-- Main Container -->
+          {/* Main Container */}
           <main className="flex-grow flex flex-col justify-center px-4 py-6 max-w-md mx-auto w-full">
             
-            <!-- STEP 1: PREFERENCES -->
+            {/* STEP 1: PREFERENCES */}
             {step === 1 && (
               <div key="step-1" className="step-transition space-y-6">
                 <div className="text-center space-y-1.5">
@@ -679,7 +679,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </h2>
                 </div>
 
-                <!-- Genre Selector -->
+                {/* Genre Selector */}
                 <div className="space-y-2">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
                     1. Haupt-Genre wählen
@@ -705,7 +705,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 </div>
 
-                <!-- Mood Selector - Omitted for Sachbuch & Wissen -->
+                {/* Mood Selector - Omitted for Sachbuch & Wissen */}
                 {selectedGenres[0] !== 'sachbuch' && (
                   <div className="space-y-2">
                     <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
@@ -729,7 +729,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                <!-- Length Selector -->
+                {/* Length Selector */}
                 <div className="space-y-2">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
                     {selectedGenres[0] === 'sachbuch' ? '2. Umfang' : '3. Umfang'}
@@ -751,7 +751,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 </div>
 
-                <!-- Submit Button -->
+                {/* Submit Button */}
                 <button
                   onClick={startSwipingThemes}
                   className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white font-literary font-bold text-base rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 tracking-wide"
@@ -761,7 +761,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
               </div>
             )}
 
-            <!-- STEP 2: SWIPE MOTIFS -->
+            {/* STEP 2: SWIPE MOTIFS */}
             {step === 2 && (
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2">
                 {currentTheme ? (
@@ -774,7 +774,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       <p className="text-xs text-ink-700">Soll dieses Motiv in deiner Lektüre vorkommen?</p>
                     </div>
 
-                    <!-- Swipe Card -->
+                    {/* Swipe Card */}
                     <div 
                       key={`card-${currentIndex}`}
                       className="card-appear relative bg-white border border-paper-300 rounded-2xl p-6 shadow-md overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none space-y-5"
@@ -793,7 +793,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       onMouseUp={onMouseUp}
                       onMouseLeave={onMouseUp}
                     >
-                      <!-- Swipe Visual Feedback -->
+                      {/* Swipe Visual Feedback */}
                       {dragOffset.x > 35 && (
                         <div className="absolute top-5 left-5 z-30 border-2 border-emerald-600 text-emerald-700 font-literary font-bold text-xs px-3 py-1 rounded-lg rotate-[-8deg] bg-white shadow-md">
                           PASST GUT 👍
@@ -805,7 +805,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         </div>
                       )}
 
-                      <!-- Card Content Header -->
+                      {/* Card Content Header */}
                       <div className="flex items-center space-x-3.5 border-b border-paper-200 pb-4">
                         <div className="w-12 h-12 rounded-xl bg-paper-100 border border-paper-300 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
                           {currentTheme.icon}
@@ -820,7 +820,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         </div>
                       </div>
 
-                      <!-- Story Theme Description Text -->
+                      {/* Story Theme Description Text */}
                       <div className="bg-paper-50 border border-paper-200 p-4 rounded-xl space-y-1.5">
                         <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
                           📜 Wie äußert sich das im Buch?
@@ -830,7 +830,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                         </p>
                       </div>
 
-                      <!-- Action Buttons -->
+                      {/* Action Buttons */}
                       <div className="flex items-center justify-center space-x-8 pt-2">
                         <button
                           onClick={() => handleDecision(false)}
@@ -863,7 +863,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
               </div>
             )}
 
-            <!-- STEP 3: RECOMMENDATIONS -->
+            {/* STEP 3: RECOMMENDATIONS */}
             {step === 3 && (
               <div key="step-3" className="step-transition space-y-6">
                 <div className="text-center space-y-1.5">
@@ -875,7 +875,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </h2>
                 </div>
 
-                <!-- Loading State with Smooth Progress Bar -->
+                {/* Loading State with Smooth Progress Bar */}
                 {isLoadingAi && (
                   <div className="bg-white border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-md">
                     <div className="space-y-3">
@@ -887,7 +887,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       </div>
                     </div>
 
-                    <!-- Progress Bar & Percentage -->
+                    {/* Progress Bar & Percentage */}
                     <div className="space-y-2 max-w-xs mx-auto">
                       <div className="flex justify-between items-center text-xs font-medium text-ink-700">
                         <span>Katalogisierung...</span>
@@ -903,7 +903,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                <!-- Error State -->
+                {/* Error State */}
                 {aiError && (
                   <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-center space-y-3">
                     <p className="text-xs text-rose-800 font-medium">{aiError}</p>
@@ -916,11 +916,11 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                <!-- AI Recommendations Display -->
+                {/* AI Recommendations Display */}
                 {aiRecommendations && !isLoadingAi && (
                   <div className="space-y-5">
                     
-                    <!-- Leseprofil Summary -->
+                    {/* Leseprofil Summary */}
                     {aiRecommendations.summary && (
                       <div className="bg-paper-50 border border-paper-300 p-4 rounded-xl text-xs text-ink-800 font-literary leading-relaxed shadow-sm flex items-start space-x-3">
                         <span className="text-lg flex-shrink-0">📜</span>
@@ -928,7 +928,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       </div>
                     )}
 
-                    <!-- Book Cards -->
+                    {/* Book Cards */}
                     <div className="space-y-4">
                       {aiRecommendations.books?.map((book, idx) => {
                         const fav = isFavorite(book);
@@ -953,7 +953,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                                 </p>
                               </div>
 
-                              <!-- Favorite Heart Button -->
+                              {/* Favorite Heart Button */}
                               <button
                                 onClick={() => toggleFavorite(book)}
                                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
@@ -969,13 +969,13 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </button>
                             </div>
 
-                            <!-- Matching Reason -->
+                            {/* Matching Reason */}
                             <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl text-xs text-burgundy-900 flex items-start space-x-2">
                               <span>🎯</span>
                               <span><strong>Warum es passt:</strong> {book.matchReason}</span>
                             </div>
 
-                            <!-- Real Blurb -->
+                            {/* Real Blurb */}
                             <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl space-y-1">
                               <span className="text-[10px] font-bold text-ink-700 uppercase tracking-wider block">
                                 Klappentext
@@ -992,7 +992,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                <!-- Restart -->
+                {/* Restart */}
                 <div className="pt-2">
                   <button
                     onClick={() => {
@@ -1009,7 +1009,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
           </main>
 
-          <!-- FAVORITES DRAWER -->
+          {/* FAVORITES DRAWER */}
           {isFavoritesOpen && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
@@ -1023,7 +1023,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 }`}
               >
                 
-                <!-- Modal Header -->
+                {/* Modal Header */}
                 <div className="flex items-center justify-between pb-4 border-b border-paper-300">
                   <div className="flex items-center space-x-2">
                     <span className="text-xl">📚</span>
@@ -1042,7 +1042,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </button>
                 </div>
 
-                <!-- Share Button -->
+                {/* Share Button */}
                 {favorites.length > 0 && (
                   <div className="my-3 space-y-2">
                     <button
@@ -1060,7 +1060,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                <!-- LocalStorage Note -->
+                {/* LocalStorage Note */}
                 <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl my-1 text-[11px] text-amber-900 flex items-start space-x-2 leading-relaxed">
                   <span className="text-sm flex-shrink-0">ℹ️</span>
                   <p>
@@ -1068,7 +1068,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </p>
                 </div>
 
-                <!-- Favorites List -->
+                {/* Favorites List */}
                 <div className="flex-grow overflow-y-auto space-y-3 custom-scrollbar my-2 pr-1">
                   {favorites.length === 0 ? (
                     <div className="text-center py-12 space-y-2">
@@ -1115,7 +1115,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   )}
                 </div>
 
-                <!-- Modal Footer -->
+                {/* Modal Footer */}
                 <div className="pt-3 border-t border-paper-300">
                   <button
                     onClick={handleCloseDrawer}
@@ -1129,7 +1129,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             </div>
           )}
 
-          <!-- Footer -->
+          {/* Footer */}
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary">
             BuchKompass &bull; Bene 2026
           </footer>
