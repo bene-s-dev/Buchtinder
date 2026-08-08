@@ -381,7 +381,6 @@
         const formattedList = favorites.map((b, i) => `${i + 1}. "${b.title}" von ${b.author} (${b.genre})`).join('\n');
         const text = `📚 Meine Buch-Favoriten auf BuchTinder:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller!`;
 
-        // Web Share API or Clipboard Fallback
         if (navigator.share) {
           navigator.share({
             title: 'Meine BuchTinder Favoriten',
@@ -516,38 +515,11 @@ Antworte mir ausschließlich im folgenden JSON-Format ohne zusätzlichen Fließt
 Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
         try {
-          /*
-            ===================================================================
-            STANDALONE / EXTERN ERWEITERTE VERWENDUNG (AUSSERHALB VON CANVAS)
-            ===================================================================
-            Für die Nutzung außerhalb dieses Previews mit dem neuen @google/genai SDK
-            und z.B. Gemma ("gemma-4-26b-a4b-it"):
-
-            import { GoogleGenAI, ThinkingLevel } from "@google/genai";
-
-            const ai = new GoogleGenAI({ apiKey: "DEIN_API_KEY" });
-            const response = await ai.models.generateContent({
-              model: "gemma-4-26b-a4b-it",
-              contents: prompt,
-              config: {
-                thinkingConfig: {
-                  thinkingLevel: ThinkingLevel.HIGH,
-                },
-              },
-            });
-            const responseText = response.text;
-          */
-
-          // Platzhalter für externen API Key (für eigenen Webserver/Deployment):
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.REACT_APP_GEMINI_API_KEY || "AIzaSyCYccpWNFQFwvcclEuArDHDNlpkzLBitGg";
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-          const res = await fetch(apiUrl, {
+          // Server-Aufruf an das eigene Vercel-Backend
+          const res = await fetch('/api/gemini', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }]
-            })
+            body: JSON.stringify({ prompt })
           });
 
           const data = await res.json();
@@ -772,7 +744,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
               </div>
             )}
 
-            {}
+            {/* STEP 2: SWIPE MOTIFS */}
             {step === 2 && (
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2">
                 {currentTheme ? (
@@ -879,7 +851,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
               </div>
             )}
 
-            {}
+            {/* STEP 3: RECOMMENDATIONS */}
             {step === 3 && (
               <div key="step-3" className="step-transition space-y-6">
                 <div className="text-center space-y-1.5">
@@ -976,7 +948,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
                                 </p>
                               </div>
 
-                              {/* Favorite Heart Button with Playful Pop Animation (Top Right) */}
+                              {/* Favorite Heart Button */}
                               <button
                                 onClick={() => toggleFavorite(book)}
                                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
@@ -1032,8 +1004,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
 
           </main>
 
-          {}
-          {/* FAVORITES DRAWER / MODAL WITH SLIDE ANIMATION */}
+          {/* FAVORITES DRAWER */}
           {isFavoritesOpen && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
@@ -1066,7 +1037,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
                   </button>
                 </div>
 
-                {/* Share Button (Top of Favorites Drawer) */}
+                {/* Share Button */}
                 {favorites.length > 0 && (
                   <div className="my-3 space-y-2">
                     <button
@@ -1084,11 +1055,11 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
                   </div>
                 )}
 
-                {/* LocalStorage Note / Disclaimer */}
+                {/* LocalStorage Note */}
                 <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl my-1 text-[11px] text-amber-900 flex items-start space-x-2 leading-relaxed">
                   <span className="text-sm flex-shrink-0">ℹ️</span>
                   <p>
-                    <strong>Hinweis:</strong> Deine Favoriten werden direkt im lokalen Speicher deines Browsers (LocalStorage) gespeichert. Bei einer Löschung deiner Browserdaten gehen deine gemerkten Bücher verloren.
+                    <strong>Hinweis:</strong> Deine Favoriten werden direkt im lokalen Speicher deines Browsers (LocalStorage) gespeichert.
                   </p>
                 </div>
 
@@ -1153,7 +1124,6 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3
             </div>
           )}
 
-          {}
           {/* Footer */}
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary">
             BuchTinder &bull; Belletristik & Verlags-Edition &bull; Gemini AI
