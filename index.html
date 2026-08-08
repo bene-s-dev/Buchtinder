@@ -527,7 +527,17 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             body: JSON.stringify({ prompt })
           });
 
-          const data = await res.json();
+const data = await res.json();
+
+          // Liest den Fehlertext samt Grund direkt vom Backend aus
+          if (data.error) {
+            const errorMsg = typeof data.error === 'string' 
+              ? data.error 
+              : `Leider sind alle Bibliothekare im Urlaub (${data.error.message || 'Unbekannter API-Fehler'}).`;
+            setAiError(errorMsg);
+            return;
+          }
+
           const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
           if (responseText) {
@@ -541,11 +551,11 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             await new Promise(r => setTimeout(r, 300));
             setAiRecommendations(parsed);
           } else {
-            setAiError("Konnte keine Buchempfehlungen aus dem Verlagsarchiv abrufen.");
+            setAiError("Leider sind alle Bibliothekare im Urlaub (Keine gültigen Buchdaten empfangen).");
           }
         } catch (err) {
           console.error("Gemini Error:", err);
-          setAiError("Verbindungsfehler zum Verlagsarchiv. Bitte versuche es erneut.");
+          setAiError(`Leider sind alle Bibliothekare im Urlaub (${err.message || 'Verbindungsfehler'}).`);
         } finally {
           clearInterval(progressInterval);
           clearInterval(phraseInterval);
