@@ -1,5 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const books = require('../data/books.json');
+const rawBooks = require('../data/books.json');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
@@ -14,8 +14,19 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 });
 
 async function seed() {
-  console.log(`Starte Import von ${books.length} Büchern aus data/books.json...`);
+  // 1. Duplikate anhand der ISBN filtern (behält immer das erste Buch mit dieser ISBN)
+  const seenIsbns = new Set();
+  const books = rawBooks.filter(book => {
+    if (!book.isbn || seenIsbns.has(book.isbn)) {
+      return false;
+    }
+    seenIsbns.add(book.isbn);
+    return true;
+  });
 
+  console.log(`Starte Import von ${books.length} eindeutigen Büchern (von ${rawBooks.length} insgesamt)...`);
+
+  // 2. Import in Supabase
   const { error } = await supabase
     .from('books')
     .upsert(books, { onConflict: 'isbn' });
