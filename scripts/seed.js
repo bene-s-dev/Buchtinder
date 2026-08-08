@@ -29,15 +29,21 @@ const GENRE_QUERIES = {
   jugend: 'jugendbuch OR jugendroman OR internat OR teenager',
   klassiker: 'klassiker OR "reclam" OR goethe OR schiller OR weltliteratur'
 };
-// Pause einlegen (Rate Limit / ToS Schutz)
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function seed() {
+  // Bestehende ISBNs und Titel aus Supabase abrufen für Duplikat-Check
+  const { data: existingData } = await supabase.from('books').select('isbn, title');
+  const existingIsbns = new Set((existingData || []).map(b => b.isbn).filter(Boolean));
+  const existingTitles = new Set((existingData || []).map(b => b.title ? b.title.toLowerCase().trim() : ''));
+
   for (const [genre, query] of Object.entries(GENRE_QUERIES)) {
     console.log(`Lade Bücher für Genre: ${genre}...`);
     let booksForGenre = [];
 
-    for (const startIndex of [0, 40, 80]) {
+    // Erhöht auf 8 Seiten (0, 40, 80, 120, 160, 200, 240, 280) -> bis zu 320 Ergebnisse pro Genre
+    for (const startIndex of [0, 40, 80, 120, 160, 200, 240, 280]) {
       const keyParam = GOOGLE_KEY ? `&key=${GOOGLE_KEY}` : '';
       const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40&startIndex=${startIndex}&langRestrict=de${keyParam}`;
       
@@ -57,6 +63,9 @@ async function seed() {
 
         for (const item of data.items) {
           const info = item.volumeInfo || {};
+          
+          if (info.language !== 'de') continue;
+
           const title = info.title;
           const authors = info.authors ? info.authors.join(', ') : 'Unbekannt';
           const pubDate = info.publishedDate || '';
@@ -66,6 +75,12 @@ async function seed() {
           const coverUrl = info.imageLinks?.thumbnail || null;
           const isbns = info.industryIdentifiers || [];
           const isbn = isbns.length > 0 ? isbns[0].identifier : null;
+
+          const normalizedTitle = title ? title.toLowerCase().trim() : '';
+
+          // Duplikat-Prüfung gegen Supabase + aktuellen Durchlauf
+          if (isbn && existingIsbns.has(isbn)) continue;
+          if (normalizedTitle && existingTitles.has(normalizedTitle)) continue;
 
           if (title && description && description.length > 60) {
             booksForGenre.push({
@@ -78,20 +93,23 @@ async function seed() {
               isbn,
               cover_url: coverUrl
             });
+
+            // Für spätere Vergleiche merken
+            if (isbn) existingIsbns.add(isbn);
+            if (normalizedTitle) existingTitles.add(normalizedTitle);
           }
         }
       } catch (err) {
         console.error(`Fehler bei ${genre}:`, err.message);
       }
 
-      // ToS-konforme Pause zwischen den Anfragen
-      await delay(500);
+      await delay(300);
     }
 
     if (booksForGenre.length > 0) {
       const { error } = await supabase.from('books').upsert(booksForGenre, { onConflict: 'isbn' });
       if (error) console.error(`Supabase Error (${genre}):`, error.message);
-      else console.log(`-> ${booksForGenre.length} Bücher für '${genre}' gespeichert.`);
+      else console.log(`-> ${booksForGenre.length} neue deutsche Bücher für '${genre}' gespeichert.`);
     }
   }
   console.log('✅ Import erfolgreich abgeschlossen!');
