@@ -166,7 +166,6 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // Lucide Heart Icon Component
     const HeartIcon = ({ filled = false, className = "w-5 h-5" }) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +181,6 @@
       </svg>
     );
 
-    // Share Icon
     const ShareIcon = ({ className = "w-4 h-4" }) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -200,16 +198,25 @@
       </svg>
     );
 
-    // Database of story elements
     const STORY_THEMES = [
-      { id: 'st-f1', genreIds: ['fantasy'], icon: '🧙‍♂️', category: 'Magie & System', title: 'Komplexe Magiesysteme & Alte Artefakte', description: 'Die Geschichte beinhaltet ein ausgeklügeltes Zaubersystem mit klaren Regeln, Magieschulen und uralten Relikten. Zauberei erfordert Opfer, Studium oder Vorbereitung und wirkt logisch durchdacht.' },
-      { id: 'st-f2', genreIds: ['fantasy'], icon: '🏰', category: 'Epik & Macht', title: 'Düstere High-Fantasy & Thronkämpfe', description: 'Epische Machtkämpfe um mächtige Königreiche, Allianzen, Hofintrigen und Schlachten. Die Welt ist vielschichtig, oft düster und voller politischer Ränkespiele verschiedener Fraktionen.' },
-      { id: 'st-f3', genreIds: ['fantasy'], icon: '🐉', category: 'Kreaturen', title: 'Mythologische Wesen & Fabeltiere', description: 'Im Fokus stehen faszinierende Wesen wie Drachen, Elfen, Dämonen oder eigens erdachte Fabeltiere, die eine zentrale Rolle im Ökosystem und der Handlung der Welt einnehmen.' },
+      { id: 'st-f1', genreIds: ['fantasy', 'romantasy'], icon: '🧙‍♂️', category: 'Magie & System', title: 'Komplexe Magiesysteme & Alte Artefakte', description: 'Die Geschichte beinhaltet ein ausgeklügeltes Zaubersystem mit klaren Regeln, Magieschulen und uralten Relikten. Zauberei erfordert Opfer, Studium oder Vorbereitung und wirkt logisch durchdacht.' },
+      { id: 'st-f2', genreIds: ['fantasy', 'romantasy'], icon: '🏰', category: 'Epik & Macht', title: 'Düstere High-Fantasy & Thronkämpfe', description: 'Epische Machtkämpfe um mächtige Königreiche, Allianzen, Hofintrigen und Schlachten. Die Welt ist vielschichtig, oft düster und voller politischer Ränkespiele verschiedener Fraktionen.' },
+      { id: 'st-f3', genreIds: ['fantasy', 'romantasy'], icon: '🐉', category: 'Kreaturen', title: 'Mythologische Wesen & Fabeltiere', description: 'Im Fokus stehen faszinierende Wesen wie Drachen, Elfen, Dämonen oder eigens erdachte Fabeltiere, die eine zentrale Rolle im Ökosystem und der Handlung der Welt einnehmen.' },
       { id: 'st-f4', genreIds: ['fantasy'], icon: '🌆', category: 'Urban Fantasy', title: 'Versteckte Magiewelt in der Moderne', description: 'Magie und übernatürliche Wesen existieren im Geheimen mitten in einer modernen Großstadt. Hinter alltäglichen Fassaden verbergen sich zauberhafte Zünfte und alte Bünde.' },
       { id: 'st-f5', genreIds: ['fantasy'], icon: '🗡️', category: 'Gefährten', title: 'Die Gruppen-Quest & Heldenreise', description: 'Eine bunt gemischte Truppe aus unterschiedlichen Charakteren zieht gemeinsam los, um ein großes Unheil abzuwenden. Freundschaft, Loyalität und gemeinsame Gefahren stehen im Vordergrund.' },
-      { id: 'st-f6', genreIds: ['fantasy'], icon: '🏛️', category: 'Ausbildung', title: 'Magische Akademien & Geheimbünde', description: 'Setting an einer magischen Schule, Internat oder Akademie: Ausbildung der eigenen Fähigkeiten, verbotene Bibliotheken, Rivalitäten unter Künstlern und alte Schulgeheimnisse.' },
+      { id: 'st-f6', genreIds: ['fantasy', 'romantasy'], icon: '🏛️', category: 'Ausbildung', title: 'Magische Akademien & Geheimbünde', description: 'Setting an einer magischen Schule, Internat oder Akademie: Ausbildung der eigenen Fähigkeiten, verbotene Bibliotheken, Rivalitäten unter Künstlern und alte Schulgeheimnisse.' },
       { id: 'st-f7', genreIds: ['fantasy'], icon: '🕯️', category: 'Dunkle Künste', title: 'Flüche, Seelenmagie & Schattenkräfte', description: 'Keine reine Wohlfühlmagie: Verbotene Rituale, Nekromantie, Flüche und Moralfragen. Die Nutzung von Kräften bringt spürbare physische oder psychische Konsequenzen mit sich.' },
       { id: 'st-f8', genreIds: ['fantasy'], icon: '🌀', category: 'Dimensionen', title: 'Portal-Fantasy & Fremde Welten', description: 'Der magische Übergang von unserer normalen Alltagswelt in ein völlig fremdes, phantastisches Reich mit eigenen Gesetzen, Weltenbau und unerforschten Gefahren.' },
+
+      { id: 'st-rom1', genreIds: ['romantasy'], icon: '✨', category: 'Romantasy', title: 'Magische Welten & Verbotene Liebe', description: 'Gefährliche magische Reiche, in denen sich zwischen rivalisierenden Höfen, magischen Wesen oder Feinden eine verbotene, leidenschaftliche Liebe entwickelt.' },
+      { id: 'st-rom2', genreIds: ['romantasy'], icon: '👑', category: 'Romantasy', title: 'Fae-Höfe & Hofintrigen', description: 'Glanzvolle und grauenvolle Fae-Königreiche, magische Pakte, tödliche Prüfungen und knisternde Machtkämpfe auf königlichem Parkett.' },
+
+      { id: 'st-na1', genreIds: ['new_adult'], icon: '🎓', category: 'New Adult', title: 'Identität, Uni-Leben & Lebensrealität', description: 'Geschichten über das Erwachsenwerden, die erste eigene Wohnung, Universitätsleben, emotionale Neuanfänge und die Suche nach dem eigenen Weg.' },
+      { id: 'st-dr1', genreIds: ['dark_romance'], icon: '🖤', category: 'Dark Romance', title: 'Antihelden, Machtdynamiken & Tabus', description: 'Düstere, hochintensive Liebesgeschichten mit gebrochenen Antihelden, moralischen Grauzonen, dominanten Machtverhältnissen und Tabuthemen.' },
+      { id: 'st-cc1', genreIds: ['cozy_crime'], icon: '☕', category: 'Cozy Crime', title: 'Gemütliche Dorf-Krimis & Humor', description: 'Unblutige, charmante Kriminalfälle in dörflicher Idylle, gelöst von kauzigen Hobby-Ermittlern bei Tee und Kuchen ohne blutige Thriller-Spannung.' },
+      { id: 'st-gn1', genreIds: ['graphic_novels'], icon: '🎨', category: 'Graphic Novel', title: 'Visuelles Erzählen & Manga-Kultur', description: 'Ausdrucksstarke Illustrationen und Bildsprache, die komplexe Handlung, tiefgründige Emotionen und phantastische Welten visuell zum Leben erwecken.' },
+      { id: 'st-ip1', genreIds: ['modern_poetry'], icon: '✍️', category: 'Poetry', title: 'Moderne Kurzlyrik & Mental Health', description: 'Ehrliche, emotionale Zeilen über Selbstliebe, Beziehungsgeflechte, Mentale Gesundheit und die Aufarbeitung eigener Gefühle.' },
+      { id: 'st-ma1', genreIds: ['memoir'], icon: '📖', category: 'Memoir', title: 'Echte Lebensgeschichten & Autobiografie', description: 'Persönliche, tief berührende und narrativ aufgearbeitete Lebensberichte aus erster Hand – inspirierend, bewegend und authentisch.' },
 
       { id: 'st-t1', genreIds: ['thriller'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Verwirrspiel', description: 'Fokus auf Wahn, unzuverlässige Erzähler, unterdrückte Erinnerungen und täuschende Wahrnehmung. Wer sagt die Wahrheit und was passiert nur im Kopf der Beteiligten?' },
       { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienkiller & Forensische Jagd', description: 'Detaillierte Spurensicherung, Täter-Profiling, Obduktionsberichte und ein packendes Katz-und-Maus-Spiel zwischen Ermittlern und einem hochintelligenten Serienmörder.' },
@@ -230,11 +237,11 @@
       { id: 'st-s8', genreIds: ['scifi'], icon: '🔬', category: 'Wissenschaft', title: 'Hard Sci-Fi & Astronomie', description: 'Physikalisch fundierte Theorien, echte Astronomie, Schwarze Löcher, Quantenmechanik und wissenschaftlich präzise durchdachte Zukunftsszenarien.' },
 
       { id: 'st-r1', genreIds: ['romance'], icon: '🔥', category: 'Dynamik', title: 'Slow Burn & Knisternde Gefühle', description: 'Eine sehr langsame, tiefgründige und intensiv spürbare emotionale Annäherung. Blicke, kleine Gesten und unausgesprochene Spannungen stehen im Mittelpunkt.' },
-      { id: 'st-r2', genreIds: ['romance'], icon: '⚔️', category: 'Beziehungs-Trope', title: 'Enemies to Lovers (Feinde zu Liebenden)', description: 'Zwei Figuren beginnen mit tiefen Abneigungen, Rivalität oder Missverständnissen. Durch erzwungene Zusammenarbeit wandelt sich die Wut Schritt für Schritt in Leidenschaft.' },
+      { id: 'st-r2', genreIds: ['romance', 'romantasy', 'dark_romance'], icon: '⚔️', category: 'Beziehungs-Trope', title: 'Enemies to Lovers (Feinde zu Liebenden)', description: 'Zwei Figuren beginnen mit tiefen Abneigungen, Rivalität oder Missverständnissen. Durch erzwungene Zusammenarbeit wandelt sich die Wut Schritt für Schritt in Leidenschaft.' },
       { id: 'st-r3', genreIds: ['romance'], icon: '🍂', category: 'Neuanfang', title: 'Second Chance & Alte Liebe', description: 'Das unverhoffte Wiedersehen der ersten Großen Liebe nach vielen Jahren. Das Aufarbeiten alter Wunden, verpasster Chancen und das Entdecken neuer Reife.' },
       { id: 'st-r4', genreIds: ['romance'], icon: '🎭', category: 'Arrangement', title: 'Fake Relationship (Vorgetäuschte Beziehung)', description: 'Zwei Charaktere gehen aus pragmatischen Gründen eine vorgetäuschte Beziehung ein. Durch die Nähe verschwimmen jedoch die Grenzen zwischen Spiel und echten Gefühlen.' },
-      { id: 'st-r5', genreIds: ['romance'], icon: '☕', category: 'Stimmung', title: 'Small Town & Cozy Vibe', description: 'Charmantes Küstenstädtchen, gemütlicher Buchladen oder Dorfgemeinschaft. Wohlfühlatmosphäre mit herzlichen Nebenfiguren und entschleunigter Romantik.' },
-      { id: 'st-r6', genreIds: ['romance'], icon: '💔', category: 'Emotion', title: 'Schicksalsschläge & Emotionale Heilung', description: 'Große Gefühle, Verlust und Herzschmerz, aber vor allem gegenseitiger Trost, Verständnis und der gemeinsame Weg zurück ins Leben und zum Vertrauen.' },
+      { id: 'st-r5', genreIds: ['romance', 'cozy_crime'], icon: '☕', category: 'Stimmung', title: 'Small Town & Cozy Vibe', description: 'Charmantes Küstenstädtchen, gemütlicher Buchladen oder Dorfgemeinschaft. Wohlfühlatmosphäre mit herzlichen Nebenfiguren und entschleunigter Romantik.' },
+      { id: 'st-r6', genreIds: ['romance', 'new_adult'], icon: '💔', category: 'Emotion', title: 'Schicksalsschläge & Emotionale Heilung', description: 'Große Gefühle, Verlust und Herzschmerz, aber vor allem gegenseitiger Trost, Verständnis und der gemeinsame Weg zurück ins Leben und zum Vertrauen.' },
       { id: 'st-r7', genreIds: ['romance'], icon: '👑', category: 'Hindernisse', title: 'Verbotene Liebe & Standesunterschiede', description: 'Liebe entgegen gesellschaftlichen Konventionen, Familienfehden, Standesunterschieden oder Regeln, die das Dazwischenkommen unter Strafe stellen.' },
       { id: 'st-r8', genreIds: ['romance'], icon: '☀️', category: 'Kontraste', title: 'Grumpy x Sunshine & Gegensätze', description: 'Ein verschlossener, mürrischer Gemütsmensch trifft auf eine lebensfrohe, optimistische Persönlichkeit. Gegensätze ziehen sich an und ergänzen sich perfekt.' },
 
@@ -249,7 +256,7 @@
 
       { id: 'st-sb1', genreIds: ['sachbuch'], icon: '🧠', category: 'Psychologie', title: 'Menschliches Verhalten & Hirnforschung', description: 'Fundierte Einblicke in Neurowissenschaften, Denkfehler, Verhaltensmuster und Emotionen. Warum wir handeln, fühlen und entscheiden, wie wir es tun.' },
       { id: 'st-sb2', genreIds: ['sachbuch'], icon: '🔬', category: 'Wissenschaft', title: 'Komplexe Forschung anschaulich erklärt', description: 'Spannende Exkurse in Physik, Biologie, Astronomie oder Medizin – mit verständlichen Vergleichen und packender Erzählweise ohne trockenes Fachchinesisch.' },
-      { id: 'st-sb3', genreIds: ['sachbuch'], icon: '📜', category: 'Biografie', title: 'Inspirierende Lebensläufe & Persönlichkeiten', description: 'Eindrückliche Porträts außergewöhnlicher Menschen, Pionierinnen und Entdecker, die durch Mut, Visionen oder Schicksale Geschichte geschrieben haben.' },
+      { id: 'st-sb3', genreIds: ['sachbuch', 'memoir'], icon: '📜', category: 'Biografie', title: 'Inspirierende Lebensläufe & Persönlichkeiten', description: 'Eindrückliche Porträts außergewöhnlicher Menschen, Pionierinnen und Entdecker, die durch Mut, Visionen oder Schicksale Geschichte geschrieben haben.' },
       { id: 'st-sb4', genreIds: ['sachbuch'], icon: '💡', category: 'Philosophie', title: 'Die großen Fragen der Menschheit', description: 'Gedankenexperimente zu Ethik, Existenz, Gerechtigkeit und Sinn. Philosophische Strömungen verknüpft mit modernen Alltagsthemen.' },
       { id: 'st-sb5', genreIds: ['sachbuch'], icon: '📈', category: 'Wirtschaft', title: 'Finanzen, Märkte & Zukunfts-Trends', description: 'Verständliche Analysen globaler Märkte, technologischer Transformationen, Geldpolitik und der Zukunft unserer Arbeitswelt.' },
       { id: 'st-sb6', genreIds: ['sachbuch'], icon: '🏛️', category: 'Geschichte', title: 'Wendepunkte der Weltgeschichte', description: 'Detaillierte, mitreißende Dokumentation historischer Schlüsselereignisse, Epochen und deren oft überraschende Auswirkungen auf unsere heutige Gegenwart.' },
@@ -265,14 +272,14 @@
       { id: 'st-hi7', genreIds: ['historisch'], icon: '🔍', category: 'Kriminalfall', title: 'Historische Morde & Alte Ermittlungen', description: 'Kriminalfälle gelöst mit den begrenzten Mitteln vergangener Jahrhunderte. Aberglaube, Medizin der Zeit und Intuition treffen aufeinander.' },
       { id: 'st-hi8', genreIds: ['historisch'], icon: '🌾', category: 'Alltag', title: 'Das harte Leben des einfachen Volkes', description: 'Authentischer Einblick in den Arbeits- und Lebensalltag von Bauern, Dienstmägden, Handwerkern und der Unterschicht fernab des Adelsprunks.' },
 
-      { id: 'st-j1', genreIds: ['jugend'], icon: '🌱', category: 'Entwicklung', title: 'Coming-of-Age & Selbstfindung', description: 'Der steinige Weg zum Erwachsenwerden, die Suche nach der eigenen Identität, Werten, Berufung und dem eigenen Platz in der Gesellschaft.' },
+      { id: 'st-j1', genreIds: ['jugend', 'new_adult'], icon: '🌱', category: 'Entwicklung', title: 'Coming-of-Age & Selbstfindung', description: 'Der steinige Weg zum Erwachsenwerden, die Suche nach der eigenen Identität, Werten, Berufung und dem eigenen Platz in der Gesellschaft.' },
       { id: 'st-j2', genreIds: ['jugend'], icon: '🏫', category: 'Internat', title: 'Highschool-Geheimnisse & Cliquen', description: 'Freundschaften, Rivalitäten, Campus-Kultur, soziale Dynamiken und dunkle Geheimnisse hinter der perfekten Schulfassade.' },
-      { id: 'st-j3', genreIds: ['jugend'], icon: '💓', category: 'Gefühle', title: 'Erste große Liebe & Freundschaft', description: 'Intensives Gefühlschaos, Herzklopfen, Vertrauensproben, Enttäuschungen und die unvergessliche Intensität der ersten tiefen Liebe.' },
+      { id: 'st-j3', genreIds: ['jugend', 'new_adult'], icon: '💓', category: 'Gefühle', title: 'Erste große Liebe & Freundschaft', description: 'Intensives Gefühlschaos, Herzklopfen, Vertrauensproben, Enttäuschungen und die unvergessliche Intensität der ersten tiefen Liebe.' },
       { id: 'st-j4', genreIds: ['jugend'], icon: '✨', category: 'Magie-Hauch', title: 'Magischer Realismus & Besondere Gaben', description: 'Eine ganz normale Alltagswelt, in der kleine, wundervolle magische Phänomene oder besondere Fähigkeiten auftauchen und den Alltag verändern.' },
       { id: 'st-j5', genreIds: ['jugend'], icon: '✊', category: 'Widerstand', title: 'Mut & Aufbegehren gegen Ungerechtigkeit', description: 'Junge Menschen schließen sich zusammen, um Haltung zu zeigen, gegen Ungerechtigkeit, Mobbing oder gesellschaftliche Missstände aufzubegehren.' },
-      { id: 'st-j6', genreIds: ['jugend'], icon: '🚗', category: 'Freiheit', title: 'Roadtrips, Sommerferien & Ausbruch', description: 'Sommerliche Unbeschwertheit, unvergessliche Trips mit Freunden, das Brechen mit dem Alltag und das spürbare Gefühl absoluter Freiheit.' },
+      { id: 'st-j6', genreIds: ['jugend', 'new_adult'], icon: '🚗', category: 'Freiheit', title: 'Roadtrips, Sommerferien & Ausbruch', description: 'Sommerliche Unbeschwertheit, unvergessliche Trips mit Freunden, das Brechen mit dem Alltag und das spürbare Gefühl absoluter Freiheit.' },
       { id: 'st-j7', genreIds: ['jugend'], icon: '🗝️', category: 'Familie', title: 'Familiengeheimnisse & Verborgene Wurzeln', description: 'Aufdeckung von lang gehüteten Lügen, Geheimnissen oder unbekannten Verwandten innerhalb der eigenen Familie.' },
-      { id: 'st-j8', genreIds: ['jugend'], icon: '🌧️', category: 'Realismus', title: 'Mentale Gesundheit & Echte Lebensnahheit', description: 'Sensible, ehrliche und mutmachende Behandlung von lebensnahen Themen wie mentaler Gesundheit, Trauer, Leistungsdruck und Heilung.' }
+      { id: 'st-j8', genreIds: ['jugend', 'modern_poetry', 'new_adult'], icon: '🌧️', category: 'Realismus', title: 'Mentale Gesundheit & Echte Lebensnahheit', description: 'Sensible, ehrliche und mutmachende Behandlung von lebensnahen Themen wie mentaler Gesundheit, Trauer, Leistungsdruck und Heilung.' }
     ];
 
     const LOADING_PHRASES = [
@@ -290,6 +297,7 @@
 
     const GENRES = [
       { id: 'fantasy', name: 'Fantasy & Magie' },
+      { id: 'romantasy', name: 'Romantasy' },
       { id: 'thriller', name: 'Krimi & Thriller' },
       { id: 'scifi', name: 'Science Fiction' },
       { id: 'romance', name: 'Liebe & Romantik' },
@@ -297,6 +305,15 @@
       { id: 'sachbuch', name: 'Sachbuch & Wissen' },
       { id: 'historisch', name: 'Historische Romane' },
       { id: 'jugend', name: 'Jugendbuch & Belletristik' }
+    ];
+
+    const EXTRA_GENRES = [
+      { id: 'new_adult', name: 'New Adult (Gegenwartsliteratur)', desc: 'Geschichten über die Lebensrealität, Identitätssuche und Herausforderungen junger Erwachsener (ca. 18–25 Jahre).' },
+      { id: 'dark_romance', name: 'Dark Romance', desc: 'Düstere Romane mit Fokus auf Antihelden, Machtdynamiken und Tabuthemen (stark abgegrenzt von klassischer Liebesromantik).' },
+      { id: 'cozy_crime', name: 'Cozy Crime / Cosy Mystery', desc: 'Unblutige, humorfreie Kriminalfälle in meist ländlicher oder gemütlicher Kulisse ohne harte Thriller-Elemente.' },
+      { id: 'graphic_novels', name: 'Graphic Novels / Manga / Manhwa', desc: 'Visuell erzählte Geschichten für Erwachsene und junge Erwachsene quer durch alle Themen.' },
+      { id: 'modern_poetry', name: 'Modern Poetry / Instapoetry', desc: 'Moderne Kurzlyrik zu Themen wie Selbstliebe, Aufarbeitung von Mental Health und Beziehungen.' },
+      { id: 'memoir', name: 'Memoir & Autobiografie', desc: 'Persönliche, narrativ aufgearbeitete Lebensgeschichten abseits klassischer Fach- und Sachbücher.' }
     ];
 
     const MOODS = [
@@ -312,7 +329,7 @@
     function App() {
       const [step, setStep] = useState(1);
       const [selectedGenres, setSelectedGenres] = useState(['fantasy']);
-      const [selectedMood, setSelectedMood] = useState(MOODS[0]);
+      const [selectedMoods, setSelectedMoods] = useState([MOODS[0]]);
       const [selectedLength, setSelectedLength] = useState('Egal');
 
       const [themesToSwipe, setThemesToSwipe] = useState([]);
@@ -322,11 +339,9 @@
 
       const [showToast, setShowToast] = useState(false);
 
-      // Card swipe animation state
       const [exitDirection, setExitDirection] = useState(null);
       const [isAnimatingExit, setIsAnimatingExit] = useState(false);
 
-      // Favorites State with localStorage
       const [favorites, setFavorites] = useState(() => {
         try {
           const saved = localStorage.getItem('buchtinder_favorites');
@@ -336,7 +351,6 @@
         }
       });
 
-      // Drawer Open & Animated Closing States
       const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
       const [isDrawerClosing, setIsDrawerClosing] = useState(false);
       const [popHeartKey, setPopHeartKey] = useState(null);
@@ -344,7 +358,6 @@
 
       const activeCardRef = useRef(null);
 
-      // Nicht-passiven Touch-EventListener anhängen, um Page-Scroll beim Wischen komplett zu verhindern
       useEffect(() => {
         const card = activeCardRef.current;
         if (!card) return;
@@ -361,7 +374,6 @@
         };
       }, [step, currentIndex]);
 
-      // Scrollen der Hauptseite deaktivieren, wenn Favoritenliste / Einstellungen geöffnet sind
       useEffect(() => {
         if (isFavoritesOpen) {
           document.body.style.overflow = 'hidden';
@@ -430,24 +442,53 @@
         }
       };
 
-      // AI Book Recommendations
+      const toggleGenre = (genreId) => {
+        setSelectedGenres(prev => {
+          if (prev.includes(genreId)) {
+            if (prev.length === 1) return prev; // Mindestens ein Genre ausgewählt lassen
+            return prev.filter(id => id !== genreId);
+          } else {
+            return [...prev, genreId];
+          }
+        });
+      };
+
+      const toggleMood = (mood) => {
+        setSelectedMoods(prev => {
+          if (prev.includes(mood)) {
+            if (prev.length === 1) return prev; // Mindestens eine Stimmung ausgewählt lassen
+            return prev.filter(m => m !== mood);
+          } else {
+            return [...prev, mood];
+          }
+        });
+      };
+
+      const handleDropdownSelect = (e) => {
+        const val = e.target.value;
+        if (val) {
+          if (!selectedGenres.includes(val)) {
+            setSelectedGenres(prev => [...prev, val]);
+          }
+          e.target.value = "";
+        }
+      };
+
       const [aiRecommendations, setAiRecommendations] = useState(null);
       const [isLoadingAi, setIsLoadingAi] = useState(false);
       const [aiError, setAiError] = useState('');
       const [loadingProgress, setLoadingProgress] = useState(0);
       const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
 
-      // Drag / Touch State
       const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
       const [isDragging, setIsDragging] = useState(false);
       const dragStart = useRef({ x: 0, y: 0 });
 
       const startSwipingThemes = () => {
-        const currentGenre = selectedGenres[0] || 'fantasy';
-        let pool = STORY_THEMES.filter(st => st.genreIds.includes(currentGenre));
+        let pool = STORY_THEMES.filter(st => st.genreIds.some(gId => selectedGenres.includes(gId)));
         
         if (pool.length < 5) {
-          const extra = STORY_THEMES.filter(st => !st.genreIds.includes(currentGenre));
+          const extra = STORY_THEMES.filter(st => !st.genreIds.some(gId => selectedGenres.includes(gId)));
           pool = [...pool, ...extra];
         }
 
@@ -515,14 +556,17 @@
           setLoadingPhraseIndex(prev => (prev + 1) % LOADING_PHRASES.length);
         }, 2800);
 
-        const genreName = GENRES.find(g => g.id === selectedGenres[0])?.name || 'Belletristik';
-        const moodText = selectedGenres[0] === 'sachbuch' ? 'Fokussiert & Informativ (Sachbuch)' : selectedMood;
+        const allGenresList = [...GENRES, ...EXTRA_GENRES];
+        const genreNames = selectedGenres.map(id => allGenresList.find(g => g.id === id)?.name || id).join(', ');
+        const moodText = selectedGenres.includes('sachbuch') && selectedGenres.length === 1 
+          ? 'Fokussiert & Informativ (Sachbuch)' 
+          : selectedMoods.join(', ');
 
         const prompt = `Du bist ein erfahrener Verlagslektor und Literaturkenner mit tiefem Fachwissen.
 Der Nutzer sucht konkrete, ECHTE, existierende Buch-Empfehlungen auf Deutsch basierend auf folgenden Kriterien:
 
-- Haupt-Genre: ${genreName}
-- Gewünschte Stimmung: ${moodText}
+- Ausgewählte Genres (Mehrfachauswahl): ${genreNames}
+- Gewünschte Stimmung(en): ${moodText}
 - Bevorzugter Umfang: ${selectedLength}
 
 STORY-ELEMENTE & THEMEN, DIE DER NUTZER WICHTIG / SPANNEND FINDET:
@@ -636,7 +680,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
 
       return (
         <div className="flex flex-col min-h-screen">
-          {/* Header in Clean Publishing House Style */}
           <header className="bg-paper-50/90 backdrop-blur-md border-b border-paper-300 sticky top-0 z-40 px-4 py-3.5 shadow-sm">
             <div className="max-w-md mx-auto flex items-center justify-between">
               <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setStep(1)}>
@@ -660,7 +703,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </span>
                 )}
 
-                {/* Hamburger Menu Button for Favorites */}
                 <button 
                   onClick={() => setIsFavoritesOpen(true)}
                   className="p-2.5 rounded-xl bg-paper-100 hover:bg-paper-200 border border-paper-300 text-ink-800 transition-all duration-200 active:scale-95 relative flex items-center justify-center shadow-sm"
@@ -677,7 +719,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             </div>
           </header>
 
-          {/* Main Container */}
           <main className="flex-grow flex flex-col justify-center px-4 py-6 max-w-md mx-auto w-full relative">
             
             {/* STEP 1: PREFERENCES */}
@@ -695,7 +736,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 {/* Genre Selector */}
                 <div className="space-y-2">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                    1. Haupt-Genre wählen
+                    1. Genres wählen (Mehrfachauswahl möglich)
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {GENRES.map(g => {
@@ -703,7 +744,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       return (
                         <button
                           key={g.id}
-                          onClick={() => setSelectedGenres([g.id])}
+                          onClick={() => toggleGenre(g.id)}
                           className={`p-3 rounded-xl text-left text-xs font-medium transition-all duration-200 border flex items-center justify-between ${
                             isSelected 
                               ? 'bg-burgundy-700 border-burgundy-800 text-white font-semibold shadow-sm scale-[1.01]' 
@@ -716,28 +757,63 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       );
                     })}
                   </div>
+
+                  {/* Dropdown for Special Genres */}
+                  <div className="pt-2">
+                    <select
+                      onChange={handleDropdownSelect}
+                      defaultValue=""
+                      className="w-full p-3 rounded-xl bg-white border border-paper-300 text-xs text-ink-800 focus:outline-none focus:border-burgundy-700 font-medium"
+                    >
+                      <option value="" disabled>Weitere spezifische Subgenres hinzufügen...</option>
+                      {EXTRA_GENRES.map(eg => (
+                        <option key={eg.id} value={eg.id} disabled={selectedGenres.includes(eg.id)}>
+                          {eg.name} {selectedGenres.includes(eg.id) ? '(ausgewählt)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Display Selected Special Genres Badges */}
+                  {selectedGenres.some(id => EXTRA_GENRES.some(eg => eg.id === id)) && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {selectedGenres.filter(id => EXTRA_GENRES.some(eg => eg.id === id)).map(id => {
+                        const item = EXTRA_GENRES.find(eg => eg.id === id);
+                        return (
+                          <span key={id} className="inline-flex items-center space-x-1 px-2.5 py-1 bg-burgundy-100 text-burgundy-900 border border-burgundy-200 rounded-lg text-[11px] font-medium">
+                            <span>{item?.name.split(':')[0]}</span>
+                            <button onClick={() => toggleGenre(id)} className="font-bold text-burgundy-700 hover:text-burgundy-900 ml-1">✕</button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
-                {/* Mood Selector - Omitted for Sachbuch & Wissen */}
-                {selectedGenres[0] !== 'sachbuch' && (
+                {/* Mood Selector */}
+                {(!selectedGenres.includes('sachbuch') || selectedGenres.length > 1) && (
                   <div className="space-y-2">
                     <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                      2. Gewünschte Stimmung
+                      2. Gewünschte Stimmung(en) (Mehrfachauswahl)
                     </label>
                     <div className="space-y-1.5">
-                      {MOODS.map(m => (
-                        <button
-                          key={m}
-                          onClick={() => setSelectedMood(m)}
-                          className={`w-full p-2.5 rounded-xl text-center text-xs font-medium transition-all duration-200 border ${
-                            selectedMood === m
-                              ? 'bg-burgundy-700 border-burgundy-800 text-white font-semibold shadow-sm scale-[1.01]'
-                              : 'bg-white border-paper-300 text-ink-800 hover:border-burgundy-600/40 hover:bg-paper-50'
-                          }`}
-                        >
-                          {m}
-                        </button>
-                      ))}
+                      {MOODS.map(m => {
+                        const isSelected = selectedMoods.includes(m);
+                        return (
+                          <button
+                            key={m}
+                            onClick={() => toggleMood(m)}
+                            className={`w-full p-2.5 rounded-xl text-left px-4 text-xs font-medium transition-all duration-200 border flex items-center justify-between ${
+                              isSelected
+                                ? 'bg-burgundy-700 border-burgundy-800 text-white font-semibold shadow-sm scale-[1.01]'
+                                : 'bg-white border-paper-300 text-ink-800 hover:border-burgundy-600/40 hover:bg-paper-50'
+                            }`}
+                          >
+                            <span>{m}</span>
+                            {isSelected && <span className="font-bold text-xs ml-1">✓</span>}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -745,7 +821,7 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                 {/* Length Selector */}
                 <div className="space-y-2">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                    {selectedGenres[0] === 'sachbuch' ? '2. Umfang' : '3. Umfang'}
+                    3. Umfang
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {LENGTHS.map(l => (
@@ -778,7 +854,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             {step === 2 && (
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2 relative">
                 
-                {/* Fixed Toast Overlay Notification under Header */}
                 {showToast && (
                   <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-toast pointer-events-none">
                     <div className="bg-ink-900/95 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-xl backdrop-blur-md flex items-center space-x-2">
@@ -798,7 +873,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       <p className="text-xs text-ink-700">Soll dieses Motiv in deiner Lektüre vorkommen?</p>
                     </div>
 
-                    {/* Stacked Cards Container */}
                     <div className="relative w-full h-[400px] max-w-sm flex items-center justify-center my-2 touch-none">
                       {themesToSwipe.slice(currentIndex, currentIndex + 2).map((theme, relativeIdx) => {
                         const isTop = relativeIdx === 0;
@@ -846,7 +920,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                             onMouseUp={isTop ? onMouseUp : undefined}
                             onMouseLeave={isTop ? onMouseUp : undefined}
                           >
-                            {/* Visual Feedback Indicators */}
                             {isTop && (
                               <>
                                 <div 
@@ -864,7 +937,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </>
                             )}
 
-                            {/* Card Header */}
                             <div className="flex items-center space-x-3.5 border-b border-paper-200 pb-3.5">
                               <div className="w-12 h-12 rounded-xl bg-paper-100 border border-paper-300 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
                                 {theme.icon}
@@ -879,7 +951,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </div>
                             </div>
 
-                            {/* Detailed Motif Description */}
                             <div className="bg-paper-50 border border-paper-200 p-4 rounded-xl space-y-1.5 flex-grow my-3 flex flex-col justify-start overflow-y-auto custom-scrollbar">
                               <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
                                 📜 Wie äußert sich das im Buch?
@@ -889,7 +960,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                               </p>
                             </div>
 
-                            {/* Card Footer */}
                             <div className="text-center text-[11px] text-ink-800 font-bold uppercase tracking-wider pt-1">
                               Wische nach rechts für JA &bull; nach links für NEIN
                             </div>
@@ -898,7 +968,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                       })}
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex items-center justify-center space-x-8 pt-2 z-40">
                       <button
                         onClick={() => handleDecision(false)}
@@ -942,7 +1011,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </h2>
                 </div>
 
-                {/* Loading State */}
                 {isLoadingAi && (
                   <div className="bg-white border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-md">
                     <div className="space-y-3">
@@ -969,7 +1037,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                {/* Error State */}
                 {aiError && (
                   <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-center space-y-3">
                     <p className="text-xs text-rose-800 font-medium">{aiError}</p>
@@ -982,7 +1049,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                {/* AI Recommendations Display */}
                 {aiRecommendations && !isLoadingAi && (
                   <div className="space-y-5">
                     {aiRecommendations.summary && (
@@ -1051,7 +1117,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
                   </div>
                 )}
 
-                {/* Restart */}
                 <div className="pt-2">
                   <button
                     onClick={() => {
@@ -1182,7 +1247,6 @@ Liefere genau 4 hochwertige, echte Buchempfehlungen.`;
             </div>
           )}
 
-          {/* Footer */}
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary">
             BuchKompass &bull; Bene 2026
           </footer>
