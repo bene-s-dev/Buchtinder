@@ -1065,12 +1065,12 @@
 
           const scoredBooks = filteredBooks.map(b => {
             let score = 0;
-            let learnedMatchReasons = [];
+            let storySenseDetails = [];
 
             // 1. Historische Genre-Präferenz
             if (topProfileGenres.includes(b.genre)) {
               score += 3;
-              learnedMatchReasons.push(`Lieblings-Genre: ${b.genre}`);
+              storySenseDetails.push({ label: `Lieblings-Genre (${b.genre})`, points: 3 });
             }
 
             // 2. Historische Motive-Präferenz (Titel / Kategorien)
@@ -1081,27 +1081,29 @@
               });
 
               if (matchedMotifs.length > 0) {
-                score += matchedMotifs.length * 2;
-                learnedMatchReasons.push(`${matchedMotifs.length}x historische Lieblingsmotive`);
+                const pts = matchedMotifs.length * 2;
+                score += pts;
+                storySenseDetails.push({ label: `${matchedMotifs.length}x Lieblingsmotive`, points: pts });
               }
             }
 
             // 3. Historische Stimmungs-Präferenz
             if (Array.isArray(b.moods) && b.moods.some(m => topProfileMoods.includes(m))) {
               score += 1.5;
-              learnedMatchReasons.push("Passt zu deiner üblichen Stimmung");
+              storySenseDetails.push({ label: "Stimmungs-Match", points: 1.5 });
             }
 
             // Basis-Match-Reason berechnen
             let matchReason = b.match_reason || "StorySense™ Match: Passt zu deinen gewählten Kriterien.";
-            if (learnedMatchReasons.length > 0) {
-              matchReason += ` ✨ (StorySense™ Personalisierungs-Bonus: ${learnedMatchReasons.join(' & ')})`;
+            if (storySenseDetails.length > 0) {
+              const summaryText = storySenseDetails.map(d => `${d.label} (+${d.points} Pts)`).join(' & ');
+              matchReason += ` ✨ (StorySense™ Bonus: ${summaryText})`;
             }
 
             return {
               ...b,
               storySenseScore: score,
-              storySenseBonusText: learnedMatchReasons.length > 0 ? learnedMatchReasons.join(' & ') : "Kein besonderer Profil-Bonus",
+              storySenseDetails: storySenseDetails,
               calculatedMatchReason: matchReason
             };
           });
@@ -1121,7 +1123,7 @@
             theme_ids: b.theme_ids || [],
             description: b.description,
             storySenseScore: b.storySenseScore,
-            storySenseBonusText: b.storySenseBonusText,
+            storySenseDetails: b.storySenseDetails || [],
             matchReason: b.calculatedMatchReason
           }));
 
@@ -1955,7 +1957,7 @@
             >
               <div className="bg-white border border-paper-300 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 max-h-[90vh] flex flex-col justify-between">
                 <div className="space-y-3 overflow-y-auto custom-scrollbar pr-1">
-                  <div className="flex items-start justify-between pb-3">
+                  <div className="flex items-start justify-between pb-3 border-b border-paper-200">
                     <div>
                       <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Empfehlungs-Analyse (StorySense™)</span>
                       <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{techInfoBook.title}</h3>
@@ -1970,6 +1972,54 @@
                   </div>
 
                   <div className="space-y-3 text-xs text-ink-800">
+
+                    {/* 1. STORYSENSE™ MATCH-ANALYSE (OBERSTE KARTE) */}
+                    <div className="bg-burgundy-50 border border-burgundy-200 p-3.5 rounded-xl space-y-2.5 shadow-2xs">
+                      <div className="flex items-center justify-between border-b border-burgundy-200/80 pb-2">
+                        <span className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px]">⚡ StorySense™ Match-Analyse</span>
+                        <span className="font-mono font-bold text-burgundy-900 text-xs px-2.5 py-0.5 bg-white rounded-md border border-burgundy-300 shadow-2xs">
+                          {techInfoBook.storySenseScore !== undefined ? techInfoBook.storySenseScore : 0} Pts
+                        </span>
+                      </div>
+
+                      {/* AKTUELLE ANFRAGE / MATCH-GRÜNDE */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-burgundy-900 uppercase block">1. Aktuelle Anforderungs-Kriterien:</span>
+                        <div className="flex flex-wrap gap-1 pt-0.5">
+                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
+                            Genre: {techInfoBook.genre}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
+                            Umfang: {techInfoBook.length}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
+                            Erschienen: {techInfoBook.era}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* PERSONALISIERUNGS-BONUS */}
+                      <div className="space-y-1 border-t border-burgundy-200/60 pt-2">
+                        <span className="text-[10px] font-bold text-burgundy-900 uppercase block">2. Profil-Einfluss &amp; Historie-Bonus:</span>
+                        {techInfoBook.storySenseDetails && techInfoBook.storySenseDetails.length > 0 ? (
+                          <div className="flex flex-wrap gap-1 pt-0.5">
+                            {techInfoBook.storySenseDetails.map((detail, dIdx) => (
+                              <span key={dIdx} className="inline-flex items-center px-2 py-0.5 bg-burgundy-700 text-white border border-burgundy-800 rounded-md text-[10px] font-semibold shadow-2xs">
+                                <span>{detail.label}</span>
+                                <span className="font-mono font-bold text-burgundy-900 bg-burgundy-100 px-1 rounded ml-1 text-[9px] border border-burgundy-200">+{detail.points} Pts</span>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between text-[10px] text-burgundy-800 italic bg-white/80 p-1.5 rounded border border-burgundy-200">
+                            <span>Kein gesonderter Historie-Bonus (Standard-Match)</span>
+                            <span className="font-mono font-bold text-burgundy-700 bg-burgundy-100 px-1.5 py-0.5 rounded border border-burgundy-200 not-italic">0 Pts</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 2. DATENBANK-METADATEN (MITTERE KARTE) */}
                     <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-1">
                       <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px] pb-1">📊 Datenbank-Metadaten</p>
                       <div className="space-y-1.5 pt-0.5">
@@ -1992,44 +2042,46 @@
                       </div>
                     </div>
 
-                    <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">⚡ StorySense™ Einfluss-Analyse</p>
-                      <div className="space-y-1.5 pt-0.5">
-                        <div className="flex items-center justify-between bg-white border border-burgundy-200 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-burgundy-900 font-medium">StorySense Score</span>
-                          <span className="font-mono font-bold text-burgundy-800 text-xs">{techInfoBook.storySenseScore !== undefined ? techInfoBook.storySenseScore : 0} Punkte</span>
+                    {/* 3. MOTIVE & STIMMUNGEN (UNTERSTE KARTE MIT EINZELNEN BADGES) */}
+                    <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-2">
+                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px]">🗳️ Motive &amp; Stimmungen</p>
+                      
+                      <div>
+                        <p className="text-[11px] font-medium text-ink-800 mb-1">Verknüpfte Motive:</p>
+                        <div className="flex flex-col gap-1.5">
+                          {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
+                            techInfoBook.theme_ids.map((tId, idx) => (
+                              <div key={idx} className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-ink-900">
+                                <span>{getThemeTitle(tId)}</span>
+                                <code className="bg-paper-200 text-ink-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                                  {tId}
+                                </code>
+                              </div>
+                            ))
+                          ) : (
+                            <span className="text-ink-700 italic text-[10px]">Keine expliziten Motive verknüpft</span>
+                          )}
                         </div>
-                        <div className="bg-white border border-burgundy-200 p-2 rounded-lg text-[11px]">
-                          <span className="text-burgundy-900 font-semibold block mb-0.5">Profil-Einfluss / Bonus:</span>
-                          <span className="text-burgundy-800">{techInfoBook.storySenseBonusText || (techInfoBook.storySenseScore ? "Profil-Bonus vorhanden" : "Kein Einfluss (0 Bonus-Punkte)")}</span>
+                      </div>
+
+                      <div className="pt-1">
+                        <p className="text-[11px] font-medium text-ink-800 mb-1">Zugeordnete Stimmungen:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {techInfoBook.moods && techInfoBook.moods.length > 0 ? (
+                            techInfoBook.moods.map((m, idx) => (
+                              <span key={idx} className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-semibold rounded-md shadow-2xs">
+                                {m}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="px-2 py-0.5 bg-paper-200 text-ink-800 border border-paper-300 text-[10px] font-semibold rounded-md">
+                              Standard
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px] pb-1">🗳️ Motive & Stimmung</p>
-                      <p className="text-[11px] font-medium text-ink-800">Verknüpfte Motive:</p>
-                      <div className="flex flex-col gap-1.5 pt-0.5">
-                        {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
-                          techInfoBook.theme_ids.map((tId, idx) => (
-                            <div key={idx} className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-ink-900">
-                              <span>{getThemeTitle(tId)}</span>
-                              <code className="bg-paper-200 text-ink-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
-                                {tId}
-                              </code>
-                            </div>
-                          ))
-                        ) : (
-                          <span className="text-ink-700 italic">Keine expliziten Motive verknüpft</span>
-                        )}
-                      </div>
-
-                      <p className="pt-2 text-[11px] font-medium text-ink-800">Stimmung:</p>
-                      <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-ink-900 mt-1">
-                        <span>{techInfoBook.moods && techInfoBook.moods.length > 0 ? techInfoBook.moods.join(', ') : 'Standard'}</span>
-                        <code className="bg-paper-200 text-ink-900 px-1.5 py-0.5 rounded text-[10px] font-mono">mood</code>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -2544,9 +2596,9 @@
 
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex flex-col items-center justify-center space-y-1">
             <div className="flex items-center space-x-1">
-              <span className="font-literary font-normal">Bene 2026 &bull;</span>
+              <span className="font-literary font-normal">Bene 2026</span>
               {visitorCount !== null && (
-                <span className="font-literary font-normal"> BuchKompass hat {visitorCount} Nutzer</span>
+                <span className="font-literary font-normal">BuchKompass hat {visitorCount} Nutzer</span>
               )}
             </div>
           </footer>
