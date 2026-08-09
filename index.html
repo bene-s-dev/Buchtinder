@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
-  <title>BuchKompass - Dein intelligenter Buch-Finder</title>
+  <title>BuchKompass - Powered by StorySense™</title>
 
   <link rel="icon" type="image/png" href="favicon.png" />
   
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://buchkompass.benedrive.de" />
   <meta property="og:title" content="BuchKompass - Dein intelligenter Buch-Finder" />
-  <meta property="og:description" content="Finde dein nächstes Lieblingsbuch." />
+  <meta property="og:description" content="Finde dein nächstes Lieblingsbuch mit dem StorySense™ Algorithmus." />
   <meta property="og:image" content="https://buchkompass.benedrive.de/preview.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -316,16 +316,16 @@
       { id: 'st-j3', genreIds: ['jugend'], icon: '⚡', category: 'Zusammenhalt', title: 'Gemeinsame Mutproben', description: 'Eine Gruppe jugendlicher Freunde gerät in ein unvorhergesehenes Abenteuer und muss zusammenhalten, um Gefahren zu meistern und einander bedingungslos zu vertrauen.' },
       { id: 'st-j4', genreIds: ['jugend'], icon: '💬', category: 'Gefühle', title: 'Erste große Liebe', description: 'Das unbeschreibliche Gefühl des ersten echten Herzklopfens, chaotische Emotionen, Unsicherheiten und die Magie unverfälschter Begegnungen beim Erwachsenwerden.' },
       { id: 'st-j5', genreIds: ['jugend'], icon: '⛺', category: 'Freiheit', title: 'Unvergesslicher Sommer', description: 'Spontane Roadtrips, lange Sommernächte und Ferientage voller Leichtigkeit, die das Leben der Beteiligten nachhaltig verändern und unvergessliche Erinnerungen schaffen.' },
-      { id: 'st-j6', genreIds: ['jugend'], icon: '🎸', category: 'Ausdruck', title: 'Kreativität & Bandleben', description: 'Musik machen, Schreiben oder Zeichnen als wichtiges Ventil für eigene Emotionen. Zusammen an einem Ziel arbeiten, Bühnen erobern und die eigene Stimme finden.' }
+      { id: 'st-j6', genreIds: ['jugend'], icon: '🎸', category: 'Ausdruck', title: 'Kreativität & Bandleben', description: 'Musik machen, Schreiben oder Zeichnen als wichtiges Ventil für eigene Emotionen. Zusammen an einem Ziel arbeiten, Bühnen erobren und die eigene Stimme finden.' }
     ];
 
     const LOADING_PHRASES = [
-      '👻 Büchergeister werden freundlich gebeten zu weichen...',
+      '🧠 StorySense™ analysiert deine bevorzugten Handlungsmotive...',
+      '⚡ Der StorySense™ Algorithmus berechnet deine Stimmungsmatrix...',
       '⚜️ Geheime Privatsammlungen werden durchforstet...',
       '🔖 Erstausgaben werden durchgesehen...',
       '🕯️ Dachbodenfunde werden gesichtet...',
-      '🏛️ Verlagsregister werden konsultiert...',
-      '👩🏼‍💻 Erfahrene Lektoren werden befragt...',
+      '🏛️ StorySense™ gleicht deine Profil-Präferenzen ab...',
     ];
 
     const POPULAR_GENRES = [
@@ -433,10 +433,47 @@
         }
       }, [step]);
 
-      const [selectedGenres, setSelectedGenres] = useState(['fantasy']);
-      const [selectedMoods, setSelectedMoods] = useState([MOODS[0]]);
-      const [selectedLength, setSelectedLength] = useState('Egal');
-      const [selectedEra, setSelectedEra] = useState('Egal');
+      // USER PROFILE (Local Storage Persistence)
+      const [userProfile, setUserProfile] = useState(() => {
+        try {
+          const saved = localStorage.getItem('buchkompass_profile');
+          return saved ? JSON.parse(saved) : {
+            userName: '',
+            favGenres: ['fantasy'],
+            favMoods: [MOODS[0]],
+            preferredLength: 'Egal',
+            preferredEra: 'Egal',
+            notes: ''
+          };
+        } catch (e) {
+          return {
+            userName: '',
+            favGenres: ['fantasy'],
+            favMoods: [MOODS[0]],
+            preferredLength: 'Egal',
+            preferredEra: 'Egal',
+            notes: ''
+          };
+        }
+      });
+
+      useEffect(() => {
+        try {
+          localStorage.setItem('buchkompass_profile', JSON.stringify(userProfile));
+        } catch (e) {}
+      }, [userProfile]);
+
+      const [selectedGenres, setSelectedGenres] = useState(userProfile.favGenres && userProfile.favGenres.length > 0 ? userProfile.favGenres : ['fantasy']);
+      const [selectedMoods, setSelectedMoods] = useState(userProfile.favMoods && userProfile.favMoods.length > 0 ? userProfile.favMoods : [MOODS[0]]);
+      const [selectedLength, setSelectedLength] = useState(userProfile.preferredLength || 'Egal');
+      const [selectedEra, setSelectedEra] = useState(userProfile.preferredEra || 'Egal');
+
+      const applyProfileToSearch = () => {
+        if (userProfile.favGenres && userProfile.favGenres.length > 0) setSelectedGenres(userProfile.favGenres);
+        if (userProfile.favMoods && userProfile.favMoods.length > 0) setSelectedMoods(userProfile.favMoods);
+        if (userProfile.preferredLength) setSelectedLength(userProfile.preferredLength);
+        if (userProfile.preferredEra) setSelectedEra(userProfile.preferredEra);
+      };
 
       const [themesToSwipe, setThemesToSwipe] = useState([]);
       const [currentIndex, setCurrentIndex] = useState(0);
@@ -583,7 +620,7 @@
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
         const formattedList = favorites.map((b, i) => `${i + 1}. "${b.title}" von ${b.author} (${b.genre})`).join('\n');
-        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächstes Buch auf https://buchkompass.benedrive.de`;
+        const text = `📚 Meine Buch-Favoriten auf BuchKompass (StorySense™):\n\n${formattedList}\n\nFinde dein nächstes Buch auf https://buchkompass.benedrive.de`;
 
         if (navigator.share) {
           navigator.share({ title: 'Meine BuchKompass-Favoriten', text: text }).catch(() => {});
@@ -597,6 +634,121 @@
           setCopyNotice('Text in Zwischenablage kopiert!');
           setTimeout(() => setCopyNotice(''), 3000);
         }
+      };
+
+      // CSV EXPORT FUNCTION
+      const handleExportCSV = () => {
+        const exportData = {
+          profile: userProfile,
+          sessions: sessions,
+          favorites: favorites,
+          alreadyRead: alreadyRead
+        };
+
+        let csvRows = ["Type;ID_Date;Title_Name;Author_Genres;Genre_Moods;Year_Length;Era_Details;Extra_Description"];
+
+        // Profile Row
+        csvRows.push(`PROFILE;${new Date().toISOString()};"${userProfile.userName || 'Anonym'}";"${(userProfile.favGenres||[]).join('|')}";"${(userProfile.favMoods||[]).join('|')}";"${userProfile.preferredLength}";"${userProfile.preferredEra}";"${(userProfile.notes||'').replace(/"/g, '""')}"`);
+
+        // Favorites
+        favorites.forEach((f, idx) => {
+          csvRows.push(`FAVORITE;${idx+1};"${f.title.replace(/"/g, '""')}";"${f.author.replace(/"/g, '""')}";"${f.genre||''}";"${f.year||''}";"${f.length||''}";"${(f.matchReason||'').replace(/"/g, '""')}"`);
+        });
+
+        // Already Read
+        alreadyRead.forEach((r, idx) => {
+          csvRows.push(`ALREADY_READ;${idx+1};"${r.title.replace(/"/g, '""')}";"${r.author.replace(/"/g, '""')}";"${r.genre||''}";"${r.year||''}";"${r.length||''}";""`);
+        });
+
+        // Sessions
+        sessions.forEach(s => {
+          const booksStr = (s.books || []).map(b => b.title).join('|');
+          csvRows.push(`SESSION;${s.id};"Sitzung #${s.sessionNumber}";"${(s.genres||[]).join('|')}";"${(s.moods||[]).join('|')}";"${s.timestamp}";"${booksStr.replace(/"/g, '""')}";""`);
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csvRows.join("\n"));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", csvContent);
+        downloadAnchor.setAttribute("download", `buchkompass_export_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      };
+
+      // CSV IMPORT FUNCTION
+      const handleImportCSV = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const text = event.target.result;
+            const lines = text.split("\n");
+            
+            let newFavs = [];
+            let newRead = [];
+            let newSessions = [];
+            let newProf = { ...userProfile };
+
+            lines.forEach((line, index) => {
+              if (index === 0 || !line.trim()) return; // Skip Header
+              
+              // Standard semi-colon splitting considering basic quotes
+              const cols = line.split(";").map(c => c.replace(/^"|"$/g, '').trim());
+              const type = cols[0];
+
+              if (type === 'PROFILE') {
+                newProf = {
+                  userName: cols[2] || '',
+                  favGenres: cols[3] ? cols[3].split('|') : ['fantasy'],
+                  favMoods: cols[4] ? cols[4].split('|') : [MOODS[0]],
+                  preferredLength: cols[5] || 'Egal',
+                  preferredEra: cols[6] || 'Egal',
+                  notes: cols[7] || ''
+                };
+              } else if (type === 'FAVORITE') {
+                newFavs.push({
+                  title: cols[2],
+                  author: cols[3],
+                  genre: cols[4],
+                  year: cols[5],
+                  length: cols[6],
+                  matchReason: cols[7] || "StorySense™ Import"
+                });
+              } else if (type === 'ALREADY_READ') {
+                newRead.push({
+                  title: cols[2],
+                  author: cols[3],
+                  genre: cols[4],
+                  year: cols[5],
+                  length: cols[6]
+                });
+              } else if (type === 'SESSION') {
+                const bookTitles = cols[6] ? cols[6].split('|') : [];
+                newSessions.push({
+                  id: cols[1] || Date.now().toString(),
+                  sessionNumber: newSessions.length + 1,
+                  timestamp: cols[5] || new Date().toLocaleDateString('de-DE'),
+                  genres: cols[3] ? cols[3].split('|') : [],
+                  moods: cols[4] ? cols[4].split('|') : [],
+                  books: bookTitles.map(t => ({ title: t, author: 'Importiert', genre: 'Import', matchReason: 'Aus CSV importiert' }))
+                });
+              }
+            });
+
+            if (newFavs.length > 0) setFavorites(newFavs);
+            if (newRead.length > 0) setAlreadyRead(newRead);
+            if (newSessions.length > 0) setSessions(newSessions);
+            setUserProfile(newProf);
+
+            alert("CSV-Daten erfolgreich importiert!");
+          } catch (err) {
+            console.error(err);
+            alert("Fehler beim Lesen der CSV-Datei.");
+          }
+        };
+        reader.readAsText(file);
       };
 
       const toggleGenre = (genreId) => {
@@ -854,7 +1006,7 @@
             moods: b.moods || [],
             theme_ids: b.theme_ids || [],
             description: b.description,
-            matchReason: b.match_reason || "Enthält deine gewünschten Handlungs-Motive."
+            matchReason: b.match_reason || "StorySense™ Match: Passt zu deinem Nutzerprofil & Lieblings-Motiven."
           }));
 
           setSessionShownBooks(prev => [...prev, ...selectedBooks]);
@@ -995,8 +1147,9 @@
                   B
                 </div>
                 <div>
-                  <h1 className="font-literary font-bold text-xl tracking-tight text-ink-900">
+                  <h1 className="font-literary font-bold text-xl tracking-tight text-ink-900 flex items-center gap-1.5">
                     BuchKompass
+                    <span className="text-[9px] bg-burgundy-100 text-burgundy-800 border border-burgundy-200 font-sans px-1.5 py-0.5 rounded font-bold">StorySense™</span>
                   </h1>
                   <p className="text-[10px] text-burgundy-700 font-semibold tracking-wider uppercase">
                     Finde dein nächstes Buch!
@@ -1006,7 +1159,10 @@
 
               <div className="flex items-center space-x-2">
                 <button 
-                  onClick={() => setIsFavoritesOpen(true)}
+                  onClick={() => {
+                    setDrawerTab('profile');
+                    setIsFavoritesOpen(true);
+                  }}
                   className="p-2.5 rounded-xl bg-paper-100 hover:bg-paper-200 border border-paper-300 text-ink-800 transition-all duration-200 active:scale-95 relative flex items-center justify-center shadow-sm"
                   title="Menü / Profil anzeigen"
                 >
@@ -1026,7 +1182,7 @@
             {/* STEP 1: PREFERENCES */}
             {step === 1 && (
               <div key="step-1" className="step-transition space-y-6">
-                <div className="text-center min-h-[38px] flex items-center justify-center">
+                <div className="text-center min-h-[38px] flex flex-col items-center justify-center">
                   <h2 className="font-literary text-2xl font-bold text-ink-900 inline-flex items-center">
                     <span>{typewriterText}</span>
                     {showCursor && (
@@ -1039,6 +1195,22 @@
                       ></span>
                     )}
                   </h2>
+                  <p className="text-[11px] text-ink-700 mt-1 font-medium">
+                    ⚡ Angetrieben vom intelligenten <strong>StorySense™ Algorithmus</strong>
+                  </p>
+                </div>
+
+                <div className="bg-amber-50/70 border border-amber-200 p-3 rounded-xl flex items-center justify-between text-xs text-amber-950 shadow-2xs">
+                  <div className="flex items-center space-x-2">
+                    <span>👤</span>
+                    <span>Profil-Präferenzen geladen</span>
+                  </div>
+                  <button 
+                    onClick={applyProfileToSearch}
+                    className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-[10px] transition"
+                  >
+                    Profil anwenden
+                  </button>
                 </div>
 
                 <div className="space-y-3">
@@ -1172,7 +1344,7 @@
                   onClick={startSwipingThemes}
                   className="w-full py-3.5 bg-ink-900 hover:bg-ink-950 text-paper-50 font-literary font-bold text-base rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 tracking-wide"
                 >
-                  <span>Los geht's!</span>
+                  <span>Motive analysieren mit StorySense™</span>
                 </button>
               </div>
             )}
@@ -1293,11 +1465,11 @@
                   </div>
                 ) : (
                   <div className="my-auto text-center space-y-4">
-                    <p className="text-ink-800 font-literary">Alle Motive durchgesehen.</p>
+                    <p className="text-ink-800 font-literary">Alle Motive analysiert.</p>
                     <button 
                       onClick={() => setStep(3)}
                       className="px-6 py-3 bg-burgundy-700 text-white font-literary font-bold rounded-xl shadow-md">
-                      Zu deinen Buchempfehlungen
+                      Empfehlungen mit StorySense™ berechnen
                     </button>
                   </div>
                 )}
@@ -1336,7 +1508,7 @@
 
                       <div className="space-y-2 max-w-xs mx-auto">
                         <div className="flex justify-between items-center text-xs font-medium text-ink-700">
-                          <span>Einen Moment bitte... (noch ca. {countdownSeconds} Sek.)</span>
+                          <span>StorySense™ läuft... (ca. {countdownSeconds} Sek.)</span>
                           <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
                         </div>
                         <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
@@ -1354,7 +1526,7 @@
                   <div className="bg-white border border-paper-300 rounded-2xl p-8 text-center space-y-4 shadow-md">
                     <div className="text-4xl">📚</div>
                     <p className="text-xs text-ink-800 leading-relaxed font-medium">
-                      Noch mehr Bücher, die deiner Anfrage entsprechen, konnte der Bibliothekar nicht finden. Probiere ein anderes Genre.
+                      Noch mehr Bücher, die deiner Anfrage entsprechen, konnte StorySense™ nicht finden. Probiere ein anderes Genre.
                     </p>
                     <button
                       onClick={() => {
@@ -1649,7 +1821,7 @@
                 <div className="space-y-3 overflow-y-auto custom-scrollbar pr-1">
                   <div className="flex items-start justify-between pb-3">
                     <div>
-                      <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Empfehlungs-Analyse</span>
+                      <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Empfehlungs-Analyse (StorySense™)</span>
                       <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{techInfoBook.title}</h3>
                       <p className="text-xs text-ink-700">von {techInfoBook.author}</p>
                     </div>
@@ -1819,7 +1991,7 @@
             </div>
           )}
 
-          {/* DRAWER (PROFILE & SESSIONS, FAVORITES, ALREADY READ) */}
+          {/* DRAWER (PROFILE, SESSIONS, FAVORITES, ALREADY READ, EXPERT SETTINGS) */}
           {isFavoritesOpen && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
@@ -1836,7 +2008,7 @@
                   <div className="flex items-center justify-between pb-3 border-b border-paper-300">
                     <div className="flex items-center space-x-2">
                       <span className="text-xl">👤</span>
-                      <h2 className="font-literary font-bold text-lg text-ink-900">Mein Profil &amp; Listen</h2>
+                      <h2 className="font-literary font-bold text-lg text-ink-900">Profil &amp; Einstellungen</h2>
                     </div>
                     <button
                       onClick={handleCloseDrawer}
@@ -1846,20 +2018,20 @@
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1 rounded-xl bg-paper-200 p-1 my-3 border border-paper-300 text-center">
+                  <div className="grid grid-cols-4 gap-1 rounded-xl bg-paper-200 p-1 my-3 border border-paper-300 text-center">
                     <button
                       onClick={() => setDrawerTab('profile')}
-                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
+                      className={`py-1.5 text-[11px] font-bold rounded-lg transition ${
                         drawerTab === 'profile' 
                           ? 'bg-ink-900 text-white shadow-sm' 
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      👤 Sitzungen
+                      👤 Profil
                     </button>
                     <button
                       onClick={() => setDrawerTab('favorites')}
-                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
+                      className={`py-1.5 text-[11px] font-bold rounded-lg transition ${
                         drawerTab === 'favorites' 
                           ? 'bg-burgundy-700 text-white shadow-sm' 
                           : 'text-ink-700 hover:text-ink-900'
@@ -1869,7 +2041,7 @@
                     </button>
                     <button
                       onClick={() => setDrawerTab('alreadyRead')}
-                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
+                      className={`py-1.5 text-[11px] font-bold rounded-lg transition ${
                         drawerTab === 'alreadyRead' 
                           ? 'bg-amber-600 text-white shadow-sm' 
                           : 'text-ink-700 hover:text-ink-900'
@@ -1877,28 +2049,75 @@
                     >
                       📖 ({alreadyRead.length})
                     </button>
+                    <button
+                      onClick={() => setDrawerTab('expert')}
+                      className={`py-1.5 text-[11px] font-bold rounded-lg transition ${
+                        drawerTab === 'expert' 
+                          ? 'bg-emerald-700 text-white shadow-sm' 
+                          : 'text-ink-700 hover:text-ink-900'
+                      }`}
+                    >
+                      ⚙️ CSV
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex-grow overflow-y-auto space-y-3 custom-scrollbar my-2 pr-1">
+                <div className="flex-grow overflow-y-auto space-y-4 custom-scrollbar my-2 pr-1">
                   
-                  {/* TAB: SITZUNGEN */}
+                  {/* TAB: PROFIL & SITZUNGEN */}
                   {drawerTab === 'profile' && (
                     <div className="space-y-4">
-                      <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-2 shadow-2xs">
-                        <h3 className="font-literary font-bold text-sm text-ink-900">Aktivitäts-Übersicht</h3>
-                        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
-                            <span className="block text-base font-bold text-ink-900">{sessions.length}</span>
-                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Sitzungen</span>
+                      {/* USER PROFILE MANAGEMENT */}
+                      <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-paper-200 pb-2">
+                          <h3 className="font-literary font-bold text-sm text-ink-900">Dein Leseprofil (LocalStorage)</h3>
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold">StorySense™ Aktiv</span>
+                        </div>
+
+                        <div className="space-y-2 text-xs">
+                          <div>
+                            <label className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Name / Pseudonym:</label>
+                            <input 
+                              type="text" 
+                              value={userProfile.userName || ''} 
+                              onChange={(e) => setUserProfile({ ...userProfile, userName: e.target.value })}
+                              placeholder="z. B. Bücherwurm Bene"
+                              className="w-full p-2 border border-paper-300 rounded-lg bg-paper-50 font-medium"
+                            />
                           </div>
-                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
-                            <span className="block text-base font-bold text-burgundy-700">{favorites.length}</span>
-                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Favoriten</span>
+
+                          <div>
+                            <label className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Bevorzugte Genres:</label>
+                            <div className="flex flex-wrap gap-1">
+                              {POPULAR_GENRES.slice(0, 6).map(g => {
+                                const active = (userProfile.favGenres || []).includes(g.id);
+                                return (
+                                  <button
+                                    key={g.id}
+                                    onClick={() => {
+                                      const updated = active 
+                                        ? userProfile.favGenres.filter(i => i !== g.id)
+                                        : [...(userProfile.favGenres || []), g.id];
+                                      setUserProfile({ ...userProfile, favGenres: updated });
+                                    }}
+                                    className={`px-2 py-1 rounded text-[10px] font-medium border ${active ? 'bg-burgundy-700 text-white border-burgundy-800' : 'bg-paper-50 text-ink-800 border-paper-300'}`}
+                                  >
+                                    {g.name}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
-                            <span className="block text-base font-bold text-amber-700">{alreadyRead.length}</span>
-                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Gelesen</span>
+
+                          <div className="pt-1">
+                            <label className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Persönliche Anmerkungen:</label>
+                            <textarea 
+                              rows="2"
+                              value={userProfile.notes || ''}
+                              onChange={(e) => setUserProfile({ ...userProfile, notes: e.target.value })}
+                              placeholder="z. B. Mag keine offenen Enden..."
+                              className="w-full p-2 border border-paper-300 rounded-lg bg-paper-50 font-medium resize-none"
+                            />
                           </div>
                         </div>
                       </div>
@@ -1964,6 +2183,41 @@
                             <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Suchergebnisse dauerhaft zu sichern.</p>
                           </div>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB: EXPERT SETTINGS (CSV IMPORT & EXPORT) */}
+                  {drawerTab === 'expert' && (
+                    <div className="space-y-4">
+                      <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
+                        <div className="border-b border-paper-200 pb-2">
+                          <h3 className="font-literary font-bold text-sm text-ink-900">Experteneinstellungen</h3>
+                          <p className="text-[11px] text-ink-700 font-normal">Sichere oder übertrage dein Profil, deine Favoriten und Suchsitzungen via CSV.</p>
+                        </div>
+
+                        <div className="space-y-3 pt-1">
+                          <button
+                            onClick={handleExportCSV}
+                            className="w-full py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
+                          >
+                            <span>📥 Alle Daten als CSV exportieren</span>
+                          </button>
+
+                          <div className="border-t border-paper-200 pt-3">
+                            <label className="text-[11px] font-bold text-ink-800 block mb-1.5">CSV-Daten importieren:</label>
+                            <input 
+                              type="file" 
+                              accept=".csv"
+                              onChange={handleImportCSV}
+                              className="block w-full text-xs text-ink-700 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-paper-200 file:text-ink-800 hover:file:bg-paper-300 cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl text-[11px] text-ink-700 leading-relaxed">
+                        ℹ️ Der Export beinhaltet dein Nutzerprofil, alle Favoriten, gelesene Bücher sowie vergangene Suchsitzungen des StorySense™ Algorithmus.
                       </div>
                     </div>
                   )}
@@ -2105,11 +2359,13 @@
             </div>
           )}
 
-          <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex items-center justify-center space-x-2">
-            <span className="font-literary font-normal">BuchKompass &bull; Bene 2026</span>
-            {visitorCount !== null && (
-            <span className="font-literary font-normal">{visitorCount} Personen nutzen BuchKompass</span>
-            )}
+          <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex flex-col items-center justify-center space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="font-literary font-normal">BuchKompass &bull; StorySense™ 2026</span>
+              {visitorCount !== null && (
+                <span className="font-literary font-normal">&bull; {visitorCount} Personen nutzen BuchKompass</span>
+              )}
+            </div>
           </footer>
         </div>
       );
