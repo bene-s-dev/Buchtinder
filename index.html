@@ -366,6 +366,7 @@
 
       const [reportingBook, setReportingBook] = useState(null);
       const [techInfoBook, setTechInfoBook] = useState(null);
+      const [searchModalBook, setSearchModalBook] = useState(null);
       const [selectedReasons, setSelectedReasons] = useState([]);
       const [reportComment, setReportComment] = useState('');
       const [isSubmittingReport, setIsSubmittingReport] = useState(false);
@@ -411,7 +412,7 @@
       }, [step, currentIndex]);
 
       useEffect(() => {
-        if (isFavoritesOpen || reportingBook || techInfoBook) {
+        if (isFavoritesOpen || reportingBook || techInfoBook || searchModalBook) {
           document.body.style.overflow = 'hidden';
         } else {
           document.body.style.overflow = '';
@@ -419,7 +420,7 @@
         return () => {
           document.body.style.overflow = '';
         };
-      }, [isFavoritesOpen, reportingBook, techInfoBook]);
+      }, [isFavoritesOpen, reportingBook, techInfoBook, searchModalBook]);
 
       useEffect(() => {
         try {
@@ -1229,8 +1230,6 @@
                         const isPoppingFav = popHeartKey === bookKey;
                         const isPoppingRead = popBookKey === bookKey;
 
-                        const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(book.title + ' ' + book.author + ' Buch')}`;
-
                         return (
                           <div 
                             key={idx}
@@ -1296,28 +1295,26 @@
                               </div>
                             </div>
 
-                            {/* UNTEN LINKS: INFO-BUTTON / UNTEN RECHTS: GOOGLE & MELDEN */}
+                            {/* UNTEN LINKS: INFO-BUTTON / UNTEN RECHTS: SUCHEN & MELDEN */}
                             <div className="flex justify-between items-center pt-1">
                               <button
                                 onClick={() => setTechInfoBook(book)}
                                 className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
                                 title="Technische Details zur Empfehlung"
                               >
-                                <span>ℹ️</span>
-                                <span>Info</span>
+                                <span>ⓘ</span>
+      
                               </button>
 
                               <div className="flex items-center space-x-2">
-                                <a
-                                  href={googleSearchUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  onClick={() => setSearchModalBook(book)}
                                   className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
-                                  title="Auf Google suchen"
+                                  title="Bei Händlern suchen"
                                 >
                                   <span>🔍</span>
                                   <span>Suchen</span>
-                                </a>
+                                </button>
 
                                 <button
                                   onClick={() => {
@@ -1377,6 +1374,99 @@
 
           </main>
 
+          {/* SEARCH MODAL */}
+          {searchModalBook && (
+            <div 
+              onClick={(e) => { if (e.target === e.currentTarget) setSearchModalBook(null); }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/40 backdrop-blur-sm animate-backdrop-in"
+            >
+              <div className="bg-white border border-paper-300 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+                <div className="flex items-start justify-between pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Händler-Auswahl</span>
+                    <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{searchModalBook.title}</h3>
+                    <p className="text-xs text-ink-700">von {searchModalBook.author}</p>
+                  </div>
+                  <button 
+                    onClick={() => setSearchModalBook(null)}
+                    className="text-ink-700 hover:text-ink-900 font-bold text-sm p-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <p className="text-xs text-ink-800 font-medium">Wo möchtest du nach diesem Buch suchen?</p>
+
+                <div className="space-y-2 pt-1">
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(searchModalBook.title + ' ' + searchModalBook.author + ' Buch')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs font-bold text-gray-800 flex items-center justify-between transition active:scale-98 shadow-2xs"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+                      <span>Google Suche</span>
+                    </span>
+                    <span className="text-gray-400">↗</span>
+                  </a>
+
+                  <a
+                    href={`https://www.thalia.de/suche?sq=${encodeURIComponent(searchModalBook.title + ' ' + searchModalBook.author)}&stype=top`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs font-bold text-gray-800 flex items-center justify-between transition active:scale-98 shadow-2xs"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
+                      <span>Thalia</span>
+                    </span>
+                    <span className="text-gray-400">↗</span>
+                  </a>
+
+                  <a
+                    href={`https://www.osiander.de/suche?sq=${encodeURIComponent(searchModalBook.title + ' ' + searchModalBook.author)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs font-bold text-gray-800 flex items-center justify-between transition active:scale-98 shadow-2xs"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></span>
+                      <span>Osiander</span>
+                    </span>
+                    <span className="text-gray-400">↗</span>
+                  </a>
+
+                  <a
+                    href={`https://www.amazon.de/s?k=${encodeURIComponent(searchModalBook.title + ' ' + searchModalBook.author)}&i=stripbooks`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs font-bold text-gray-800 flex items-center justify-between transition active:scale-98 shadow-2xs"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-600 inline-block"></span>
+                      <span>Amazon (Bücher)</span>
+                    </span>
+                    <span className="text-gray-400">↗</span>
+                  </a>
+                </div>
+
+                <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl text-[11px] text-ink-700 leading-relaxed text-center">
+                  BuchKompass erhält keine Provision und schützt deine Daten nach Zero-Knowledge-Standard.
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    onClick={() => setSearchModalBook(null)}
+                    className="w-full py-2.5 bg-paper-100 hover:bg-paper-200 text-ink-800 text-xs font-bold rounded-xl border border-paper-300 transition"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* TECH INFO MODAL */}
           {techInfoBook && (
             <div 
@@ -1401,30 +1491,60 @@
 
                   <div className="space-y-3 text-xs text-ink-800">
                     <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px]">📊 Datenbank-Metadaten</p>
-                      <p><strong>DB-ID:</strong> <code className="bg-paper-200 px-1 py-0.5 rounded text-[11px]">{techInfoBook.id}</code></p>
-                      <p><strong>ISBN / EAN:</strong> <code className="bg-paper-200 px-1 py-0.5 rounded text-[11px]">{techInfoBook.isbn || 'Nicht hinterlegt'}</code></p>
-                      <p><strong>Zuordnung Genre:</strong> {techInfoBook.genre}</p>
-                      <p><strong>Umfang-Filter:</strong> {techInfoBook.length}</p>
-                      <p><strong>Epoche:</strong> {techInfoBook.era}</p>
+                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px] pb-1">📊 Datenbank-Metadaten</p>
+                      <div className="space-y-1.5 pt-0.5">
+                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-ink-700 font-medium">DB-ID</span>
+                          <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.id}</code>
+                        </div>
+                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-ink-700 font-medium">ISBN / EAN</span>
+                          <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.isbn || 'Nicht hinterlegt'}</code>
+                        </div>
+                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-ink-700 font-medium">Zuordnung Genre</span>
+                          <span className="inline-block px-2 py-0.5 bg-burgundy-700 text-white text-[11px] font-semibold rounded-md">{techInfoBook.genre}</span>
+                        </div>
+                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-ink-700 font-medium">Umfang-Filter</span>
+                          <span className="inline-block px-2 py-0.5 bg-burgundy-700 text-white text-[11px] font-semibold rounded-md">{techInfoBook.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-ink-700 font-medium">Epoche</span>
+                          <span className="inline-block px-2 py-0.5 bg-burgundy-700 text-white text-[11px] font-semibold rounded-md">{techInfoBook.era}</span>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px]">⚙️ Motiv- &amp; Stimmungs-Matching</p>
-                      <p><strong>Verknüpfte Motive:</strong></p>
+                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">⚙️ Motiv- &amp; Stimmungs-Matching</p>
+                      <p className="text-[11px] font-medium text-burgundy-800">Verknüpfte Motive:</p>
                       <div className="flex flex-col gap-1.5 pt-0.5">
                         {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
                           techInfoBook.theme_ids.map((tId, idx) => (
-                            <div key={idx} className="flex items-center space-x-1.5 bg-burgundy-100 text-burgundy-900 px-2 py-1 rounded-lg text-[11px] font-medium">
+                            <div key={idx} className="flex items-center justify-between bg-white border border-burgundy-200 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-burgundy-900">
                               <span>{getThemeTitle(tId)}</span>
-                              <span className="text-[9px] font-mono text-burgundy-700 opacity-75">({tId})</span>
+                              <code className="bg-burgundy-100 text-burgundy-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                                {tId}
+                              </code>
                             </div>
                           ))
                         ) : (
                           <span className="text-ink-700 italic">Keine expliziten Motive verknüpft</span>
                         )}
                       </div>
-                      <p className="pt-2"><strong>Stimmungen:</strong> {techInfoBook.moods && techInfoBook.moods.length > 0 ? techInfoBook.moods.join(', ') : 'Standard'}</p>
+
+                      <p className="pt-2 text-[11px] font-medium text-burgundy-800">Stimmung:</p>
+                      <div className="bg-burgundy-700 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-center mt-1 shadow-2xs">
+                        {techInfoBook.moods && techInfoBook.moods.length > 0 ? techInfoBook.moods.join(', ') : 'Standard'}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px]">💡 Algorithmus-Logik</p>
+                      <p className="text-ink-700 leading-relaxed">
+                        Dieses Buch wurde ausgewählt, weil es in Supabase den oben genannten Filtern (Genre, Umfang, Zeitraum) entspricht und durch dein User-Swipe-Profil bestätigt wurde.
+                      </p>
                     </div>
                   </div>
                 </div>
