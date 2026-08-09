@@ -457,6 +457,9 @@
       const [isSubmittingReport, setIsSubmittingReport] = useState(false);
       const [reportSuccess, setReportSuccess] = useState(false);
 
+      const [currentPage, setCurrentPage] = useState(1);
+      const BOOKS_PER_PAGE = 4;
+
       const [favorites, setFavorites] = useState(() => {
         try {
           const saved = localStorage.getItem('buchtinder_favorites');
@@ -475,17 +478,19 @@
         }
       });
 
-      const [lastSession, setLastSession] = useState(() => {
+      const [sessions, setSessions] = useState(() => {
         try {
-          const saved = localStorage.getItem('buchkompass_last_session');
-          return saved ? JSON.parse(saved) : null;
+          const saved = localStorage.getItem('buchkompass_sessions');
+          return saved ? JSON.parse(saved) : [];
         } catch (e) {
-          return null;
+          return [];
         }
       });
 
+      const [currentSessionId, setCurrentSessionId] = useState(null);
+
       const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
-      const [drawerTab, setDrawerTab] = useState('favorites');
+      const [drawerTab, setDrawerTab] = useState('profile');
       const [isDrawerClosing, setIsDrawerClosing] = useState(false);
       const [popHeartKey, setPopHeartKey] = useState(null);
       const [popBookKey, setPopBookKey] = useState(null);
@@ -527,6 +532,12 @@
           localStorage.setItem('buchtinder_already_read', JSON.stringify(alreadyRead));
         } catch (e) {}
       }, [alreadyRead]);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem('buchkompass_sessions', JSON.stringify(sessions));
+        } catch (e) {}
+      }, [sessions]);
 
       const toggleFavorite = (book) => {
         const bookKey = `${book.title}-${book.author}`;
@@ -818,7 +829,7 @@
             if (progressInterval) clearInterval(progressInterval);
             if (phraseInterval) clearInterval(phraseInterval);
             setAiError("Noch mehr Bücher, die deiner Anfrage entsprechen, konnte der Bibliothekar nicht finden. Probiere ein anderes Genre.");
-            setAiRecommendations({ books: [] });
+            if (!isReload) setAiRecommendations({ books: [] });
             return;
           }
 
@@ -857,29 +868,64 @@
             await new Promise(r => setTimeout(r, 250));
           }
 
-          setAiRecommendations({ books: selectedBooks });
+          let updatedBooksList = [];
 
-          // Speichere die Sitzung im LocalStorage
-          const sessionData = {
-            timestamp: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-            genres: selectedGenres,
-            moods: selectedMoods,
-            books: selectedBooks
-          };
-          setLastSession(sessionData);
-          try {
-            localStorage.setItem('buchkompass_last_session', JSON.stringify(sessionData));
-          } catch(e) {}
+          if (isReload && aiRecommendations?.books) {
+            updatedBooksList = [...aiRecommendations.books, ...selectedBooks];
+            setAiRecommendations({ books: updatedBooksList });
+            const nextP = Math.ceil(updatedBooksList.length / BOOKS_PER_PAGE);
+            setCurrentPage(nextP);
+
+            if (currentSessionId) {
+              setSessions(prev => prev.map(s => s.id === currentSessionId ? { ...s, books: updatedBooksList } : s));
+            }
+          } else {
+            updatedBooksList = selectedBooks;
+            setAiRecommendations({ books: updatedBooksList });
+            setCurrentPage(1);
+
+            const newSession = {
+              id: Date.now().toString(),
+              sessionNumber: sessions.length + 1,
+              timestamp: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+              genres: [...selectedGenres],
+              moods: [...selectedMoods],
+              likedThemes: likedList.map(t => t.title || t.category || 'Motiv'),
+              books: updatedBooksList
+            };
+
+            setCurrentSessionId(newSession.id);
+            setSessions(prev => [newSession, ...prev]);
+          }
 
         } catch (err) {
           console.error("Supabase Error:", err);
           setAiError(`Fehler beim Laden der Bücher aus Supabase.`);
-          setAiRecommendations({ books: [] });
+          if (!isReload) setAiRecommendations({ books: [] });
         } finally {
           if (progressInterval) clearInterval(progressInterval);
           if (phraseInterval) clearInterval(phraseInterval);
           setIsLoadingAi(false);
           setIsReloading(false);
+        }
+      };
+
+      const openSessionFromProfile = (session) => {
+        setCurrentSessionId(session.id);
+        setSelectedGenres(session.genres || []);
+        setSelectedMoods(session.moods || []);
+        setAiRecommendations({ books: session.books || [] });
+        setSessionShownBooks(session.books || []);
+        setCurrentPage(1);
+        setStep(3);
+        handleCloseDrawer();
+      };
+
+      const deleteSession = (sessionId, e) => {
+        e.stopPropagation();
+        setSessions(prev => prev.filter(s => s.id !== sessionId));
+        if (currentSessionId === sessionId) {
+          setCurrentSessionId(null);
         }
       };
 
@@ -935,6 +981,10 @@
         const found = STORY_THEMES.find(st => st.id === tId);
         return found ? `${found.icon} ${found.title}` : tId;
       };
+
+      const allBooks = aiRecommendations?.books || [];
+      const totalPages = Math.ceil(allBooks.length / BOOKS_PER_PAGE);
+      const displayedBooks = allBooks.slice((currentPage - 1) * BOOKS_PER_PAGE, currentPage * BOOKS_PER_PAGE);
 
       return (
         <div className="flex flex-col min-h-screen">
@@ -1262,6 +1312,11 @@
                     <h2 className="font-literary text-2xl font-bold text-ink-900">
                       Deine Buch-Empfehlungen
                     </h2>
+                    {totalPages > 1 && (
+                      <p className="text-xs text-ink-700 font-medium">
+                        Seite {currentPage} von {totalPages} (Insgesamt {allBooks.length} Bücher geladen)
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -1314,10 +1369,11 @@
                   </div>
                 )}
 
-                {aiRecommendations && !isLoadingAi && aiRecommendations.books && aiRecommendations.books.length > 0 && (
+                {aiRecommendations && !isLoadingAi && displayedBooks.length > 0 && (
                   <div className="space-y-5">
                     <div className="space-y-4">
-                      {aiRecommendations.books.map((book, idx) => {
+                      {displayedBooks.map((book, idx) => {
+                        const globalIdx = (currentPage - 1) * BOOKS_PER_PAGE + idx;
                         const fav = isFavorite(book);
                         const read = isAlreadyRead(book);
                         const bookKey = `${book.title}-${book.author}`;
@@ -1326,14 +1382,14 @@
 
                         return (
                           <div 
-                            key={idx}
+                            key={globalIdx}
                             className="bg-white border border-paper-300 hover:border-burgundy-600/50 rounded-2xl p-5 shadow-md space-y-3 transition duration-200 relative flex flex-col justify-between"
                           >
                             <div className="space-y-3">
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-grow">
                                   <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
-                                    Empfehlung #{idx + 1} &bull; {book.genre} ({book.year})
+                                    Empfehlung #{globalIdx + 1} &bull; {book.genre} ({book.year})
                                   </span>
                                   <h3 className="font-literary font-bold text-lg text-ink-900 leading-tight mt-0.5">
                                     {book.title}
@@ -1427,10 +1483,45 @@
                         );
                       })}
                     </div>
+
+                    {/* PAGINATION NAVIGATION */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-center space-x-1.5 pt-2 pb-1">
+                        <button
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className="px-3 py-2 rounded-xl border border-paper-300 bg-white text-xs font-bold text-ink-800 disabled:opacity-40 hover:bg-paper-50 transition active:scale-95"
+                        >
+                          ◀
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-9 h-9 rounded-xl text-xs font-bold transition active:scale-95 ${
+                              currentPage === pageNum
+                                ? 'bg-burgundy-700 text-white shadow-sm font-extrabold'
+                                : 'bg-white border border-paper-300 text-ink-800 hover:bg-paper-100'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        ))}
+
+                        <button
+                          disabled={currentPage === totalPages}
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className="px-3 py-2 rounded-xl border border-paper-300 bg-white text-xs font-bold text-ink-800 disabled:opacity-40 hover:bg-paper-50 transition active:scale-95"
+                        >
+                          ▶
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {aiRecommendations && !isLoadingAi && aiRecommendations.books && aiRecommendations.books.length > 0 && (
+                {aiRecommendations && !isLoadingAi && allBooks.length > 0 && (
                   <div className="pt-2 space-y-2.5">
                     <button
                       onClick={() => fetchAiBookRecommendations(likedThemes, dislikedThemes, false, true)}
@@ -1443,10 +1534,10 @@
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          <span>Lade Vorschläge...</span>
+                          <span>Lade weitere 4 Vorschläge...</span>
                         </>
                       ) : (
-                        <span>Weitere Vorschläge laden</span>
+                        <span>Weitere Vorschläge laden (+4 Bücher)</span>
                       )}
                     </button>
 
@@ -1454,6 +1545,7 @@
                       onClick={() => {
                         setStep(1);
                         setAiRecommendations(null);
+                        setCurrentSessionId(null);
                       }}
                       className="w-full py-3 bg-white hover:bg-paper-50 text-ink-800 text-xs font-literary font-bold rounded-xl border border-paper-300 transition shadow-sm active:scale-[0.98]"
                     >
@@ -1547,7 +1639,7 @@
             </div>
           )}
 
-          {/* TECH INFO MODAL (Ohne ISBN) */}
+          {/* TECH INFO MODAL */}
           {techInfoBook && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) setTechInfoBook(null); }}
@@ -1727,7 +1819,7 @@
             </div>
           )}
 
-          {/* DRAWER (FAVORITES, ALREADY READ & PROFILE/LAST SESSION) */}
+          {/* DRAWER (PROFILE & SESSIONS, FAVORITES, ALREADY READ) */}
           {isFavoritesOpen && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
@@ -1763,7 +1855,7 @@
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      👤 Profil
+                      👤 Sitzungen
                     </button>
                     <button
                       onClick={() => setDrawerTab('favorites')}
@@ -1790,75 +1882,86 @@
 
                 <div className="flex-grow overflow-y-auto space-y-3 custom-scrollbar my-2 pr-1">
                   
-                  {/* TAB: PROFIL & LETZTE SITZUNG */}
+                  {/* TAB: SITZUNGEN */}
                   {drawerTab === 'profile' && (
                     <div className="space-y-4">
                       <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-2 shadow-2xs">
-                        <h3 className="font-literary font-bold text-sm text-ink-900">Übersicht</h3>
-                        <div className="grid grid-cols-2 gap-2 pt-1 text-center">
-                          <div className="bg-paper-50 p-2.5 rounded-lg border border-paper-200">
-                            <span className="block text-lg font-bold text-burgundy-700">{favorites.length}</span>
-                            <span className="text-[10px] text-ink-700 font-semibold uppercase">Favoriten</span>
+                        <h3 className="font-literary font-bold text-sm text-ink-900">Aktivitäts-Übersicht</h3>
+                        <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
+                            <span className="block text-base font-bold text-ink-900">{sessions.length}</span>
+                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Sitzungen</span>
                           </div>
-                          <div className="bg-paper-50 p-2.5 rounded-lg border border-paper-200">
-                            <span className="block text-lg font-bold text-amber-700">{alreadyRead.length}</span>
-                            <span className="text-[10px] text-ink-700 font-semibold uppercase">Gelesen</span>
+                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
+                            <span className="block text-base font-bold text-burgundy-700">{favorites.length}</span>
+                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Favoriten</span>
+                          </div>
+                          <div className="bg-paper-50 p-2 rounded-lg border border-paper-200">
+                            <span className="block text-base font-bold text-amber-700">{alreadyRead.length}</span>
+                            <span className="text-[9px] text-ink-700 font-semibold uppercase">Gelesen</span>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-literary font-bold text-sm text-ink-900">Letzte Such-Sitzung</h3>
-                          {lastSession && (
-                            <span className="text-[10px] text-ink-700 font-medium">{lastSession.timestamp}</span>
-                          )}
-                        </div>
+                        <h3 className="font-literary font-bold text-sm text-ink-900">Gespeicherte Such-Sitzungen</h3>
 
-                        {lastSession && lastSession.books && lastSession.books.length > 0 ? (
-                          <div className="space-y-3">
-                            <div className="bg-paper-50 border border-paper-200 p-2.5 rounded-xl text-xs space-y-1">
-                              <p className="text-ink-700"><strong>Genres:</strong> {lastSession.genres ? lastSession.genres.join(', ') : 'Keine'}</p>
-                              {lastSession.moods && lastSession.moods.length > 0 && (
-                                <p className="text-ink-700"><strong>Stimmungen:</strong> {lastSession.moods.join(', ')}</p>
-                              )}
-                            </div>
-
-                            <p className="text-xs font-semibold text-burgundy-800 uppercase tracking-wider">Vorschläge der Sitzung:</p>
-                            
-                            {lastSession.books.map((book, idx) => {
-                              const fav = isFavorite(book);
-                              const read = isAlreadyRead(book);
-                              return (
-                                <div key={idx} className="bg-white border border-paper-300 rounded-xl p-3 shadow-2xs space-y-2">
-                                  <div className="flex items-start justify-between gap-2">
-                                    <div>
-                                      <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">{book.title}</h4>
-                                      <p className="text-xs text-ink-700">von {book.author}</p>
-                                    </div>
-                                    <div className="flex space-x-1">
-                                      <button
-                                        onClick={() => toggleFavorite(book)}
-                                        className={`p-1.5 rounded-lg border text-xs ${fav ? 'bg-burgundy-700 text-white' : 'bg-paper-50 text-ink-700'}`}
-                                      >
-                                        <HeartIcon filled={fav} className="w-4 h-4" />
-                                      </button>
-                                      <button
-                                        onClick={() => toggleAlreadyRead(book)}
-                                        className={`p-1.5 rounded-lg border text-xs ${read ? 'bg-amber-600 text-white' : 'bg-paper-50 text-ink-700'}`}
-                                      >
-                                        <BookIcon filled={read} className="w-4 h-4" />
-                                      </button>
-                                    </div>
-                                  </div>
+                        {sessions.length > 0 ? (
+                          sessions.map((session, sIdx) => (
+                            <div 
+                              key={session.id || sIdx}
+                              onClick={() => openSessionFromProfile(session)}
+                              className="bg-white border border-paper-300 hover:border-burgundy-600/50 rounded-xl p-3.5 shadow-2xs space-y-2.5 cursor-pointer transition active:scale-[0.99] group"
+                            >
+                              <div className="flex items-center justify-between border-b border-paper-200 pb-2">
+                                <div>
+                                  <span className="font-literary font-bold text-sm text-ink-900 group-hover:text-burgundy-700 transition">
+                                    Sitzung #{sessions.length - sIdx}
+                                  </span>
+                                  <span className="block text-[10px] text-ink-700 font-medium">
+                                    {session.timestamp} &bull; {session.books ? session.books.length : 0} Bücher
+                                  </span>
                                 </div>
-                              );
-                            })}
-                          </div>
+                                <button
+                                  onClick={(e) => deleteSession(session.id, e)}
+                                  className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-bold transition"
+                                  title="Sitzung löschen"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <div className="flex flex-wrap gap-1">
+                                  {session.genres && session.genres.map((g, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-burgundy-700 text-white text-[10px] font-semibold rounded-md">
+                                      {g}
+                                    </span>
+                                  ))}
+
+                                  {session.moods && session.moods.map((m, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-medium rounded-md">
+                                      {m}
+                                    </span>
+                                  ))}
+
+                                  {session.likedThemes && session.likedThemes.map((t, i) => (
+                                    <span key={i} className="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-200 text-[10px] font-medium rounded-md">
+                                      ✨ {t}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="pt-1 flex items-center justify-between text-[11px] text-burgundy-700 font-bold">
+                                <span>Ergebnisse öffnen &amp; durchblättern ▶</span>
+                              </div>
+                            </div>
+                          ))
                         ) : (
                           <div className="bg-white border border-paper-300 rounded-xl p-6 text-center text-xs text-ink-700 space-y-1">
-                            <p className="font-semibold">Keine gespeicherte Sitzung vorhanden.</p>
-                            <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Empfehlungen zu merken.</p>
+                            <p className="font-semibold">Keine Such-Sitzungen gespeichert.</p>
+                            <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Suchergebnisse dauerhaft zu sichern.</p>
                           </div>
                         )}
                       </div>
