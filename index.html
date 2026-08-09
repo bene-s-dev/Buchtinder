@@ -2165,8 +2165,8 @@
                     <div className="space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-literary font-bold text-sm text-ink-900">Gespeicherte Such-Sitzungen</h3>
-                          <span className="text-[10px] bg-burgundy-100 text-burgundy-800 border border-burgundy-200 px-2 py-0.5 rounded font-bold">{sessions.length} Sitzungen</span>
+                          <h3 className="font-literary font-bold text-sm text-ink-900">Gespeicherte Buchvorschläge</h3>
+                          <span className="text-[10px] bg-burgundy-100 text-burgundy-800 border border-burgundy-200 px-2 py-0.5 rounded font-bold">{sessions.length} Einträge</span>
                         </div>
 
                         {sessions.length > 0 ? (
@@ -2223,8 +2223,8 @@
                           ))
                         ) : (
                           <div className="bg-white border border-paper-300 rounded-xl p-6 text-center text-xs text-ink-700 space-y-1">
-                            <p className="font-semibold">Keine Such-Sitzungen gespeichert.</p>
-                            <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Suchergebnisse dauerhaft zu sichern.</p>
+                            <p className="font-semibold">Keine Buchvorschläge gespeichert.</p>
+                            <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Suchergebnisse dauerhaft zu anzuzeigen.</p>
                           </div>
                         )}
                       </div>
@@ -2250,7 +2250,7 @@
                           </div>
 
                           <div>
-                            <span className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Gelesene Bücher (DB IDs):</span>
+                            <span className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Gelesene Bücher (DB-IDs):</span>
                             <div className="flex flex-wrap gap-1">
                               {alreadyRead.length > 0 ? (
                                 alreadyRead.map((b, i) => (
@@ -2333,11 +2333,11 @@
                             onClick={handleExportCSV}
                             className="w-full py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
                           >
-                            <span>📥 Alle Daten als CSV exportieren</span>
+                            <span>📥 Alle Daten exportieren (CSV)</span>
                           </button>
 
                           <div className="border-t border-paper-200 pt-3">
-                            <label className="text-[11px] font-bold text-ink-800 block mb-1.5">CSV-Daten importieren:</label>
+                            <label className="text-[11px] font-bold text-ink-800 block mb-1.5">CSV-Datei importieren:</label>
                             <input 
                               type="file" 
                               accept=".csv"
@@ -2360,7 +2360,7 @@
                             className="w-full py-2.5 px-3 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-medium rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
                           >
                             <ShareIcon className="w-4 h-4" />
-                            <span>Favoriten-Liste teilen / kopieren</span>
+                            <span>Favoriten-Liste teilen</span>
                           </button>
                           {copyNotice && (
                             <p className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 p-1.5 rounded-lg text-center font-medium transition">
