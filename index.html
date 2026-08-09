@@ -299,13 +299,13 @@
     ];
 
     const POPULAR_GENRES = [
-      { id: 'fantasy', name: 'Fantasy & Magie' },
+      { id: 'fantasy', name: 'Fantasy' },
       { id: 'romantasy', name: 'Romantasy' },
       { id: 'thriller', name: 'Krimi & Thriller' },
       { id: 'scifi', name: 'Science Fiction' },
-      { id: 'romance', name: 'Liebe & Romantik' },
+      { id: 'romance', name: 'Romantik' },
       { id: 'humor', name: 'Humor & Satire' },
-      { id: 'sachbuch', name: 'Sachbuch & Wissen' },
+      { id: 'sachbuch', name: 'Sachbuch' },
       { id: 'historisch', name: 'Historische Romane' },
       { id: 'jugend', name: 'Jugendbuch' },
       { id: 'belletristik', name: 'Belletristik' }
@@ -313,9 +313,9 @@
 
     const RARE_GENRES = [
       { id: 'cozy_crime', name: 'Cozy Crime' },
-      { id: 'dark_romance', name: 'Dark Romance' },
+      { id: 'dark_romance', name: 'Dark Romance 🔥' },
       { id: 'new_adult', name: 'New Adult' },
-      { id: 'memoir', name: 'Biografie & Memoir' },
+      { id: 'memoir', name: 'Biografien' },
       { id: 'graphic_novels', name: 'Graphic Novels' },
       { id: 'modern_poetry', name: 'Moderne Poesie' }
     ];
@@ -924,7 +924,7 @@
 
                 <div className="space-y-3">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                    1. Genres wählen (Mehrfachauswahl möglich)
+                    1. Genre(s) wählen
                   </label>
                   
                   <div className="grid grid-cols-2 gap-2">
@@ -983,7 +983,7 @@
                 {(!selectedGenres.includes('sachbuch') || selectedGenres.length > 1) && (
                   <div className="space-y-2">
                     <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                      2. Gewünschte Stimmung(en) (Mehrfachauswahl)
+                      2. Gewünschte Stimmung(en)
                     </label>
                     <div className="space-y-1.5">
                       {MOODS.map(m => {
