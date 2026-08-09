@@ -464,6 +464,7 @@
             genreStats: {},
             moodStats: {},
             topLikedMotifs: [],
+            alreadyReadIds: [],
             lastActive: null
           };
         } catch (e) {
@@ -472,6 +473,7 @@
             genreStats: {},
             moodStats: {},
             topLikedMotifs: [],
+            alreadyReadIds: [],
             lastActive: null
           };
         }
@@ -490,6 +492,7 @@
             genreStats: {},
             moodStats: {},
             topLikedMotifs: [],
+            alreadyReadIds: [],
             lastActive: null
           };
           setImplicitProfile(emptyProfile);
@@ -508,6 +511,7 @@
           const newLikedMotifs = Array.from(new Set([...(prev.topLikedMotifs || []), ...likedMotifsList.map(t => t.title || t.category)]));
 
           return {
+            ...prev,
             searchCount: (prev.searchCount || 0) + 1,
             genreStats: newGenreStats,
             moodStats: newMoodStats,
@@ -628,6 +632,12 @@
       useEffect(() => {
         try {
           localStorage.setItem('buchtinder_already_read', JSON.stringify(alreadyRead));
+          // Synchronize alreadyRead IDs with implicitProfile
+          const readDbIds = Array.from(new Set(alreadyRead.map(b => b.id).filter(Boolean)));
+          setImplicitProfile(prev => ({
+            ...prev,
+            alreadyReadIds: readDbIds
+          }));
         } catch (e) {}
       }, [alreadyRead]);
 
@@ -927,14 +937,14 @@
           if (currentIndex + 1 >= themesToSwipe.length) {
             setStep(3);
             recordUserBehavior(selectedGenres, selectedMoods, newLiked);
-            fetchAiBookRecommendations(newLiked, newDisliked, false, false);
+            fetchAiBookRecommendations(newLiked, newDisliked, false);
           } else {
             setCurrentIndex(prev => prev + 1);
           }
         }, 280);
       };
 
-      const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, excludeAlreadyRead = false, isReload = false) => {
+      const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, isReload = false) => {
         if (isReload) {
           setIsReloading(true);
         } else {
@@ -1004,13 +1014,6 @@
             query = query.overlaps('theme_ids', likedIds);
           }
 
-          if (excludeAlreadyRead && alreadyRead.length > 0) {
-            const excludeTitles = alreadyRead.map(b => b.title);
-            if (excludeTitles.length > 0) {
-              query = query.not('title', 'in', `(${excludeTitles.map(t => `"${t}"`).join(',')})`);
-            }
-          }
-
           const { data, error } = await query;
 
           if (error) throw error;
@@ -1024,6 +1027,18 @@
             if (selectedEra !== 'Egal') retryQuery = retryQuery.eq('era', selectedEra);
             const retryRes = await retryQuery;
             filteredBooks = retryRes.data || [];
+          }
+
+          // IMMER BEREITS GELESENE BÜCHER AUSSCHLIESSEN (Egal ob Reload oder Neue Suche)
+          if (alreadyRead.length > 0) {
+            const excludeTitles = alreadyRead.map(b => b.title);
+            filteredBooks = filteredBooks.filter(b => !excludeTitles.includes(b.title));
+          }
+
+          // In der aktuellen Session bereits gezeigte Bücher ebenfalls ausschließen bei Reload
+          if (isReload && sessionShownBooks.length > 0) {
+            const shownTitles = sessionShownBooks.map(b => b.title);
+            filteredBooks = filteredBooks.filter(b => !shownTitles.includes(b.title));
           }
 
           if (filteredBooks.length === 0) {
@@ -1086,6 +1101,7 @@
             return {
               ...b,
               storySenseScore: score,
+              storySenseBonusText: learnedMatchReasons.length > 0 ? learnedMatchReasons.join(' & ') : "Kein besonderer Profil-Bonus",
               calculatedMatchReason: matchReason
             };
           });
@@ -1104,6 +1120,8 @@
             moods: b.moods || [],
             theme_ids: b.theme_ids || [],
             description: b.description,
+            storySenseScore: b.storySenseScore,
+            storySenseBonusText: b.storySenseBonusText,
             matchReason: b.calculatedMatchReason
           }));
 
@@ -1814,7 +1832,7 @@
                 {aiRecommendations && !isLoadingAi && allBooks.length > 0 && (
                   <div className="pt-2 space-y-2.5">
                     <button
-                      onClick={() => fetchAiBookRecommendations(likedThemes, dislikedThemes, false, true)}
+                      onClick={() => fetchAiBookRecommendations(likedThemes, dislikedThemes, true)}
                       disabled={isReloading}
                       className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-literary font-bold rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-80"
                     >
@@ -1957,7 +1975,7 @@
                       <div className="space-y-1.5 pt-0.5">
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">DB-ID</span>
-                          <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.id}</code>
+                          <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">#{techInfoBook.id}</code>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">Genre</span>
@@ -1975,14 +1993,28 @@
                     </div>
 
                     <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">🗳️ Motive & Stimmung</p>
-                      <p className="text-[11px] font-medium text-burgundy-800">Verknüpfte Motive:</p>
+                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">⚡ StorySense™ Einfluss-Analyse</p>
+                      <div className="space-y-1.5 pt-0.5">
+                        <div className="flex items-center justify-between bg-white border border-burgundy-200 px-2.5 py-1.5 rounded-lg">
+                          <span className="text-burgundy-900 font-medium">StorySense Score</span>
+                          <span className="font-mono font-bold text-burgundy-800 text-xs">{techInfoBook.storySenseScore !== undefined ? techInfoBook.storySenseScore : 0} Punkte</span>
+                        </div>
+                        <div className="bg-white border border-burgundy-200 p-2 rounded-lg text-[11px]">
+                          <span className="text-burgundy-900 font-semibold block mb-0.5">Profil-Einfluss / Bonus:</span>
+                          <span className="text-burgundy-800">{techInfoBook.storySenseBonusText || (techInfoBook.storySenseScore ? "Profil-Bonus vorhanden" : "Kein Einfluss (0 Bonus-Punkte)")}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-1">
+                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px] pb-1">🗳️ Motive & Stimmung</p>
+                      <p className="text-[11px] font-medium text-ink-800">Verknüpfte Motive:</p>
                       <div className="flex flex-col gap-1.5 pt-0.5">
                         {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
                           techInfoBook.theme_ids.map((tId, idx) => (
-                            <div key={idx} className="flex items-center justify-between bg-white border border-burgundy-200 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-burgundy-900">
+                            <div key={idx} className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-ink-900">
                               <span>{getThemeTitle(tId)}</span>
-                              <code className="bg-burgundy-100 text-burgundy-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                              <code className="bg-paper-200 text-ink-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
                                 {tId}
                               </code>
                             </div>
@@ -1992,10 +2024,10 @@
                         )}
                       </div>
 
-                      <p className="pt-2 text-[11px] font-medium text-burgundy-800">Stimmung:</p>
-                      <div className="flex items-center justify-between bg-white border border-burgundy-200 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-burgundy-900 mt-1">
+                      <p className="pt-2 text-[11px] font-medium text-ink-800">Stimmung:</p>
+                      <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-ink-900 mt-1">
                         <span>{techInfoBook.moods && techInfoBook.moods.length > 0 ? techInfoBook.moods.join(', ') : 'Standard'}</span>
-                        <code className="bg-burgundy-100 text-burgundy-900 px-1.5 py-0.5 rounded text-[10px] font-mono">mood</code>
+                        <code className="bg-paper-200 text-ink-900 px-1.5 py-0.5 rounded text-[10px] font-mono">mood</code>
                       </div>
                     </div>
                   </div>
@@ -2272,6 +2304,21 @@
                           </div>
 
                           <div>
+                            <span className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Gelesene Bücher (DB IDs):</span>
+                            <div className="flex flex-wrap gap-1">
+                              {alreadyRead.length > 0 ? (
+                                alreadyRead.map((b, i) => (
+                                  <span key={i} className="px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-mono font-bold rounded-md">
+                                    #{b.id || b.title}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-[11px] text-ink-700 italic">Keine Bücher auf der Liste</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div>
                             <span className="text-[10px] font-bold text-ink-700 uppercase block mb-1">Bevorzugte Genres (Häufigkeit):</span>
                             <div className="flex flex-wrap gap-1">
                               {Object.keys(implicitProfile.genreStats || {}).length > 0 ? (
@@ -2430,7 +2477,7 @@
                           <button
                             onClick={() => {
                               handleCloseDrawer();
-                              fetchAiBookRecommendations(likedThemes, dislikedThemes, true, true);
+                              fetchAiBookRecommendations(likedThemes, dislikedThemes, true);
                             }}
                             className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
                           >
@@ -2456,7 +2503,7 @@
                             <div className="flex items-start justify-between gap-2">
                               <div>
                                 <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
-                                  Schon gelesen &bull; {book.genre}
+                                  Schon gelesen &bull; #{book.id || 'N/A'} &bull; {book.genre}
                                 </span>
                                 <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">
                                   {book.title}
@@ -2496,10 +2543,10 @@
           )}
 
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex flex-col items-center justify-center space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="font-literary font-normal">BuchKompass &bull; StorySense™ Algorithmus 2026</span>
+            <div className="flex items-center space-x-1">
+              <span className="font-literary font-normal">Bene 2026 &bull;</span>
               {visitorCount !== null && (
-                <span className="font-literary font-normal">&bull; {visitorCount} Personen nutzen BuchKompass</span>
+                <span className="font-literary font-normal">{visitorCount} nutzen BuchKompass</span>
               )}
             </div>
           </footer>
