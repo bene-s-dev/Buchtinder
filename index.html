@@ -1486,26 +1486,26 @@
                           <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.id}</code>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-ink-700 font-medium">ISBN / EAN</span>
+                          <span className="text-ink-700 font-medium">ISBN</span>
                           <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.isbn || 'Nicht hinterlegt'}</code>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-ink-700 font-medium">Zuordnung Genre</span>
+                          <span className="text-ink-700 font-medium">Genre</span>
                           <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[11px] font-semibold rounded-md border border-paper-300">{techInfoBook.genre}</span>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-ink-700 font-medium">Umfang-Filter</span>
+                          <span className="text-ink-700 font-medium">Umfang</span>
                           <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[11px] font-semibold rounded-md border border-paper-300">{techInfoBook.length}</span>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-ink-700 font-medium">Epoche</span>
+                          <span className="text-ink-700 font-medium">Erschienen</span>
                           <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[11px] font-semibold rounded-md border border-paper-300">{techInfoBook.era}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl space-y-1">
-                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">⚙️ Motiv- &amp; Stimmungs-Matching</p>
+                      <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px] pb-1">🗳️ Motive & Stimmung</p>
                       <p className="text-[11px] font-medium text-burgundy-800">Verknüpfte Motive:</p>
                       <div className="flex flex-col gap-1.5 pt-0.5">
                         {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
