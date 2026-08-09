@@ -561,7 +561,7 @@
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
         const formattedList = favorites.map((b, i) => `${i + 1}. "${b.title}" von ${b.author} (${b.genre})`).join('\n');
-        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller auf https://buchkompass.benedrive.de`;
+        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächstes Buch auf https://buchkompass.benedrive.de`;
 
         if (navigator.share) {
           navigator.share({ title: 'Meine BuchKompass-Favoriten', text: text }).catch(() => {});
@@ -1742,7 +1742,7 @@
                   <div className="flex items-center justify-between pb-3">
                     <div className="flex items-center space-x-2">
                       <span className="text-xl">📚</span>
-                      <h2 className="font-literary font-bold text-lg text-ink-900">Meine BuchKompass-Liste</h2>
+                      <h2 className="font-literary font-bold text-lg text-ink-900">BuchKompass-Listen</h2>
                     </div>
                     <button
                       onClick={handleCloseDrawer}
