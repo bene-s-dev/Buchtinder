@@ -145,42 +145,40 @@
       50% { opacity: 0; }
     }
 
-    /* STORYSENSE SWIRL & SUCK ANIMATIONS */
-    @keyframes suckIn1 {
-      0% { top: 8%; left: 8%; opacity: 0; transform: scale(1) rotate(-8deg); }
-      35% { opacity: 0.9; }
-      100% { top: 44%; left: 38%; opacity: 0; transform: scale(0.15) rotate(50deg); }
+    /* STORYSENSE SWIRL & SUCK ANIMATIONS (OPTIMIERT FÜR JETZT NAHTLOSEN HINTERGRUND) */
+    @keyframes suckInTL {
+      0% { top: 0%; left: 0%; opacity: 0; transform: scale(1.05) rotate(-12deg); }
+      20% { opacity: 0.95; }
+      85% { opacity: 0.9; }
+      100% { top: 40%; left: 40%; opacity: 0; transform: scale(0.1) rotate(60deg); }
     }
-    @keyframes suckIn2 {
-      0% { top: 8%; right: 8%; opacity: 0; transform: scale(1) rotate(12deg); }
-      35% { opacity: 0.9; }
-      100% { top: 44%; left: 38%; opacity: 0; transform: scale(0.15) rotate(-60deg); }
+    @keyframes suckInTR {
+      0% { top: 0%; right: 0%; opacity: 0; transform: scale(1.05) rotate(12deg); }
+      20% { opacity: 0.95; }
+      85% { opacity: 0.9; }
+      100% { top: 40%; left: 40%; opacity: 0; transform: scale(0.1) rotate(-60deg); }
     }
-    @keyframes suckIn3 {
-      0% { bottom: 8%; left: 12%; opacity: 0; transform: scale(1) rotate(15deg); }
-      35% { opacity: 0.9; }
-      100% { top: 44%; left: 38%; opacity: 0; transform: scale(0.15) rotate(-40deg); }
+    @keyframes suckInBL {
+      0% { bottom: 0%; left: 0%; opacity: 0; transform: scale(1.05) rotate(15deg); }
+      20% { opacity: 0.95; }
+      85% { opacity: 0.9; }
+      100% { top: 40%; left: 40%; opacity: 0; transform: scale(0.1) rotate(-45deg); }
     }
-    @keyframes suckIn4 {
-      0% { bottom: 8%; right: 12%; opacity: 0; transform: scale(1) rotate(-15deg); }
-      35% { opacity: 0.9; }
-      100% { top: 44%; left: 38%; opacity: 0; transform: scale(0.15) rotate(45deg); }
-    }
-    @keyframes suckIn5 {
-      0% { top: 42%; left: 2%; opacity: 0; transform: scale(1) rotate(-5deg); }
-      35% { opacity: 0.9; }
-      100% { top: 44%; left: 38%; opacity: 0; transform: scale(0.15) rotate(70deg); }
+    @keyframes suckInBR {
+      0% { bottom: 0%; right: 0%; opacity: 0; transform: scale(1.05) rotate(-15deg); }
+      20% { opacity: 0.95; }
+      85% { opacity: 0.9; }
+      100% { top: 40%; left: 40%; opacity: 0; transform: scale(0.1) rotate(45deg); }
     }
 
     .animate-cursor {
       animation: cursorBlink 0.75s infinite;
     }
 
-    .animate-suck1 { animation: suckIn1 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-    .animate-suck2 { animation: suckIn2 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.6s; }
-    .animate-suck3 { animation: suckIn3 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.2s; }
-    .animate-suck4 { animation: suckIn4 3.0s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.8s; }
-    .animate-suck5 { animation: suckIn5 2.7s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.3s; }
+    .animate-suck-tl { animation: suckInTL 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+    .animate-suck-tr { animation: suckInTR 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.85s; }
+    .animate-suck-bl { animation: suckInBL 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.7s; }
+    .animate-suck-br { animation: suckInBR 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite 2.55s; }
 
     .step-transition {
       animation: fadeInSmooth 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -286,7 +284,7 @@
       { id: 'st-t1', genreIds: ['thriller', 'cozy_crime'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Katz-und-Maus-Spiel', description: 'Ein nervenzerreißendes Verwirrspiel voller psychologischer Manipulation, Täuschung und unzuverlässiger Erzähler. Nichts ist, wie es scheint: Geheimnisse werden schrittweise enthüllt, während die Grenze zwischen Täter und Opfer im Strudel aus Wahn, Lügen und Paranoia vollkommen verschwimmt.' },
       { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienmörder & Profiling', description: 'Ein erfahrener Ermittlerteam taucht tief in die Psyche eines hochintelligenten Serientäters ein. Durch akribische Tatortanalysen, spurenmedizinische Rekonstruktionen und psychologisches Profiling versuchen die Ermittler das Muster zu knacken, bevor der Mörder erneut zuschlägt.' },
       { id: 'st-t3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Ticking-Clock-Szenario', description: 'Maximale Atemlosigkeit von der ersten Seite an: Ein unerbittlicher Countdown läuft gegen die Protagonisten. Ob eine Entführung, eine drohende Explosion oder eine Erpressung – den Charakteren bleiben nur wenige Stunden, um Rätsel zu lösen und Leben zu retten.' },
-      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
+      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehnte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
       { id: 'st-cc1', genreIds: ['cozy_crime', 'thriller'], icon: '🏝️', category: 'Trügerisch', title: 'Abgelegene Idylle & Cosy Crime', description: 'Ein charmantes Küstendorf, ein verschneites Landgut oder eine beschauliche Kleinstadt bietet die bunte Kulisse. Doch hinter der idyllischen Fassade geschehen rätselhafte Morde, die von cleveren Laiendetektiven mit viel Scharfsinn, Humor und einer Tasse Tee aufgeklärt werden.' },
       { id: 'st-cc2', genreIds: ['cozy_crime', 'thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Isoliertes Setting', description: 'Eine Gruppe von Menschen ist durch einen Schneesturm, auf einer abgelegenen Insel oder in einem fahrenden Zug von der Außenwelt abgeschnitten. Als ein Mord geschieht, ist klar: Der Täter befindet sich unter den Anwesenden im Raum – und niemand kann entkommen.' },
       { id: 'st-dr1', genreIds: ['thriller'], icon: '🎭', category: 'Identität', title: 'Doppelleben & Täuschung', description: 'Protagonisten führen ein perfekt inszeniertes Doppelleben als bürgerliche Ehepartner, erfolgreiche Unternehmer oder unauffällige Nachbarn. Doch im Verborgenen betreiben sie illegale Machenschaften oder dunkle Rachefeldzüge, bis ein kleiner Fehler das Kartenhaus bedroht.' },
@@ -342,6 +340,16 @@
       '🔖 Erstausgaben werden durchgesehen...',
       '🕯️ Dachbodenfunde werden gesichtet...',
       '🏛️ StorySense™ gleicht deine gelesenen Muster ab...',
+    ];
+
+    // DYNAMISCHE UMFANGREICHE WORTSAMMLUNG FÜR DIE SUCK-ANIMATION
+    const LITERARY_TERMS_POOL = [
+      'Fantasy', 'Slow Burn', 'Sci-Fi', 'Intrigen', 'Romantasy', 'Magiesysteme',
+      'Cozy Crime', 'Düster', 'Dark Romance', 'Heldenreise', 'Epik', 'Profiler',
+      'Akademie', 'Cold Cases', 'Kammerspiel', 'Dystopie', 'Cyberpunk', 'Verbotene Liebe',
+      'Drachen', 'Spionage', 'Mittelalter', 'Zeitreise', 'Rhetorik', 'Körpersprache',
+      'Philosophie', 'Kosmos', 'Autobiografie', 'Poesie', 'Satire', 'Slapstick',
+      'Enemies to Lovers', 'Found Family', 'Heist', 'Plot Twist', 'Morally Grey'
     ];
 
     const POPULAR_GENRES = [
@@ -523,6 +531,19 @@
 
       const [currentPage, setCurrentPage] = useState(1);
       const BOOKS_PER_PAGE = 4;
+
+      // ZUFÄLLIG WECHSELNDE BEGRIFFE FÜR DIE ANIMATION
+      const [suckedWords, setSuckedWords] = useState(['Fantasy', 'Intrigen', 'Slow Burn', 'Dystopie']);
+
+      useEffect(() => {
+        if (isLoadingAi) {
+          const interval = setInterval(() => {
+            const shuffled = [...LITERARY_TERMS_POOL].sort(() => 0.5 - Math.random());
+            setSuckedWords(shuffled.slice(0, 4));
+          }, 3200);
+          return () => clearInterval(interval);
+        }
+      }, [isLoadingAi]);
 
       const [favorites, setFavorites] = useState(() => {
         try {
@@ -1468,7 +1489,7 @@
               </div>
             )}
 
-            {/* STEP 3: RECOMMENDATIONS & REDESIGNED LOADING SCREEN */}
+            {/* STEP 3: RECOMMENDATIONS & NAHTLOSER REDESIGNED LOADING SCREEN */}
             {step === 3 && (
               <div key="step-3" className="step-transition space-y-6">
                 {!hasNoBooksFound && (
@@ -1485,22 +1506,30 @@
                 )}
 
                 {isLoadingAi && (
-                  <div className="my-auto space-y-5">
-                    {/* WABERNDES STRUDEL-KONSTRUKT FÜR LITERARISCHE BEGRIFFE */}
-                    <div className="relative w-full h-48 flex items-center justify-center overflow-hidden rounded-2xl bg-paper-50/70 border border-paper-300/80 shadow-inner">
-                      {/* ZENTRALER STRUDEL */}
-                      <div className="absolute w-24 h-24 rounded-full bg-gradient-to-tr from-burgundy-700/80 via-amber-500/70 to-burgundy-900/80 animate-spin blur-md opacity-80"></div>
-                      <div className="absolute w-12 h-12 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center shadow-md z-10">
+                  <div className="my-auto space-y-6">
+                    {/* SAUG-ANIMATION OHNE EIGENEN HINTERGRUND UND MIT REICHLICH BEGRIFFEN */}
+                    <div className="relative w-full h-44 flex items-center justify-center pointer-events-none select-none">
+                      {/* ZENTRALER WEICHER STRUDEL */}
+                      <div className="absolute w-20 h-24 rounded-full bg-gradient-to-tr from-burgundy-700/60 via-amber-500/50 to-burgundy-900/60 animate-spin blur-lg opacity-70"></div>
+                      
+                      <div className="absolute w-12 h-12 rounded-full bg-paper-100/90 border border-paper-300 flex items-center justify-center shadow-md z-10">
                         <span className="text-xl animate-pulse">📖</span>
                       </div>
                       
-                      {/* EINTEILUNGEN & SAUG-ANIMATIONEN FÜR GENRES & MOTIVE */}
-                      <div className="absolute inset-0 pointer-events-none select-none">
-                        <span className="absolute animate-suck1 text-[11px] font-bold text-burgundy-900 bg-white/90 px-2.5 py-1 rounded-full border border-burgundy-200 shadow-xs">Fantasy</span>
-                        <span className="absolute animate-suck2 text-[11px] font-bold text-amber-950 bg-white/90 px-2.5 py-1 rounded-full border border-amber-200 shadow-xs">Slow Burn</span>
-                        <span className="absolute animate-suck3 text-[11px] font-bold text-ink-900 bg-white/90 px-2.5 py-1 rounded-full border border-paper-300 shadow-xs">Krimi &amp; Thriller</span>
-                        <span className="absolute animate-suck4 text-[11px] font-bold text-emerald-950 bg-white/90 px-2.5 py-1 rounded-full border border-emerald-200 shadow-xs">Intrigen</span>
-                        <span className="absolute animate-suck5 text-[11px] font-bold text-rose-950 bg-white/90 px-2.5 py-1 rounded-full border border-rose-200 shadow-xs">Magiesysteme</span>
+                      {/* EINTEILUNGEN & SAUG-ANIMATIONEN FÜR LITERATUR-BEGRIFFE (VIELFÄLTIGE WÖRTER) */}
+                      <div className="absolute inset-0">
+                        <span className="absolute animate-suck-tl text-[11px] font-bold text-burgundy-900 bg-white/90 px-2.5 py-1 rounded-full border border-burgundy-200 shadow-xs">
+                          {suckedWords[0]}
+                        </span>
+                        <span className="absolute animate-suck-tr text-[11px] font-bold text-amber-950 bg-white/90 px-2.5 py-1 rounded-full border border-amber-200 shadow-xs">
+                          {suckedWords[1]}
+                        </span>
+                        <span className="absolute animate-suck-bl text-[11px] font-bold text-ink-900 bg-white/90 px-2.5 py-1 rounded-full border border-paper-300 shadow-xs">
+                          {suckedWords[2]}
+                        </span>
+                        <span className="absolute animate-suck-br text-[11px] font-bold text-emerald-950 bg-white/90 px-2.5 py-1 rounded-full border border-emerald-200 shadow-xs">
+                          {suckedWords[3]}
+                        </span>
                       </div>
                     </div>
 
@@ -1511,7 +1540,7 @@
                       </span>
                     </div>
 
-                    {/* ÜBLICHES LADEFENSTER */}
+                    {/* LADEFENSTER MIT PROZENTBALKEN */}
                     <div className="bg-white border border-paper-300 rounded-2xl p-6 text-center space-y-5 shadow-md">
                       <div className="space-y-3">
                         <div className="text-3xl animate-bounce">📚</div>
