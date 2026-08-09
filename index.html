@@ -242,7 +242,7 @@
       { id: 'st-t3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Ticking-Clock-Szenario', description: 'Maximale Atemlosigkeit von der ersten Seite an: Ein unerbittlicher Countdown läuft gegen die Protagonisten. Ob eine Entführung, eine drohende Explosion oder eine Erpressung – den Charakteren bleiben nur wenige Stunden, um Rätsel zu lösen und Leben zu retten.' },
       { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehnte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
       { id: 'st-cc1', genreIds: ['cozy_crime', 'thriller'], icon: '🏝️', category: 'Trügerisch', title: 'Abgelegene Idylle & Cosy Crime', description: 'Ein charmantes Küstendorf, ein verschneites Landgut oder eine beschauliche Kleinstadt bietet die bunte Kulisse. Doch hinter der idyllischen Fassade geschehen rätselhafte Morde, die von cleveren Laiendetektiven mit viel Scharfsinn, Humor und einer Tasse Tee aufgeklärt werden.' },
-      { id: 'st-cc2', genreIds: ['cozy_crime', 'thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Isoliertes Setting (Locked Room)', description: 'Eine Gruppe von Menschen ist durch einen Schneesturm, auf einer abgelegenen Insel oder in einem fahrenden Zug von der Außenwelt abgeschnitten. Als ein Mord geschieht, ist klar: Der Täter befindet sich unter den Anwesenden im Raum – und niemand kann entkommen.' },
+      { id: 'st-cc2', genreIds: ['cozy_crime', 'thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Isoliertes Setting', description: 'Eine Gruppe von Menschen ist durch einen Schneesturm, auf einer abgelegenen Insel oder in einem fahrenden Zug von der Außenwelt abgeschnitten. Als ein Mord geschieht, ist klar: Der Täter befindet sich unter den Anwesenden im Raum – und niemand kann entkommen.' },
       { id: 'st-dr1', genreIds: ['thriller'], icon: '🎭', category: 'Identität', title: 'Doppelleben & Täuschung', description: 'Protagonisten führen ein perfekt inszeniertes Doppelleben als bürgerliche Ehepartner, erfolgreiche Unternehmer oder unauffällige Nachbarn. Doch im Verborgenen betreiben sie illegale Machenschaften oder dunkle Rachefeldzüge, bis ein kleiner Fehler das Kartenhaus bedroht.' },
       { id: 'st-dr2', genreIds: ['thriller'], icon: '💻', category: 'Techno-Thriller', title: 'Cybercrime & Erpressung', description: 'Hochmoderne Bedrohungen in einer digitalisierten Welt: Anonyme Hacker-Kollektive, Erpressung durch künstliche Intelligenz, globale Überwachungssysteme und digitale Angriffe auf kritische Infrastrukturen sorgen für realistischen, hochtechnologischen Nervenkitzel.' },
 
@@ -924,7 +924,7 @@
 
                 <div className="space-y-3">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                    1. Genre(s) wählen
+                    1. Genre(s)
                   </label>
                   
                   <div className="grid grid-cols-2 gap-2">
@@ -983,7 +983,7 @@
                 {(!selectedGenres.includes('sachbuch') || selectedGenres.length > 1) && (
                   <div className="space-y-2">
                     <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                      2. Gewünschte Stimmung(en)
+                      2. Stimmung(en)
                     </label>
                     <div className="space-y-1.5">
                       {MOODS.map(m => {
