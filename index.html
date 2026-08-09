@@ -136,7 +136,7 @@
       100% { opacity: 0; transform: translate(-50%, -12px); }
     }
 
-    /* Animationen: Schreibmaschine & Magische Aura */
+    /* Animationen: Schreibmaschine & Vergrößerte Magische Aura */
     @keyframes cursorBlink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
@@ -144,14 +144,14 @@
 
     @keyframes magicAura {
       0%, 100% {
-        transform: scale(0.96) rotate(0deg);
-        opacity: 0.55;
-        filter: blur(24px);
+        transform: scale(0.92) rotate(0deg);
+        opacity: 0.6;
+        filter: blur(35px);
       }
       50% {
-        transform: scale(1.08) rotate(3deg);
-        opacity: 0.85;
-        filter: blur(36px);
+        transform: scale(1.15) rotate(4deg);
+        opacity: 0.9;
+        filter: blur(50px);
       }
     }
 
@@ -265,9 +265,9 @@
       { id: 'st-rom2', genreIds: ['romantasy', 'dark_romance'], icon: '👑', category: 'Romantasy', title: 'Höfische Magie & Bünde', description: 'Glanzvolle Ballfälle an den Höfen mächtiger Fae, Vampire oder Magier, bei denen hinter jedem Lächeln ein tödlicher Dolch lauert. Blutschwüre, unverbrüchliche Verträge und politische Zwangsheiraten verstricken die Hauptfiguren in ein gefährliches Spiel aus Leidenschaft und Erpressung.' },
 
       { id: 'st-t1', genreIds: ['thriller', 'cozy_crime'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Katz-und-Maus-Spiel', description: 'Ein nervenzerreißendes Verwirrspiel voller psychologischer Manipulation, Täuschung und unzuverlässiger Erzähler. Nichts ist, wie es scheint: Geheimnisse werden schrittweise enthüllt, während die Grenze zwischen Täter und Opfer im Strudel aus Wahn, Lügen und Paranoia vollkommen verschwimmt.' },
-      { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienmörder & Profiling', description: 'Ein erfahrenes Ermittlerteam taucht tief in die Psyche eines hochintelligenten Serientäters ein. Durch akribische Tatortanalysen, spurenmedizinische Rekonstruktionen und psychologisches Profiling versuchen die Ermittler das Muster zu knacken, bevor der Mörder erneut zuschlägt.' },
+      { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienmörder & Profiling', description: 'Ein erfahrener Ermittlerteam taucht tief in die Psyche eines hochintelligenten Serientäters ein. Durch akribische Tatortanalysen, spurenmedizinische Rekonstruktionen und psychologisches Profiling versuchen die Ermittler das Muster zu knacken, bevor der Mörder erneut zuschlägt.' },
       { id: 'st-t3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Ticking-Clock-Szenario', description: 'Maximale Atemlosigkeit von der ersten Seite an: Ein unerbittlicher Countdown läuft gegen die Protagonisten. Ob eine Entführung, eine drohende Explosion oder eine Erpressung – den Charakteren bleiben nur wenige Stunden, um Rätsel zu lösen und Leben zu retten.' },
-      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
+      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehnte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
       { id: 'st-cc1', genreIds: ['cozy_crime', 'thriller'], icon: '🏝️', category: 'Trügerisch', title: 'Abgelegene Idylle & Cosy Crime', description: 'Ein charmantes Küstendorf, ein verschneites Landgut oder eine beschauliche Kleinstadt bietet die bunte Kulisse. Doch hinter der idyllischen Fassade geschehen rätselhafte Morde, die von cleveren Laiendetektiven mit viel Scharfsinn, Humor und einer Tasse Tee aufgeklärt werden.' },
       { id: 'st-cc2', genreIds: ['cozy_crime', 'thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Isoliertes Setting', description: 'Eine Gruppe von Menschen ist durch einen Schneesturm, auf einer abgelegenen Insel oder in einem fahrenden Zug von der Außenwelt abgeschnitten. Als ein Mord geschieht, ist klar: Der Täter befindet sich unter den Anwesenden im Raum – und niemand kann entkommen.' },
       { id: 'st-dr1', genreIds: ['thriller'], icon: '🎭', category: 'Identität', title: 'Doppelleben & Täuschung', description: 'Protagonisten führen ein perfekt inszeniertes Doppelleben als bürgerliche Ehepartner, erfolgreiche Unternehmer oder unauffällige Nachbarn. Doch im Verborgenen betreiben sie illegale Machenschaften oder dunkle Rachefeldzüge, bis ein kleiner Fehler das Kartenhaus bedroht.' },
@@ -399,29 +399,34 @@
       const [step, setStep] = useState(1);
       const [typewriterText, setTypewriterText] = useState('');
       const [showCursor, setShowCursor] = useState(true);
+      const [cursorFading, setCursorFading] = useState(false);
       const fullHeadline = "Was möchtest du lesen?";
 
       useEffect(() => {
         if (step === 1) {
           setTypewriterText('');
           setShowCursor(true);
+          setCursorFading(false);
           let index = 0;
           let cursorTimeout;
+          let removeTimeout;
           const timer = setInterval(() => {
             if (index < fullHeadline.length) {
               setTypewriterText(fullHeadline.substring(0, index + 1));
               index++;
             } else {
               clearInterval(timer);
-              // Nach Satzende genau 3-mal blinken lassen (3 * 0.75s = 2250ms)
+              // Nach Satzende genau 3-mal blinken lassen (3 * 0.75s = 2250ms), dann sanft ausfaden
               cursorTimeout = setTimeout(() => {
-                setShowCursor(false);
+                setCursorFading(true);
+                removeTimeout = setTimeout(() => setShowCursor(false), 700);
               }, 2250);
             }
           }, 65);
           return () => {
             clearInterval(timer);
             if (cursorTimeout) clearTimeout(cursorTimeout);
+            if (removeTimeout) clearTimeout(removeTimeout);
           };
         }
       }, [step]);
@@ -654,6 +659,7 @@
       const [isReloading, setIsReloading] = useState(false);
       const [aiError, setAiError] = useState('');
       const [loadingProgress, setLoadingProgress] = useState(0);
+      const [countdownSeconds, setCountdownSeconds] = useState(10);
       const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
 
       const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -724,6 +730,7 @@
         }
         setAiError('');
         setLoadingProgress(0);
+        setCountdownSeconds(10);
         setLoadingPhraseIndex(0);
 
         const startTime = Date.now();
@@ -735,7 +742,9 @@
           progressInterval = setInterval(() => {
             const elapsedTime = Date.now() - startTime;
             const progress = Math.min(Math.floor((elapsedTime / DURATION) * 100), 100);
+            const remainingSecs = Math.max(0, Math.ceil((DURATION - elapsedTime) / 1000));
             setLoadingProgress(progress);
+            setCountdownSeconds(remainingSecs);
           }, 50);
 
           phraseInterval = setInterval(() => {
@@ -848,6 +857,7 @@
             const remainingTime = Math.max(DURATION - elapsedSoFar, 0);
             await new Promise(r => setTimeout(r, remainingTime));
             setLoadingProgress(100);
+            setCountdownSeconds(0);
             await new Promise(r => setTimeout(r, 250));
           }
 
@@ -937,12 +947,6 @@
               </div>
 
               <div className="flex items-center space-x-2">
-                {step === 2 && (
-                  <span className="text-xs font-literary font-medium px-3 py-1 bg-paper-200 border border-paper-300 text-ink-800 rounded-full">
-                    Motiv {currentIndex + 1} von {themesToSwipe.length}
-                  </span>
-                )}
-
                 <button 
                   onClick={() => setIsFavoritesOpen(true)}
                   className="p-2.5 rounded-xl bg-paper-100 hover:bg-paper-200 border border-paper-300 text-ink-800 transition-all duration-200 active:scale-95 relative flex items-center justify-center shadow-sm"
@@ -968,7 +972,13 @@
                   <h2 className="font-literary text-2xl font-bold text-ink-900 inline-flex items-center">
                     <span>{typewriterText}</span>
                     {showCursor && (
-                      <span className="inline-block w-0.5 h-6 ml-1 bg-burgundy-700 animate-cursor"></span>
+                      <span 
+                        className={`inline-block w-0.5 h-6 ml-1 bg-burgundy-700 ${!cursorFading ? 'animate-cursor' : ''}`}
+                        style={{
+                          opacity: cursorFading ? 0 : 1,
+                          transition: 'opacity 0.7s ease-out'
+                        }}
+                      ></span>
                     )}
                   </h2>
                 </div>
@@ -1125,9 +1135,6 @@
                   <div className="w-full space-y-4 my-auto flex flex-col items-center">
                     
                     <div className="text-center space-y-1">
-                      <span className="inline-block px-3 py-0.5 bg-burgundy-50 border border-burgundy-100 text-burgundy-700 rounded-full text-xs font-semibold tracking-wide uppercase">
-                        Schritt 2: Handlungen & Motive
-                      </span>
                       <p className="text-xs text-ink-700">Soll dieses Motiv in deiner Lektüre vorkommen?</p>
                     </div>
 
@@ -1244,9 +1251,6 @@
               <div key="step-3" className="step-transition space-y-6">
                 {!hasNoBooksFound && (
                   <div className="text-center space-y-1.5">
-                    <span className="inline-block px-3 py-0.5 bg-burgundy-50 border border-burgundy-100 text-burgundy-700 rounded-full text-xs font-semibold tracking-wide uppercase">
-                      Schritt 3 von 3
-                    </span>
                     <h2 className="font-literary text-2xl font-bold text-ink-900">
                       Deine Buch-Empfehlungen
                     </h2>
@@ -1255,8 +1259,8 @@
 
                 {isLoadingAi && (
                   <div className="relative my-auto">
-                    {/* Magische Pulsier- & Schimmer-Aura im Hintergrund */}
-                    <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-burgundy-700/40 via-amber-500/35 to-burgundy-900/40 animate-aura -z-10"></div>
+                    {/* Größere Magische Pulsier- & Schimmer-Aura im Hintergrund */}
+                    <div className="absolute -inset-8 sm:-inset-10 rounded-3xl bg-gradient-to-r from-burgundy-700/50 via-amber-500/45 to-burgundy-900/50 animate-aura -z-10"></div>
 
                     <div className="bg-white/95 backdrop-blur-md border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-xl relative z-10">
                       <div className="space-y-3">
@@ -1270,7 +1274,7 @@
 
                       <div className="space-y-2 max-w-xs mx-auto">
                         <div className="flex justify-between items-center text-xs font-medium text-ink-700">
-                          <span>Einen Moment bitte...</span>
+                          <span>Einen Moment bitte... (noch ca. {countdownSeconds} Sek.)</span>
                           <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
                         </div>
                         <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
@@ -1378,25 +1382,9 @@
                               </div>
                             </div>
 
+                            {/* Angepasste Button-Anordnung: Melden & Info links, Suchen ganz rechts unten */}
                             <div className="flex justify-between items-center pt-1">
-                              <button
-                                onClick={() => setTechInfoBook(book)}
-                                className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
-                                title="Technische Details zur Empfehlung"
-                              >
-                                <span>ℹ️</span>
-                              </button>
-
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => setSearchModalBook(book)}
-                                  className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
-                                  title="Bei Händlern suchen"
-                                >
-                                  <span>🔍</span>
-                                  <span>Suchen</span>
-                                </button>
-
+                              <div className="flex items-center space-x-1.5">
                                 <button
                                   onClick={() => {
                                     setReportingBook(book);
@@ -1409,7 +1397,24 @@
                                 >
                                   <span>Melden</span>
                                 </button>
+
+                                <button
+                                  onClick={() => setTechInfoBook(book)}
+                                  className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
+                                  title="Technische Details zur Empfehlung"
+                                >
+                                  <span>ℹ️</span>
+                                </button>
                               </div>
+
+                              <button
+                                onClick={() => setSearchModalBook(book)}
+                                className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-paper-200 border border-paper-300 text-[10px] font-semibold text-ink-800 transition active:scale-95 shadow-2xs"
+                                title="Bei Händlern suchen"
+                              >
+                                <span>🔍</span>
+                                <span>Suchen</span>
+                              </button>
                             </div>
 
                           </div>
