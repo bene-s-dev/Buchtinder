@@ -130,10 +130,10 @@
     }
 
     @keyframes toastFade {
-      0% { opacity: 0; transform: translateY(-12px); }
-      15% { opacity: 1; transform: translateY(0); }
-      85% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-12px); }
+      0% { opacity: 0; transform: translate(-50%, -12px); }
+      15% { opacity: 1; transform: translate(-50%, 0); }
+      85% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -12px); }
     }
 
     .step-transition {
@@ -216,7 +216,7 @@
     );
 
     const REPORT_REASONS = [
-      "Dieses Buuch gibt es nicht",
+      "Dieses Buch gibt es nicht",
       "Falscher Buchtitel",
       "Falscher Autor",
       "Falsches Genre zugeordnet",
@@ -225,71 +225,158 @@
       "Sonstiger Fehler"
     ];
 
-    // PASSGENAUE MOTIV-SETS FÜR JEDES DER 10 HAUPTGENRES (mit gewollten Überschneidungen)
+    // EXACT 12 MOTIF CARDS FOR EACH OF THE 10 GENRES
     const STORY_THEMES = [
-      // --- FANTASY & MAGIE ---
-      { id: 'f1', genreIds: ['fantasy', 'romantasy'], icon: '🧙‍♂️', category: 'Magie', title: 'Komplexe Magiesysteme', description: 'Ein durchdachtes Zaubersystem mit klaren Regeln, Schulen und Artefakten.' },
-      { id: 'f2', genreIds: ['fantasy', 'romantasy'], icon: '🏰', category: 'Epik', title: 'High-Fantasy & Thronkämpfe', description: 'Machtkämpfe um Königreiche, Allianzen, Hofintrigen und große Schlachten.' },
-      { id: 'f3', genreIds: ['fantasy', 'romantasy'], icon: '🐉', category: 'Kreaturen', title: 'Fabelwesen & Drachen', description: 'Faszinierende Wesen wie Drachen, Elfen oder Dämonen prägen die Welt.' },
+      // --- FANTASY & MAGIE (12 Motive) ---
+      { id: 'f1', genreIds: ['fantasy'], icon: '🧙‍♂️', category: 'Magie', title: 'Komplexe Magiesysteme', description: 'Ein durchdachtes Zaubersystem mit klaren Regeln, Schulen und Artefakten.' },
+      { id: 'f2', genreIds: ['fantasy'], icon: '🏰', category: 'Epik', title: 'High-Fantasy & Thronkämpfe', description: 'Machtkämpfe um Königreiche, Allianzen, Hofintrigen und große Schlachten.' },
+      { id: 'f3', genreIds: ['fantasy'], icon: '🐉', category: 'Kreaturen', title: 'Fabelwesen & Drachen', description: 'Faszinierende Wesen wie Drachen, Elfen oder Dämonen prägen die Welt.' },
       { id: 'f4', genreIds: ['fantasy'], icon: '🌆', category: 'Urban Fantasy', title: 'Magie in der Moderne', description: 'Magische Wesen und Geheimbünde verstecken sich mitten in unserer Großstadt.' },
-      { id: 'f5', genreIds: ['fantasy', 'jugend'], icon: '🗡️', category: 'Heldenreise', title: 'Gefährten & Quests', description: 'Eine bunt gemischte Truppe zieht gemeinsam los, um ein Unheil abzuwenden.' },
-      { id: 'f6', genreIds: ['fantasy', 'romantasy', 'jugend'], icon: '🏛️', category: 'Akademie', title: 'Magische Schulen & Internate', description: 'Ausbildung magischer Fähigkeiten, verbotene Bibliotheken und Rivalitäten.' },
+      { id: 'f5', genreIds: ['fantasy'], icon: '🗡️', category: 'Heldenreise', title: 'Gefährten & Quests', description: 'Eine bunt gemischte Truppe zieht gemeinsam los, um ein Unheil abzuwenden.' },
+      { id: 'f6', genreIds: ['fantasy'], icon: '🏛️', category: 'Akademie', title: 'Magische Schulen & Internate', description: 'Ausbildung magischer Fähigkeiten, verbotene Bibliotheken und Rivalitäten.' },
+      { id: 'f7', genreIds: ['fantasy'], icon: '🔮', category: 'Prophezeiung', title: 'Alte Auserwählten-Sagen', description: 'Eine Schicksalssaga um eine uralte Prophezeiung und dunkle Bedrohungen.' },
+      { id: 'f8', genreIds: ['fantasy'], icon: 'Portal', category: 'Parallelwelt', title: 'Portal-Fantasy & Weltenwechsel', description: 'Versteckte Zugänge führen aus unserer Alltagswelt in fremde magische Reiche.' },
+      { id: 'f9', genreIds: ['fantasy'], icon: '👑', category: 'Herrschaft', title: 'Gefallene Reiche & Artefakte', description: 'Spuren untergegangener Zivilisationen und die Suche nach mächtigen Relikten.' },
+      { id: 'f10', genreIds: ['fantasy'], icon: '🌲', category: 'Naturmagie', title: 'Verzauberte Wälder & Elemente', description: 'Uralte Wälder, Geisterwesen und die Beherrschung von Naturgewalten.' },
+      { id: 'f11', genreIds: ['fantasy'], icon: '⚔️', category: 'Gilden', title: 'Diebesgilden & Schattenläufer', description: 'Heimliche Missionen, Meuchelmörder und das Überleben in finsteren Gassen.' },
+      { id: 'f12', genreIds: ['fantasy'], icon: '📜', category: 'Mythen', title: 'Götterfehden & Legenden', description: 'Einflussreiche Gottheiten greifen direkt in das Schicksal der Sterblichen ein.' },
 
-      // --- ROMANTASY ---
+      // --- ROMANTASY (12 Motive) ---
       { id: 'rf1', genreIds: ['romantasy'], icon: '✨', category: 'Romantasy', title: 'Magische Welten & Verbotene Liebe', description: 'Gefährliche magische Reiche und eine knisternde, leidenschaftliche Liebe.' },
       { id: 'rf2', genreIds: ['romantasy'], icon: '👑', category: 'Romantasy', title: 'Fae-Höfe & Hofintrigen', description: 'Glanzvolle Fae-Königreiche, magische Pakte und tödliche Prüfungen.' },
+      { id: 'rf3', genreIds: ['romantasy'], icon: '⚔️', category: 'Romantasy', title: 'Enemies to Lovers mit Magie', description: 'Rivalisierende Magier oder feindliche Reiche verfallen einander unaufhaltsam.' },
+      { id: 'rf4', genreIds: ['romantasy'], icon: '🩸', category: 'Romantasy', title: 'Vampire & Gestaltwandler', description: 'Schattenwelten, mystische Gefährten und unsterbliche Leidenschaft.' },
+      { id: 'rf5', genreIds: ['romantasy'], icon: '📜', category: 'Romantasy', title: 'Magische Seelenbande', description: 'Schicksalhafte Verbindungen, Unausweichlichkeit und tiefe Gefühle.' },
+      { id: 'rf6', genreIds: ['romantasy'], icon: '🏰', category: 'Romantasy', title: 'Gefährliche Ballnächte & Masken', description: 'Prunkvolle Festlichkeiten mit versteckten Dolchen und verbotenen Blicken.' },
+      { id: 'rf7', genreIds: ['romantasy'], icon: '🔥', category: 'Romantasy', title: 'Slow Burn im Zauberreich', description: 'Langsam aufbauendes Knistern inmitten drohender Schlachten und Verrat.' },
+      { id: 'rf8', genreIds: ['romantasy'], icon: '🗝️', category: 'Romantasy', title: 'Dunkle Flüche & Rettung', description: 'Ein alter Magiefluch kann nur durch wahre Hingabe gebrochen werden.' },
+      { id: 'rf9', genreIds: ['romantasy'], icon: '🏛️', category: 'Romantasy', title: 'Elite-Akademien für Magie', description: 'Knallharte Wettkämpfe, verbotene Romanzen und akademischer Neid.' },
+      { id: 'rf10', genreIds: ['romantasy'], icon: '🌙', category: 'Romantasy', title: 'Schattenmagier & Lichtwesen', description: 'Entgegengesetzte Kräfte treffen aufeinander und erzeugen pure Anziehung.' },
+      { id: 'rf11', genreIds: ['romantasy'], icon: '🦅', category: 'Romantasy', title: 'Reiter & Magische Gefährten', description: 'Mächtige Bindungen zu magischen Reittieren und gemeinsame Kämpfe.' },
+      { id: 'rf12', genreIds: ['romantasy'], icon: '💎', category: 'Romantasy', title: 'Machtkämpfe & Herzensentscheidungen', description: 'Die Pflicht gegenüber dem eigenen Volk kollidiert mit der Liebe.' },
 
-      // --- KRIMI & THRILLER ---
+      // --- KRIMI & THRILLER (12 Motive) ---
       { id: 't1', genreIds: ['thriller'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Verwirrspiel', description: 'Wahn, unzuverlässige Erzähler und täuschende Wahrnehmung im Kopf der Figuren.' },
       { id: 't2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienkiller & Profiling', description: 'Detaillierte Spurensicherung, Täterprofiling und ein packendes Katz-und-Maus-Spiel.' },
       { id: 't3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Countdown & Ticking Clock', description: 'Wenig Zeit, um ein Opfer zu retten oder eine Katastrophe zu verhindern.' },
-      { id: 't4', genreIds: ['thriller', 'historisch'], icon: '📁', category: 'Cold Cases', title: 'Alte Familiengeheimnisse', description: 'Ein ungelöster Fall wird aufgerollt und bringt düstere Lügen ans Licht.' },
+      { id: 't4', genreIds: ['thriller'], icon: '📁', category: 'Cold Cases', title: 'Alte Familiengeheimnisse', description: 'Ein ungelöster Fall wird aufgerollt und bringt düstere Lügen ans Licht.' },
       { id: 't5', genreIds: ['thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Abgelegenes Setting (Locked Room)', description: 'Eingeschneit oder isoliert: Der Mörder ist garantiert unter den Anwesenden.' },
+      { id: 't6', genreIds: ['thriller'], icon: '💻', category: 'Cybercrime', title: 'Hacker & Anonyme Erpresser', description: 'Digitale Spionage, gestohlene Identitäten und Bedrohungen aus dem Netz.' },
+      { id: 't7', genreIds: ['thriller'], icon: '⚖️', category: 'Justiz', title: 'Anwälte & Gerichtssäle', description: 'Spannende Gerichtsverhandlungen, Indizienbeweise und unschuldige Angeklagte.' },
+      { id: 't8', genreIds: ['thriller'], icon: '🕵️‍♂️', category: 'Privatdetektive', title: 'Einsame Ermittler & Noir', description: 'Scharfsinnige Schnüffler, raue Straßen und düstere Verschwörungen.' },
+      { id: 't9', genreIds: ['thriller'], icon: '🏛️', category: 'Politik', title: 'Machtgier & Korruption', description: 'Intrigen auf höchster politischer Ebene und vertuschte Verbrechen.' },
+      { id: 't10', genreIds: ['thriller'], icon: '🩺', category: 'Forensik', title: 'Pathologie & Rechtsmedizin', description: 'Wissenschaftliche Rekonstruktion von Verbrechen im Labor.' },
+      { id: 't11', genreIds: ['thriller'], icon: '🏝️', category: 'Insel-Setting', title: 'Trügerische Idylle & Urlaubsgrauen', description: 'Ein Scheinparadies verwandelt sich rasch in ein tödliches Labyrinth.' },
+      { id: 't12', genreIds: ['thriller'], icon: '🎭', category: 'Doppelleben', title: 'Täuschung & Falsche Identitäten', description: 'Niemand ist, wer er zu sein scheint – Fassaden bröckeln unter Druck.' },
 
-      // --- SCIENCE FICTION ---
+      // --- SCIENCE FICTION (12 Motive) ---
       { id: 'sf1', genreIds: ['scifi'], icon: '🚀', category: 'Weltraum', title: 'Deep Space & Raumschiffe', description: 'Erforschung unbekannter Sternensysteme und Überleben im All.' },
       { id: 'sf2', genreIds: ['scifi'], icon: '🤖', category: 'Technologie', title: 'KI & Roboter-Ethik', description: 'Künstliche Intelligenzen entwickeln Bewusstsein und fordern die Menschheit heraus.' },
       { id: 'sf3', genreIds: ['scifi'], icon: '👁️', category: 'Dystopie', title: 'Überwachungsstaat & Widerstand', description: 'Ein autoritäres Regime kontrolliert das Leben – bis sich Widerstand regt.' },
       { id: 'sf4', genreIds: ['scifi'], icon: '🏙️', category: 'Cyberpunk', title: 'Neon-Metropolen & High-Tech', description: 'Megakonzerne, Cyberware-Implantate und Düsterkeit in Zukunftsstädten.' },
+      { id: 'sf5', genreIds: ['scifi'], icon: '👽', category: 'Erstkontakt', title: 'Alien-Spezies & Kontaktaufnahme', description: 'Das Aufeinandertreffen mit außerirdischen Lebensformen und Kulturbrücken.' },
+      { id: 'sf6', genreIds: ['scifi'], icon: '⏳', category: 'Zeitreisen', title: 'Zeitparadoxa & Multiversum', description: 'Sprünge durch Epochen oder alternative Zeitlinien verändern die Realität.' },
+      { id: 'sf7', genreIds: ['scifi'], icon: '🧬', category: 'Biopunk', title: 'Genetik & Klone', description: 'Laborgezüchtete Wesen, genetische Optimierung und moralische Abgründe.' },
+      { id: 'sf8', genreIds: ['scifi'], icon: '🌌', category: 'Space Opera', title: 'Intergalaktische Reiche & Kriege', description: 'Große Sternenreiche, Flottenkämpfe und diplomatische Ränkespiele.' },
+      { id: 'sf9', genreIds: ['scifi'], icon: '🌋', category: 'Postapokalypse', title: 'Überleben nach der Katastrophe', description: 'Ressourcenknappheit und Neuanfang in den Ruinen der Zivilisation.' },
+      { id: 'sf10', genreIds: ['scifi'], icon: '🪐', category: 'Terraforming', title: 'Kolonisierung fremder Planeten', description: 'Der schwierige Aufbau einer Heimat auf lebensfeindlichen Welten.' },
+      { id: 'sf11', genreIds: ['scifi'], icon: '🕶️', category: 'Virtuell', title: 'Simulationen & Virtuelle Realität', description: 'Grenzen zwischen echten Welten und virtuellen Räumen verschwimmen.' },
+      { id: 'sf12', genreIds: ['scifi'], icon: '⚙️', category: 'Steampunk', title: 'Dampfmaschinen & Retro-Zukunft', description: 'Anachronistische Technologie, Luftschiffe und Zahnrad-Ästhetik.' },
 
-      // --- LIEBE & ROMANTIK ---
-      { id: 'r1', genreIds: ['romance', 'belletristik'], icon: '🔥', category: 'Dynamik', title: 'Slow Burn & Knisternde Gefühle', description: 'Eine langsame, tiefgründige und intensiv spürbare emotionale Annäherung.' },
-      { id: 'r2', genreIds: ['romance', 'romantasy'], icon: '⚔️', category: 'Trope', title: 'Enemies to Lovers', description: 'Tiefe Abneigung wandelt sich durch Nähe schrittweise in Leidenschaft.' },
-      { id: 'r3', genreIds: ['romance', 'belletristik'], icon: '🍂', category: 'Neuanfang', title: 'Second Chance & Erste Liebe', description: 'Das unverhoffte Wiedersehen der ersten großen Liebe nach vielen Jahren.' },
-      { id: 'r4', genreIds: ['romance', 'belletristik'], icon: '☕', category: 'Stimmung', title: 'Small Town & Küstenzauber', description: 'Gemütliche Buchläden, dörfliche Kulisse und Wohlfühlatmosphäre.' },
-      { id: 'r5', genreIds: ['romance', 'belletristik'], icon: '💔', category: 'Emotion', title: 'Schicksalsschläge & Heilung', description: 'Herzschmerz, Trost und der gemeinsame Weg zurück zum Vertrauen.' },
+      // --- LIEBE & ROMANTIK (12 Motive) ---
+      { id: 'r1', genreIds: ['romance'], icon: '🔥', category: 'Dynamik', title: 'Slow Burn & Knisternde Gefühle', description: 'Eine langsame, tiefgründige und intensiv spürbare emotionale Annäherung.' },
+      { id: 'r2', genreIds: ['romance'], icon: '⚔️', category: 'Trope', title: 'Enemies to Lovers', description: 'Tiefe Abneigung wandelt sich durch Nähe schrittweise in Leidenschaft.' },
+      { id: 'r3', genreIds: ['romance'], icon: '🍂', category: 'Neuanfang', title: 'Second Chance & Erste Liebe', description: 'Das unverhoffte Wiedersehen der ersten großen Liebe nach vielen Jahren.' },
+      { id: 'r4', genreIds: ['romance'], icon: '☕', category: 'Stimmung', title: 'Small Town & Küstenzauber', description: 'Gemütliche Buchläden, dörfliche Kulisse und Wohlfühlatmosphäre.' },
+      { id: 'r5', genreIds: ['romance'], icon: '💔', category: 'Emotion', title: 'Schicksalsschläge & Heilung', description: 'Herzschmerz, Trost und der gemeinsame Weg zurück zum Vertrauen.' },
+      { id: 'r6', genreIds: ['romance'], icon: '🤝', category: 'Trope', title: 'Fake Dating', description: 'Eine vorgetäuschte Beziehung führt unerwartet zu echten Gefühlen.' },
+      { id: 'r7', genreIds: ['romance'], icon: '🏢', category: 'Setting', title: 'Office Romance & Boss-Rivalität', description: 'Karriereambitionen und Prickeln hinter den Kulissen des Arbeitsplatzes.' },
+      { id: 'r8', genreIds: ['romance'], icon: '🎸', category: 'Setting', title: 'Rockstar & Promi-Verliebtsein', description: 'Liebe im Scheinwerferlicht zwischen Privatsphäre und Fan-Rummel.' },
+      { id: 'r9', genreIds: ['romance'], icon: '🏆', category: 'Setting', title: 'Sports Romance', description: 'Disziplin, sportlicher Ehrgeiz und Leidenschaft auf und abseits des Feldes.' },
+      { id: 'r10', genreIds: ['romance'], icon: '✈️', category: 'Reise', title: 'Wanderlust & Urlaubsromanze', description: 'Sonne, ferne Länder und unvergessliche Begegnungen unterwegs.' },
+      { id: 'r11', genreIds: ['romance'], icon: '🏡', category: 'Nachbarn', title: 'Opposites Attract & Mitbewohner', description: 'Gegensätze ziehen sich an, wenn man Tür an Tür wohnt.' },
+      { id: 'r12', genreIds: ['romance'], icon: '💌', category: 'Brieffreunde', title: 'Anonyme Nachrichten & Briefe', description: 'Verliebt in Worte, bevor man dem anderen je persönlich begegnet ist.' },
 
-      // --- HUMOR & SATIRE ---
-      { id: 'h1', genreIds: ['humor', 'belletristik'], icon: '🌀', category: 'Chaos', title: 'Absurder Alltag & Fettnäpfchen', description: 'Schräge Charaktere stolpern von einer Verstrickung in die nächste.' },
+      // --- HUMOR & SATIRE (12 Motive) ---
+      { id: 'h1', genreIds: ['humor'], icon: '🌀', category: 'Chaos', title: 'Absurder Alltag & Fettnäpfchen', description: 'Schräge Charaktere stolpern von einer Verstrickung in die nächste.' },
       { id: 'h2', genreIds: ['humor'], icon: '☕', category: 'Tonfall', title: 'Trockener Humor & Sarkasmus', description: 'Feine Ironie, spitzzüngige Bemerkungen und makabre Situationskomik.' },
-      { id: 'h3', genreIds: ['humor', 'belletristik'], icon: '🎭', category: 'Satire', title: 'Gesellschaftskritik & Parodie', description: 'Überspitzte Hieb- und Stichfestigkeiten auf moderne Trends und Promikultur.' },
+      { id: 'h3', genreIds: ['humor'], icon: '🎭', category: 'Satire', title: 'Gesellschaftskritik & Parodie', description: 'Überspitzte Hieb- und Stichfestigkeiten auf moderne Trends und Promikultur.' },
+      { id: 'h4', genreIds: ['humor'], icon: '👨‍👩‍👧', category: 'Familie', title: 'Familienchaos & Verwandtschaft', description: 'Kuriose Verwandte und katastrophale Familienfeste mit Lachgarantie.' },
+      { id: 'h5', genreIds: ['humor'], icon: '🐾', category: 'Tiere', title: 'Eigensinnige Haustiere', description: 'Freche Vierbeiner, die das Leben ihrer Besitzer komplett auf den Kopf stellen.' },
+      { id: 'h6', genreIds: ['humor'], icon: '💼', category: 'Büro', title: 'Büro-Wahnsinn & Kollegium', description: 'Meetings, Kaffeeküchen-Tratsch und bürokratische Absurditäten.' },
+      { id: 'h7', genreIds: ['humor'], icon: '✈️', category: 'Reisen', title: 'Pannen auf Reisen & Urlaube', description: 'Verpasste Züge, chaotische Hotels und unvergessliche Reiseabenteuer.' },
+      { id: 'h8', genreIds: ['humor'], icon: '🔍', category: 'Krimi-Com', title: 'Schusselige Ermittler & Cosy Crime', description: 'Hobbydetektive stolpern eher zufällig in die Aufklärung von Fällen.' },
+      { id: 'h9', genreIds: ['humor'], icon: '🧙‍♂️', category: 'Parodie', title: 'Kuriose Fantasy-Parodien', description: 'Heldensagen humorvoll entzaubert mit schrägen Fabelwesen.' },
+      { id: 'h10', genreIds: ['humor'], icon: '🍳', category: 'Kochen', title: 'Kulinaria & Gastronomie-Chaos', description: 'Turbulenzen in der Küche und skurrile Gäste im Restaurant.' },
+      { id: 'h11', genreIds: ['humor'], icon: '📱', category: 'Modern', title: 'Dating-Katastrophen & Social Media', description: 'Verzweiflung und Lacher in der Welt der Online-Single-Börsen.' },
+      { id: 'h12', genreIds: ['humor'], icon: '👴', category: 'Senioren', title: 'Eigensinnige Rentner-Gangs', description: 'Lebenserfahrene Senioren hecken vergnügliche Streiche aus.' },
 
-      // --- SACHBUCH & WISSEN ---
+      // --- SACHBUCH & WISSEN (12 Motive) ---
       { id: 'sb1', genreIds: ['sachbuch'], icon: '🧠', category: 'Psychologie', title: 'Menschliches Verhalten & Hirn', description: 'Verhaltensmuster, Denkfehler und Neurowissenschaften verständlich erklärt.' },
       { id: 'sb2', genreIds: ['sachbuch'], icon: '🔬', category: 'Wissenschaft', title: 'Forschung & Naturphänomene', description: 'Spannende Exkurse in Physik, Biologie oder den Kosmos ohne Fachchinesisch.' },
       { id: 'sb3', genreIds: ['sachbuch'], icon: '📜', category: 'Biografie', title: 'Inspirierende Lebensläufe', description: 'Porträts außergewöhnlicher Persönlichkeiten und historischer Pioniere.' },
       { id: 'sb4', genreIds: ['sachbuch'], icon: '🎯', category: 'Entwicklung', title: 'Habits & Persönlichkeitsentfaltung', description: 'Praktische Methoden für Produktivität, mentale Stärke und Gewohnheiten.' },
+      { id: 'sb5', genreIds: ['sachbuch'], icon: '🌍', category: 'Gesellschaft', title: 'Weltgeschehen & Geopolitik', description: 'Hintergründe zu globalen Zusammenhängen und historischen Wendepunkten.' },
+      { id: 'sb6', genreIds: ['sachbuch'], icon: '💰', category: 'Finanzen', title: 'Wirtschaft & Finanzielles Wissen', description: 'Verständliche Analysen zu Märkten, Geldanlagen und Wirtschaftssystemen.' },
+      { id: 'sb7', genreIds: ['sachbuch'], icon: '🌿', category: 'Ökologie', title: 'Umwelt, Natur & Nachhaltigkeit', description: 'Einblicke in Ökosysteme, Artenschutz und Lösungen für die Zukunft.' },
+      { id: 'sb8', genreIds: ['sachbuch'], icon: '🥗', category: 'Gesundheit', title: 'Ernährung & Körperwissen', description: 'Fundiertes Wissen über Medizin, Fitness und das menschliche Wohlbefinden.' },
+      { id: 'sb9', genreIds: ['sachbuch'], icon: '💻', category: 'Technologie', title: 'Zukunft & Digitale Wende', description: 'Auswirkungen von KI, Big Data und neuen Technologien auf die Gesellschaft.' },
+      { id: 'sb10', genreIds: ['sachbuch'], icon: '🎨', category: 'Kultur', title: 'Kunst, Musik & Philosophie', description: 'Gedankengebäude, Meisterwerke und geistesgeschichtliche Strömungen.' },
+      { id: 'sb11', genreIds: ['sachbuch'], icon: '🏛️', category: 'Geschichte', title: 'Antike & Epochale Schätze', description: 'Vergangene Hochkulturen, Kriege und Wendepunkte der Menschheit.' },
+      { id: 'sb12', genreIds: ['sachbuch'], icon: '🗣️', category: 'Rhetorik', title: 'Kommunikation & Schlagfertigkeit', description: 'Bessere Gespräche führen, Körpersprache lesen und überzeugen.' },
 
-      // --- HISTORISCHE ROMANE ---
-      { id: 'hi1', genreIds: ['historisch', 'belletristik'], icon: '👑', category: 'Epoche', title: 'Opulente Epochenporträts', description: 'Bildgewaltiges Abtauchen in vergangene Jahrhunderte und deren Lebensgefühl.' },
-      { id: 'hi2', genreIds: ['historisch', 'belletristik'], icon: '🌹', category: 'Rebellion', title: 'Starke Frauen gegen Konventionen', description: 'Pionierinnen, die sich den strengen Zwängen ihrer Zeit widersetzen.' },
-      { id: 'hi3', genreIds: ['historisch', 'belletristik'], icon: '⏳', category: 'Zeitstränge', title: 'Dual-Timeline (Zwei Ebenen)', description: 'Ein Artefakt der Gegenwart verwebt sich mit Dramen der Vergangenheit.' },
+      // --- HISTORISCHE ROMANE (12 Motive) ---
+      { id: 'hi1', genreIds: ['historisch'], icon: '👑', category: 'Epoche', title: 'Opulente Epochenporträts', description: 'Bildgewaltiges Abtauchen in vergangene Jahrhunderte und deren Lebensgefühl.' },
+      { id: 'hi2', genreIds: ['historisch'], icon: '🌹', category: 'Rebellion', title: 'Starke Frauen gegen Konventionen', description: 'Pionierinnen, die sich den strengen Zwängen ihrer Zeit widersetzen.' },
+      { id: 'hi3', genreIds: ['historisch'], icon: '⏳', category: 'Zeitstränge', title: 'Dual-Timeline (Zwei Ebenen)', description: 'Ein Artefakt der Gegenwart verwebt sich mit Dramen der Vergangenheit.' },
+      { id: 'hi4', genreIds: ['historisch'], icon: '⚔️', category: 'Krieg', title: 'Ritter, Burgen & Schlachten', description: 'Mittelalterliche Fehden, Ehre und das Leben auf historischen Burgen.' },
+      { id: 'hi5', genreIds: ['historisch'], icon: '⛪', category: 'Glaube', title: 'Klostergeheimnisse & Inquisitoren', description: 'Machtkämpfe der Kirche, verbotenes Wissen und Glaubensfragen.' },
+      { id: 'hi6', genreIds: ['historisch'], icon: '⚓', category: 'Seefahrt', title: 'Entdeckungsreisen & Seefahrt', description: 'Abenteuer auf den Weltmeeren, Handelsschiffe und Piraterie.' },
+      { id: 'hi7', genreIds: ['historisch'], icon: '🏭', category: 'Industrie', title: 'Gründerzeit & Umbrüche', description: 'Aufstieg von Dynastien während der industriellen Revolution.' },
+      { id: 'hi8', genreIds: ['historisch'], icon: '🎨', category: 'Künstler', title: 'Renaissance & Genies', description: 'Das Schaffen von Künstlern, Baumeistern und Gelehrten alter Zeit.' },
+      { id: 'hi9', genreIds: ['historisch'], icon: '🏛️', category: 'Antike', title: 'Rom, Griechenland & Ägypten', description: 'Gladiatoren, Pharaonen und politische Intrigen der Antike.' },
+      { id: 'hi10', genreIds: ['historisch'], icon: '📜', category: 'Familiensaga', title: 'Generationenübergreifende Epen', description: 'Das Schicksal einer Familie im Wandel historischer Jahrzehnte.' },
+      { id: 'hi11', genreIds: ['historisch'], icon: '🏰', category: 'Adel', title: 'Königshöfe & Höfische Ränke', description: 'Schattenseiten des Adelslebens, Geheimbünde und Thronfolgen.' },
+      { id: 'hi12', genreIds: ['historisch'], icon: '🩺', category: 'Pioniere', title: 'Medizingeschichte & Forschung', description: 'Der Kampf gegen Seuchen und frühe medizinische Entdeckungen.' },
 
-      // --- JUGENDBUCH ---
-      { id: 'j1', genreIds: ['jugend', 'belletristik'], icon: '🌱', category: 'Entwicklung', title: 'Coming-of-Age & Selbstfindung', description: 'Der Weg zum Erwachsenwerden, eigene Werte und die Suche nach dem Platz im Leben.' },
+      // --- JUGENDBUCH (12 Motive) ---
+      { id: 'j1', genreIds: ['jugend'], icon: '🌱', category: 'Entwicklung', title: 'Coming-of-Age & Selbstfindung', description: 'Der Weg zum Erwachsenwerden, eigene Werte und die Suche nach dem Platz im Leben.' },
       { id: 'j2', genreIds: ['jugend'], icon: '🏫', category: 'Highschool', title: 'Internate & Clique-Geheimnisse', description: 'Freundschaften, Cliquen-Rivalitäten und Geheimnisse hinter Schulfassaden.' },
+      { id: 'j3', genreIds: ['jugend'], icon: '⚡', category: 'Abenteuer', title: 'Mutproben & Gefährliche Bünde', description: 'Zusammenhalten unter Druck, Mut beweisen und Rätsel lösen.' },
+      { id: 'j4', genreIds: ['jugend'], icon: '💬', category: 'Beziehungen', title: 'Erste Liebe & Verwirrung', description: 'Herzklopfen, emotionale Berg- und Talfahrten und Missverständnisse.' },
+      { id: 'j5', genreIds: ['jugend'], icon: '⛺', category: 'Sommer', title: 'Sommerlager & Roadtrips', description: 'Unvergessliche Ferientage, Freiheit auf Achse und Spontaneität.' },
+      { id: 'j6', genreIds: ['jugend'], icon: '🎸', category: 'Musik', title: 'Bands, Kunst & Kreativität', description: 'Gemeinsame Leidenschaft für Musik, Ausdruck und Rebellion.' },
+      { id: 'j7', genreIds: ['jugend'], icon: '👁️', category: 'Dystopie YA', title: 'Rebellion gegen Systeme', description: 'Jugendliche Helden stellen sich einer ungerechten Welt entgegen.' },
+      { id: 'j8', genreIds: ['jugend'], icon: '🎮', category: 'Gaming', title: 'Virtual Games & Geheimcodes', description: 'Wettkämpfe in digitalen Welten und reale Konsequenzen.' },
+      { id: 'j9', genreIds: ['jugend'], icon: '🕵️‍♀️', category: 'Mystery', title: 'Detektiv-Cliquen & Vermisste', description: 'Eine Gruppe von Freunden ermittelt auf eigene Faust.' },
+      { id: 'j10', genreIds: ['jugend'], icon: '🎒', category: 'Schulwechsel', title: 'Neuanfang an der Schule', description: 'Sich in ein neues Umfeld einfügen und echte Freunde finden.' },
+      { id: 'j11', genreIds: ['jugend'], icon: '🏆', category: 'Sport', title: 'Teamgeist & Schulmeisterschaften', description: 'Ehrgeiz, sportliche Siege und Zusammenhalt im Team.' },
+      { id: 'j12', genreIds: ['jugend'], icon: '📜', category: 'Tagebuch', title: 'Tagebuch-Form & Intime Einblicke', description: 'Ehrliche, unverschönte Gedanken über das eigene Leben.' },
 
-      // --- BELLETRISTIK ---
+      // --- BELLETRISTIK (12 Motive) ---
       { id: 'b1', genreIds: ['belletristik'], icon: '📖', category: 'Gegenwart', title: 'Tiefgründige Familiendramen', description: 'Beziehungsgeflechte, Generationenkonflikte und Lebensentscheidungen.' },
-      { id: 'b2', genreIds: ['belletristik'], icon: '🎨', category: 'Kultur', title: 'Künstlerporträts & Zeitgeist', description: 'Geschichten aus der Kunstwelt, Philosophie und bewegende Lebensreisen.' }
+      { id: 'b2', genreIds: ['belletristik'], icon: '🎨', category: 'Kultur', title: 'Künstlerporträts & Zeitgeist', description: 'Geschichten aus der Kunstwelt, Philosophie und bewegende Lebensreisen.' },
+      { id: 'b3', genreIds: ['belletristik'], icon: '🌊', category: 'Melancholie', title: 'Insel- & Küstenporträts', description: 'Ruhige, atmosphärische Erzählungen über Einsamkeit und Innenschau.' },
+      { id: 'b4', genreIds: ['belletristik'], icon: '☕', category: 'Alltag', title: 'Café-Begegnungen & Lebenswege', description: 'Zufällige Treffen verschiedener Menschen verändern deren Blick aufs Leben.' },
+      { id: 'b5', genreIds: ['belletristik'], icon: '🧳', category: 'Auswandern', title: 'Späte Neuanfänge & Aufbruch', description: 'Im reiferen Alter noch einmal alles hinter sich lassen und neu anfangen.' },
+      { id: 'b6', genreIds: ['belletristik'], icon: '✉️', category: 'Erinnerung', title: 'Briefe aus der Vergangenheit', description: 'Versteckte Schriftstücke enthüllen lang gehütete Lebensgeheimnisse.' },
+      { id: 'b7', genreIds: ['belletristik'], icon: '🏙️', category: 'Großstadt', title: 'Metropolen & Großstadtleben', description: 'Das Pulsieren einer Großstadt und das Suchen nach Geborgenheit.' },
+      { id: 'b8', genreIds: ['belletristik'], icon: '🎭', category: 'Theater', title: 'Bühne & Das Spiel des Lebens', description: 'Rollenbilder, Schein und Sein vor und hinter dem Vorhang.' },
+      { id: 'b9', genreIds: ['belletristik'], icon: '🍷', category: 'Genuss', title: 'Weinberge, Gastronomie & Lebensart', description: 'Geschichten rund um Tradition, Handwerk und Sinnesfreuden.' },
+      { id: 'b10', genreIds: ['belletristik'], icon: '🤝', category: 'Freundschaft', title: 'Unerwartete Freundschaften', description: 'Menschen unterschiedlichster Herkunft finden zueinander.' },
+      { id: 'b11', genreIds: ['belletristik'], icon: '🌳', category: 'Rückzug', title: 'Das Leben auf dem Land', description: 'Entschleunigung, Dorfgemeinschaften und die Verbundenheit zur Natur.' },
+      { id: 'b12', genreIds: ['belletristik'], icon: '💭', category: 'Gedanken', title: 'Philosophische Lebensfragen', description: 'Fragen nach dem Glück, der Zeit und dem Sinn des Daseins.' }
     ];
 
     const LOADING_PHRASES = [
-      '🧹 Supabase-Bibliothek wird durchsucht...',
-      '👓 Leseempfehlungen werden kuratiert...',
+      '🧹 Das Verlagsarchiv wird durchstöbert...',
+      '👻 Büchergeister werden freundlich gebeten zu weichen...',
       '⚜️ Geheime Privatsammlungen werden durchforstet...',
       '🔖 Erstausgaben werden durchgesehen...',
-      '🔍 Literarische Schätze werden aufgespürt...'
+      '🕯️ Dachbodenfunde werden gesichtet...',
+      '🏛️ Verlagsregister werden konsultiert...',
+      '🐛 Erfahrene Lektoren werden befragt...',
+      '✨ Exklusive Perlen werden ausgewählt...'
     ];
 
     const GENRES = [
@@ -651,7 +738,7 @@
         setLoadingPhraseIndex(0);
 
         const startTime = Date.now();
-        const DURATION = 7000;
+        const DURATION = 10000;
 
         let progressInterval, phraseInterval;
 
@@ -741,7 +828,7 @@
           }
 
           const shuffled = filteredBooks.sort(() => 0.5 - Math.random());
-          const selectedBooks = shuffled.slice(0, 6).map(b => ({
+          const selectedBooks = shuffled.slice(0, 12).map(b => ({
             title: b.title,
             author: b.author,
             year: b.year,
@@ -988,10 +1075,9 @@
               <div key="step-2" className="step-transition flex flex-col items-center justify-between flex-grow py-2 relative">
                 
                 {showToast && (
-                  <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-toast pointer-events-none">
-                    <div className="bg-ink-900/95 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-xl backdrop-blur-md flex items-center space-x-2">
-                      <span>👉</span>
-                      <span>Swipe nach rechts oder links!</span>
+                  <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-toast pointer-events-none whitespace-nowrap">
+                    <div className="bg-ink-900/95 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-xl backdrop-blur-md text-center">
+                      Swipe nach rechts oder links!
                     </div>
                   </div>
                 )}
@@ -1269,7 +1355,6 @@
                                 className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-rose-50 border border-paper-300 hover:border-rose-200 text-[10px] font-semibold text-ink-700 hover:text-rose-700 transition active:scale-95 shadow-2xs"
                                 title="Bucheintrag melden"
                               >
-                        
                                 <span>Melden</span>
                               </button>
                             </div>
@@ -1355,10 +1440,10 @@
                         {REPORT_REASONS.map((reason, i) => {
                           const checked = selectedReasons.includes(reason);
                           return (
-                            <label 
+                            <div 
                               key={i} 
                               onClick={() => handleToggleReportReason(reason)}
-                              className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition ${
+                              className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition select-none ${
                                 checked 
                                   ? 'bg-burgundy-50 border-burgundy-300 text-burgundy-900 font-semibold' 
                                   : 'bg-paper-50 border-paper-200 text-ink-800 hover:bg-paper-100'
@@ -1368,10 +1453,10 @@
                                 type="checkbox" 
                                 checked={checked} 
                                 onChange={() => {}} 
-                                className="rounded text-burgundy-700 focus:ring-burgundy-700 h-4 w-4"
+                                className="rounded text-burgundy-700 focus:ring-burgundy-700 h-4 w-4 pointer-events-none"
                               />
-                              <span>{reason}</span>
-                            </label>
+                              <span className="pointer-events-none">{reason}</span>
+                            </div>
                           );
                         })}
                       </div>
