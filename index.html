@@ -400,7 +400,6 @@
       const [typewriterText, setTypewriterText] = useState('');
       const fullHeadline = "Was möchtest du lesen?";
 
-      // Schreibmaschineneffekt für Schritt 1 Headline
       useEffect(() => {
         if (step === 1) {
           setTypewriterText('');
@@ -635,7 +634,7 @@
           }, 1800);
         } catch (err) {
           alert("Fehler beim Absenden der Meldung.");
-        } font-sans finally {
+        } finally {
           setIsSubmittingReport(false);
         }
       };
