@@ -255,7 +255,7 @@
       { id: 'st-h1', genreIds: ['humor'], icon: '🌀', category: 'Chaos', title: 'Turbulente Verstrickungen', description: 'Eine Verkettung denkbar unglücklicher Missverständnisse stürzt die vom Pech verfolgten Protagonisten von einer absurden Situation in die nächste. Ein turbulenter Slapstick-Mix aus Ausreden, Verwechslungen und chaotischen Rettungsversuchen.' },
       { id: 'st-h2', genreIds: ['humor'], icon: '☕', category: 'Tonalität', title: 'Sarkasmus & Trockener Witz', description: 'Pointierte Dialoge, staubtrockener Humor und ein zynisch-liebenswerter Blick auf den normalen Alltagswahn. Die Charaktere kommentieren die Absurditäten des Lebens mit bissiger Ironie und scharfsinnigem Wortwitz.' },
       { id: 'st-h3', genreIds: ['humor'], icon: '🎭', category: 'Satire', title: 'Gesellschaftsspiegel', description: 'Mit intelligenter Überspitzung und spitzer Feder werden gesellschaftliche Zwänge, moderne Trends, die Arbeitswelt oder politische Eigenheiten aufs Korn genommen – extrem unterhaltsam, treffsicher und entlarvend.' },
-      { id: 'st-h4', genreIds: ['humor'], icon: '👨‍👩‍👧', category: 'Familie', title: 'Skurriles Familienleben', description: 'Anstrengende aber liebenswerte Verwandte, katastrophale Familienfeste, eigensinnige Haustiere und das tägliche Chaos zwischen Generationen. Geschichten voller Wärme, Wiedererkennungswert und herzhaftem Lachen.' },
+      { id: 'st-h4', genreIds: ['humor'], icon: '👨‍👩‍👧', category: 'Familie', title: 'Skurriles Familienleben', description: 'Anstrengende aber liebenswerte Verwandte, katastrophale Familienfeste, eigensinnige Haustiere und das tägliches Chaos zwischen Generationen. Geschichten voller Wärme, Wiedererkennungswert und herzhaftem Lachen.' },
 
       { id: 'st-s1', genreIds: ['sachbuch', 'memoir', 'modern_poetry'], icon: '🧠', category: 'Psychologie', title: 'Menschliches Denken & Handeln', description: 'Wissenschaftlich fundierte Einblicke in Verhaltensmuster, kognitive Denkfehler und die Geheimnisse unseres Gehirns. Verständlich aufbereitet zeigt die Lektüre, warum wir entscheiden wie wir entscheiden und wie Emotionen unser Leben lenken.' },
       { id: 'st-s2', genreIds: ['sachbuch'], icon: '🔬', category: 'Wissenschaft', title: 'Naturgesetze & Kosmos', description: 'Faszination Naturwissenschaft: Von den Rätseln der Quantenphysik und den Weiten des Universums bis zur Molekularbiologie. Komplexes Wissen wird durch packende Vergleiche und mitreißende Erklärungen für jeden greifbar gemacht.' },
@@ -344,21 +344,23 @@
               const client = window.supabase.createClient(cfg.url, cfg.key);
               setSupabaseClient(client);
 
-              // Besucherzähler Logik
+              // Echte Nutzer zählen: Nutzt localStorage für dauerhafte Erkennung (wiederkehrend vs neu)
+              // und sendet eine Anfrage an eine RPC Funktion oder führt ein sicheres Upsert durch,
+              // ohne Aufrufe künstlich hochzuzählen, wenn dieselbe Person die Seite erneut besucht.
               try {
-                const sessionKey = 'buchkompass_visited';
-                const hasVisited = sessionStorage.getItem(sessionKey);
+                const storageKey = 'buchkompass_user_counted';
+                const hasBeenCounted = localStorage.getItem(storageKey);
 
-                if (!hasVisited) {
-                  // Inkrementieren oder neu anlegen in Supabase (Tabelle: visitors, ID: 1)
+                if (!hasBeenCounted) {
+                  // Neuer echter Nutzer
                   const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
                   const newCount = (currentData ? currentData.count : 0) + 1;
                   
                   await client.from('visitors').upsert({ id: 1, count: newCount });
                   setVisitorCount(newCount);
-                  sessionStorage.setItem(sessionKey, 'true');
+                  localStorage.setItem(storageKey, 'true');
                 } else {
-                  // Nur auslesen
+                  // Bekannter Nutzer (wieder da) – nur Zähler auslesen ohne Inkrement
                   const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
                   if (currentData) {
                     setVisitorCount(currentData.count);
@@ -1849,12 +1851,12 @@
             </div>
           )}
 
-        <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex items-center justify-center space-x-2">
-    <span className="font-literary">BuchKompass &bull; Bene 2026</span>
-    {visitorCount !== null && (
-        <span className="font-literary font-semibold">&bull;{visitorCount} Personen nutzen BuchKompass</span>
-    )}
-</footer>
+          <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex items-center justify-center space-x-2">
+            <span className="font-literary font-normal">BuchKompass &bull; Bene 2026</span>
+            {visitorCount !== null && (
+                <span className="font-literary font-normal">&bull; {visitorCount} Personen nutzen BuchKompass</span>
+            )}
+          </footer>
         </div>
       );
     }
