@@ -483,6 +483,20 @@
         } catch (e) {}
       }, [implicitProfile]);
 
+      const resetImplicitProfile = () => {
+        if (confirm("Möchtest du dein gelerntes StorySense™-Profil wirklich zurücksetzen?")) {
+          const emptyProfile = {
+            searchCount: 0,
+            genreStats: {},
+            moodStats: {},
+            topLikedMotifs: [],
+            lastActive: null
+          };
+          setImplicitProfile(emptyProfile);
+          localStorage.removeItem('storysense_learned_profile');
+        }
+      };
+
       const recordUserBehavior = (genres, moods, likedMotifsList) => {
         setImplicitProfile(prev => {
           const newGenreStats = { ...(prev.genreStats || {}) };
@@ -2239,7 +2253,7 @@
                     </div>
                   )}
 
-                  {/* TAB: EXPERT SETTINGS (READ-ONLY LEARNED PROFILE + CSV) */}
+                  {/* TAB: EXPERT SETTINGS (READ-ONLY LEARNED PROFILE + RESET & CSV) */}
                   {drawerTab === 'expert' && (
                     <div className="space-y-4">
                       {/* READ-ONLY IMPLICIT PROFILE */}
@@ -2300,6 +2314,16 @@
                                 <span className="text-[11px] text-ink-700 italic">Noch keine Motive positiv gewischt</span>
                               )}
                             </div>
+                          </div>
+
+                          <div className="pt-2 border-t border-paper-200">
+                            <button
+                              onClick={resetImplicitProfile}
+                              className="w-full py-2 px-3 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl transition active:scale-95 flex items-center justify-center space-x-1.5"
+                            >
+                              <span>🧹</span>
+                              <span>Nutzerprofil zurücksetzen</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -2473,7 +2497,7 @@
 
           <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex flex-col items-center justify-center space-y-1">
             <div className="flex items-center space-x-2">
-              <span className="font-literary font-normal">BuchKompass &bull;</span>
+              <span className="font-literary font-normal">BuchKompass &bull; StorySense™ Algorithmus 2026</span>
               {visitorCount !== null && (
                 <span className="font-literary font-normal">&bull; {visitorCount} Personen nutzen BuchKompass</span>
               )}
