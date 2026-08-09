@@ -561,7 +561,7 @@
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
         const formattedList = favorites.map((b, i) => `${i + 1}. "${b.title}" von ${b.author} (${b.genre})`).join('\n');
-        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller: https://buchkompass.benedrive.de!`;
+        const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde deinen nächsten Bestseller auf https://buchkompass.benedrive.de`;
 
         if (navigator.share) {
           navigator.share({ title: 'Meine BuchKompass-Favoriten', text: text }).catch(() => {});
@@ -1091,7 +1091,7 @@
 
                 <div className="space-y-2">
                   <label className="text-xs font-literary font-bold text-burgundy-800 uppercase tracking-wider block">
-                    4. Erscheinungszeitraum
+                    4. Erschienen
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {ERA_OPTIONS.map(e => (
@@ -1126,7 +1126,7 @@
                 {showToast && (
                   <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-toast pointer-events-none whitespace-nowrap">
                     <div className="bg-ink-900/95 text-white border border-paper-300/30 text-xs font-semibold px-4 py-2 rounded-full shadow-xl backdrop-blur-md text-center">
-                      Wische nach rechts oder links!
+                      ⬅️ Wische nach rechts oder links ➡️
                     </div>
                   </div>
                 )}
@@ -1742,7 +1742,7 @@
                   <div className="flex items-center justify-between pb-3">
                     <div className="flex items-center space-x-2">
                       <span className="text-xl">📚</span>
-                      <h2 className="font-literary font-bold text-lg text-ink-900">Deine Bibliothek</h2>
+                      <h2 className="font-literary font-bold text-lg text-ink-900">Meine BuchKompass-Liste</h2>
                     </div>
                     <button
                       onClick={handleCloseDrawer}
