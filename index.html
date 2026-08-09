@@ -136,6 +136,33 @@
       100% { opacity: 0; transform: translate(-50%, -12px); }
     }
 
+    /* Animationen: Schreibmaschine & Magische Aura */
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @keyframes magicAura {
+      0%, 100% {
+        transform: scale(0.96) rotate(0deg);
+        opacity: 0.55;
+        filter: blur(24px);
+      }
+      50% {
+        transform: scale(1.08) rotate(3deg);
+        opacity: 0.85;
+        filter: blur(36px);
+      }
+    }
+
+    .animate-cursor {
+      animation: cursorBlink 0.75s infinite;
+    }
+
+    .animate-aura {
+      animation: magicAura 3s ease-in-out infinite;
+    }
+
     .step-transition {
       animation: fadeInSmooth 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -344,15 +371,11 @@
               const client = window.supabase.createClient(cfg.url, cfg.key);
               setSupabaseClient(client);
 
-              // Echte Nutzer zählen: Nutzt localStorage für dauerhafte Erkennung (wiederkehrend vs neu)
-              // und sendet eine Anfrage an eine RPC Funktion oder führt ein sicheres Upsert durch,
-              // ohne Aufrufe künstlich hochzuzählen, wenn dieselbe Person die Seite erneut besucht.
               try {
                 const storageKey = 'buchkompass_user_counted';
                 const hasBeenCounted = localStorage.getItem(storageKey);
 
                 if (!hasBeenCounted) {
-                  // Neuer echter Nutzer
                   const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
                   const newCount = (currentData ? currentData.count : 0) + 1;
                   
@@ -360,7 +383,6 @@
                   setVisitorCount(newCount);
                   localStorage.setItem(storageKey, 'true');
                 } else {
-                  // Bekannter Nutzer (wieder da) – nur Zähler auslesen ohne Inkrement
                   const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
                   if (currentData) {
                     setVisitorCount(currentData.count);
@@ -375,6 +397,26 @@
       }, []);
 
       const [step, setStep] = useState(1);
+      const [typewriterText, setTypewriterText] = useState('');
+      const fullHeadline = "Was möchtest du lesen?";
+
+      // Schreibmaschineneffekt für Schritt 1 Headline
+      useEffect(() => {
+        if (step === 1) {
+          setTypewriterText('');
+          let index = 0;
+          const timer = setInterval(() => {
+            if (index < fullHeadline.length) {
+              setTypewriterText(fullHeadline.substring(0, index + 1));
+              index++;
+            } else {
+              clearInterval(timer);
+            }
+          }, 65);
+          return () => clearInterval(timer);
+        }
+      }, [step]);
+
       const [selectedGenres, setSelectedGenres] = useState(['fantasy']);
       const [selectedMoods, setSelectedMoods] = useState([MOODS[0]]);
       const [selectedLength, setSelectedLength] = useState('Egal');
@@ -593,7 +635,7 @@
           }, 1800);
         } catch (err) {
           alert("Fehler beim Absenden der Meldung.");
-        } finally {
+        } font-sans finally {
           setIsSubmittingReport(false);
         }
       };
@@ -913,12 +955,10 @@
             {/* STEP 1: PREFERENCES */}
             {step === 1 && (
               <div key="step-1" className="step-transition space-y-6">
-                <div className="text-center space-y-1.5">
-                  <span className="inline-block px-3 py-0.5 bg-burgundy-50 border border-burgundy-100 text-burgundy-700 rounded-full text-xs font-semibold tracking-wide uppercase">
-                    Schritt 1 von 3
-                  </span>
-                  <h2 className="font-literary text-2xl font-bold text-ink-900">
-                    Was möchtest du lesen?
+                <div className="text-center min-h-[38px] flex items-center justify-center">
+                  <h2 className="font-literary text-2xl font-bold text-ink-900 inline-flex items-center">
+                    <span>{typewriterText}</span>
+                    <span className="inline-block w-0.5 h-6 ml-1 bg-burgundy-700 animate-cursor"></span>
                   </h2>
                 </div>
 
@@ -1203,26 +1243,31 @@
                 )}
 
                 {isLoadingAi && (
-                  <div className="bg-white border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-md">
-                    <div className="space-y-3">
-                      <div className="text-3xl animate-bounce">📚</div>
-                      <div className="min-h-[44px] flex items-center justify-center px-2">
-                        <p className="font-literary text-ink-800 text-xs transition-all duration-300 leading-relaxed">
-                          {LOADING_PHRASES[loadingPhraseIndex]}
-                        </p>
-                      </div>
-                    </div>
+                  <div className="relative my-auto">
+                    {/* Magische Pulsier- & Schimmer-Aura im Hintergrund */}
+                    <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-burgundy-700/40 via-amber-500/35 to-burgundy-900/40 animate-aura -z-10"></div>
 
-                    <div className="space-y-2 max-w-xs mx-auto">
-                      <div className="flex justify-between items-center text-xs font-medium text-ink-700">
-                        <span>Einen Moment bitte...</span>
-                        <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
+                    <div className="bg-white/95 backdrop-blur-md border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-xl relative z-10">
+                      <div className="space-y-3">
+                        <div className="text-3xl animate-bounce">📚</div>
+                        <div className="min-h-[44px] flex items-center justify-center px-2">
+                          <p className="font-literary text-ink-800 text-xs transition-all duration-300 leading-relaxed font-medium">
+                            {LOADING_PHRASES[loadingPhraseIndex]}
+                          </p>
+                        </div>
                       </div>
-                      <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
-                        <div 
-                          className="h-full bg-burgundy-700 rounded-full transition-all duration-300 ease-out shadow-sm"
-                          style={{ width: `${loadingProgress}%` }}
-                        ></div>
+
+                      <div className="space-y-2 max-w-xs mx-auto">
+                        <div className="flex justify-between items-center text-xs font-medium text-ink-700">
+                          <span>Einen Moment bitte...</span>
+                          <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
+                        </div>
+                        <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
+                          <div 
+                            className="h-full bg-burgundy-700 rounded-full transition-all duration-300 ease-out shadow-sm"
+                            style={{ width: `${loadingProgress}%` }}
+                          ></div>
+                        </div>
                       </div>
                     </div>
                   </div>
