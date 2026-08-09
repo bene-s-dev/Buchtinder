@@ -313,7 +313,7 @@
       { id: 'st-sb4', genreIds: ['sachbuch'], icon: '🏛️', category: 'Geschichte', title: 'Historische Epochen', description: 'Packend aufbereitete Sachgeschichten über den Aufstieg und Fall großer Zivilisationen, entscheidende Schlachten, gesellschaftliche Revolutionen und kulturelle Blütezeiten vergangener Epochen.' },
       { id: 'st-sb5', genreIds: ['sachbuch'], icon: '🗣️', category: 'Rhetorik', title: 'Kommunikation & Sprache', description: 'Die Kunst des Überzeugens, Körpersprache und Konfliktlösung. Praktische Einblicke, wie Sprache wirkt, wie man in Verhandlungen erfolgreich argumentiert und zwischenmenschliche Verbindungen stärkt.' },
       { id: 'st-sb7', genreIds: ['sachbuch'], icon: '🌿', category: 'Umwelt', title: 'Ökologie & Natur', description: 'Tiefgehende Einblicke in die empfindlichen Ökosysteme der Erde, Artenvielfalt, Klimawandel und zukunftsfähige Konzepte zum Schutz unseres Heimatplaneten.' },
-      { id: 'st-na1', genreIds: ['sachbuch'], icon: '🌱', category: 'Naturwissen', title: 'Flora & Fauna', description: 'Faszinierende Sachverhalte über das Verhaltensmuster von Tieren, verblüffende botanische Netzwerke und die versteckten Wunder heimischer und exotischer Ökosysteme.' },
+      { id: 'st-na1', genreIds: ['sachbuch'], icon: '🌱', category: 'Naturwissen', title: 'Flora & Fauna', description: 'Faszinierende Sachverhalte über das Verhaltensmuster von Tieren, verblüffende botanische Netzwerke und die versteckten Wunder heimischer und exotic Ökosysteme.' },
       { id: 'st-na2', genreIds: ['sachbuch'], icon: '🌋', category: 'Geowissenschaften', title: 'Erde & Elemente', description: 'Die Naturgewalten unseres Planeten: Erdgeschichte, Vulkanismus, Plattentektonik und die Entstehung extremer Wetterphänomene verständlich und bildgewaltig erklärt.' },
 
       { id: 'st-hi1', genreIds: ['historisch'], icon: '👑', category: 'Panorama', title: 'Große Epochenporträts', description: 'Detailgetreue, meisterhaft recherchierte Epochengemälde vergangener Jahrhunderte. Das alltägliche Leben, politische Umbrüche und das Lebensgefühl einer Epoche werden durch authentische Schicksale lebendig.' },
@@ -2060,17 +2060,26 @@
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-paper-300">
+                  <div className="flex items-center justify-between pb-3">
                     <div className="flex items-center space-x-2">
                       <span className="text-xl">👤</span>
                       <h2 className="font-literary font-bold text-lg text-ink-900">Dein BuchKompass</h2>
                     </div>
-                    <button
-                      onClick={handleCloseDrawer}
-                      className="w-8 h-8 rounded-full bg-paper-200 hover:bg-paper-300 text-ink-800 font-bold flex items-center justify-center transition active:scale-95"
-                    >
-                      ✕
-                    </button>
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        onClick={() => setDrawerTab(drawerTab === 'expert' ? 'profile' : 'expert')}
+                        className="w-8 h-8 rounded-full bg-paper-200 hover:bg-paper-300 text-ink-800 font-bold flex items-center justify-center transition active:scale-95"
+                        title="Experten-Einstellungen"
+                      >
+                        ⚙️
+                      </button>
+                      <button
+                        onClick={handleCloseDrawer}
+                        className="w-8 h-8 rounded-full bg-paper-200 hover:bg-paper-300 text-ink-800 font-bold flex items-center justify-center transition active:scale-95"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
 
                   {/* 3 HAUPTREITER IN DER OBEREN LEISTE */}
@@ -2399,16 +2408,8 @@
 
                 </div>
 
-                {/* EIGENER EXPERTEN-BUTTON GANZ UNTEN VOR DEM SCHLIESSEN-BUTTON */}
-                <div className="pt-3 border-t border-paper-300 space-y-2">
-                  <button
-                    onClick={() => setDrawerTab(drawerTab === 'expert' ? 'profile' : 'expert')}
-                    className="w-full py-2 px-3 bg-paper-200 hover:bg-paper-300 text-ink-800 text-xs font-bold rounded-xl border border-paper-300 transition flex items-center justify-center space-x-2 active:scale-98"
-                  >
-                    <span>⚙️</span>
-                    <span>{drawerTab === 'expert' ? 'Zurück zu den Listen' : 'Experten-Einstellungen'}</span>
-                  </button>
-
+                {/* GANZ UNTEN SCHLIESSEN-BUTTON */}
+                <div className="pt-3 space-y-2">
                   <button
                     onClick={handleCloseDrawer}
                     className="w-full py-2.5 bg-ink-900 hover:bg-ink-950 text-paper-50 text-xs font-literary font-bold rounded-xl transition shadow-sm active:scale-98"
