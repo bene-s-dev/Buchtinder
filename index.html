@@ -1093,18 +1093,10 @@
               storySenseDetails.push({ label: "Stimmungs-Match", points: 1.5 });
             }
 
-            // Basis-Match-Reason berechnen
-            let matchReason = b.match_reason || "StorySense™ Match: Passt zu deinen gewählten Kriterien.";
-            if (storySenseDetails.length > 0) {
-              const summaryText = storySenseDetails.map(d => `${d.label} (+${d.points} Pts)`).join(' & ');
-              matchReason += ` ✨ (StorySense™ Bonus: ${summaryText})`;
-            }
-
             return {
               ...b,
               storySenseScore: score,
-              storySenseDetails: storySenseDetails,
-              calculatedMatchReason: matchReason
+              storySenseDetails: storySenseDetails
             };
           });
 
@@ -1124,7 +1116,7 @@
             description: b.description,
             storySenseScore: b.storySenseScore,
             storySenseDetails: b.storySenseDetails || [],
-            matchReason: b.calculatedMatchReason
+            matchReason: b.match_reason || "Passt zu deinen gewählten Kriterien."
           }));
 
           setSessionShownBooks(prev => [...prev, ...selectedBooks]);
@@ -1172,7 +1164,7 @@
           console.error("Supabase Error:", err);
           setAiError(`Fehler beim Laden der Bücher aus Supabase.`);
           if (!isReload) setAiRecommendations({ books: [] });
-        } finally {
+        } font-sans {
           if (progressInterval) clearInterval(progressInterval);
           if (phraseInterval) clearInterval(phraseInterval);
           setIsLoadingAi(false);
