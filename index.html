@@ -310,11 +310,19 @@
     ];
 
     const LOADING_PHRASES = [
-      '🧹 Supabase-Bibliothek wird durchsucht...',
+      '',
+
+      '🧹 Das Verlagsarchiv wird durchstöbert...',
       '👓 Leseempfehlungen werden kuratiert...',
+      '👻 Büchergeister werden freundlich gebeten zu weichen...',
       '⚜️ Geheime Privatsammlungen werden durchforstet...',
       '🔖 Erstausgaben werden durchgesehen...',
-      '🔍 Literarische Schätze werden aufgespürt...'
+      '🕯️ Dachbodenfunde werden gesichtet...',
+      '🏛️ Verlagsregister werden konsultiert...',
+      '🔍 Literarische Schätze werden aufgespürt...',
+      '🐛 Erfahrene Lektoren werden befragt...',
+      '✨ Exklusive Perlen werden ausgewählt...'
+      
     ];
 
     const GENRES = [
@@ -385,7 +393,7 @@
       const [exitDirection, setExitDirection] = useState(null);
       const [isAnimatingExit, setIsAnimatingExit] = useState(false);
 
-      // STATE FÜR BUCH-MELDUNG (REPORT MODAL) MIT KOMMENTARFELD
+      // STATE FÜR BUCH-MELDUNG
       const [reportingBook, setReportingBook] = useState(null);
       const [selectedReasons, setSelectedReasons] = useState([]);
       const [reportComment, setReportComment] = useState('');
@@ -612,6 +620,7 @@
 
       const [aiRecommendations, setAiRecommendations] = useState(null);
       const [isLoadingAi, setIsLoadingAi] = useState(false);
+      const [isReloading, setIsReloading] = useState(false); // NEU: Trennung für schnelles Nachladen
       const [aiError, setAiError] = useState('');
       const [loadingProgress, setLoadingProgress] = useState(0);
       const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
@@ -679,32 +688,41 @@
 
           if (currentIndex + 1 >= themesToSwipe.length) {
             setStep(3);
-            fetchAiBookRecommendations(newLiked, newDisliked);
+            fetchAiBookRecommendations(newLiked, newDisliked, false, false);
           } else {
             setCurrentIndex(prev => prev + 1);
           }
         }, 280);
       };
 
-      // --- SUPABASE DIRECT QUERY MIT EXAKT 7-SEKUNDEN-TIMER ---
-      const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, excludeAlreadyRead = false) => {
-        setIsLoadingAi(true);
+      // --- SUPABASE DIRECT QUERY ---
+      const fetchAiBookRecommendations = async (likedList = likedThemes, dislikedList = dislikedThemes, excludeAlreadyRead = false, isReload = false) => {
+        if (isReload) {
+          setIsReloading(true);
+        } else {
+          setIsLoadingAi(true);
+        }
         setAiError('');
         setLoadingProgress(0);
         setLoadingPhraseIndex(0);
 
         const startTime = Date.now();
-        const DURATION = 7000;
+        const DURATION = 9000;
 
-        const progressInterval = setInterval(() => {
-          const elapsedTime = Date.now() - startTime;
-          const progress = Math.min(Math.floor((elapsedTime / DURATION) * 100), 100);
-          setLoadingProgress(progress);
-        }, 50);
+        let progressInterval, phraseInterval;
 
-        const phraseInterval = setInterval(() => {
-          setLoadingPhraseIndex(prev => (prev + 1) % LOADING_PHRASES.length);
-        }, 1750);
+        // Timer NUR beim ersten Laden anzeigen
+        if (!isReload) {
+          progressInterval = setInterval(() => {
+            const elapsedTime = Date.now() - startTime;
+            const progress = Math.min(Math.floor((elapsedTime / DURATION) * 100), 100);
+            setLoadingProgress(progress);
+          }, 50);
+
+          phraseInterval = setInterval(() => {
+            setLoadingPhraseIndex(prev => (prev + 1) % LOADING_PHRASES.length);
+          }, 1750);
+        }
 
         try {
           let client = supabaseClient;
@@ -742,8 +760,8 @@
           if (error) throw error;
 
           if (!data || data.length === 0) {
-            clearInterval(progressInterval);
-            clearInterval(phraseInterval);
+            if (progressInterval) clearInterval(progressInterval);
+            if (phraseInterval) clearInterval(phraseInterval);
             setAiError("Keine passenden Bücher in der Datenbank gefunden. Versuche deine Filter zu lockern!");
             return;
           }
@@ -769,22 +787,25 @@
             isbn: b.isbn
           }));
 
-          const elapsedSoFar = Date.now() - startTime;
-          const remainingTime = Math.max(DURATION - elapsedSoFar, 0);
+          // Nur beim ERSTEN Laden auf exakt 7 Sekunden warten
+          if (!isReload) {
+            const elapsedSoFar = Date.now() - startTime;
+            const remainingTime = Math.max(DURATION - elapsedSoFar, 0);
+            await new Promise(r => setTimeout(r, remainingTime));
+            setLoadingProgress(100);
+            await new Promise(r => setTimeout(r, 250));
+          }
 
-          await new Promise(r => setTimeout(r, remainingTime));
-
-          setLoadingProgress(100);
-          await new Promise(r => setTimeout(r, 250));
           setAiRecommendations({ books: selectedBooks });
 
         } catch (err) {
           console.error("Supabase Error:", err);
           setAiError(`Fehler beim Laden der Bücher aus Supabase (${err.message || 'Verbindungsfehler'}).`);
         } finally {
-          clearInterval(progressInterval);
-          clearInterval(phraseInterval);
+          if (progressInterval) clearInterval(progressInterval);
+          if (phraseInterval) clearInterval(phraseInterval);
           setIsLoadingAi(false);
+          setIsReloading(false);
         }
       };
 
@@ -1218,7 +1239,7 @@
                   <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-center space-y-3">
                     <p className="text-xs text-rose-800 font-medium">{aiError}</p>
                     <button
-                      onClick={() => fetchAiBookRecommendations()}
+                      onClick={() => fetchAiBookRecommendations(likedThemes, dislikedThemes, false, false)}
                       className="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white text-xs font-literary font-bold rounded-lg shadow-sm"
                     >
                       Erneut versuchen
@@ -1301,7 +1322,7 @@
                               </div>
                             </div>
 
-                            {/* UNTEN RECHTS: MELDEN BUTTON */}
+                            {/* UNTEN RECHTS: KLEINES BADGE FÜR MELDEN */}
                             <div className="flex justify-end pt-2 border-t border-paper-200/60 mt-1">
                               <button
                                 onClick={() => {
@@ -1310,9 +1331,11 @@
                                   setReportComment('');
                                   setReportSuccess(false);
                                 }}
-                                className="text-[11px] font-medium text-ink-700 hover:text-rose-700 flex items-center space-x-1 transition"
+                                className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-paper-100 hover:bg-rose-50 border border-paper-300 hover:border-rose-200 text-[10px] font-semibold text-ink-700 hover:text-rose-700 transition active:scale-95 shadow-2xs"
+                                title="Bucheintrag melden"
                               >
-                                <span>⚠️ Fehler melden</span>
+                                <span>⚠️</span>
+                                <span>Melden</span>
                               </button>
                             </div>
 
@@ -1327,10 +1350,21 @@
                 {aiRecommendations && !isLoadingAi && (
                   <div className="pt-2 space-y-2.5">
                     <button
-                      onClick={() => fetchAiBookRecommendations()}
-                      className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-literary font-bold rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2"
+                      onClick={() => fetchAiBookRecommendations(likedThemes, dislikedThemes, false, true)}
+                      disabled={isReloading}
+                      className="w-full py-3.5 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-literary font-bold rounded-xl shadow-md transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-80"
                     >
-                      <span>🔄 Weitere Vorschläge laden</span>
+                      {isReloading ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Lade neue Bücher...</span>
+                        </>
+                      ) : (
+                        <span>🔄 Weitere Vorschläge laden</span>
+                      )}
                     </button>
 
                     <button
@@ -1349,7 +1383,7 @@
 
           </main>
 
-          {/* REPORT MODAL (BUCH MELDEN MIT KOMMENTARFELD) */}
+          {/* REPORT MODAL */}
           {reportingBook && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) setReportingBook(null); }}
@@ -1519,7 +1553,7 @@
                     <button
                       onClick={() => {
                         handleCloseDrawer();
-                        fetchAiBookRecommendations(likedThemes, dislikedThemes, true);
+                        fetchAiBookRecommendations(likedThemes, dislikedThemes, true, true);
                       }}
                       className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
                     >
