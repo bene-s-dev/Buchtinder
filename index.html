@@ -334,14 +334,39 @@
 
     function App() {
       const [supabaseClient, setSupabaseClient] = useState(null);
+      const [visitorCount, setVisitorCount] = useState(null);
 
       useEffect(() => {
         fetch('/api/config')
           .then(res => res.json())
-          .then(cfg => {
+          .then(async cfg => {
             if (cfg.url && cfg.key && window.supabase) {
               const client = window.supabase.createClient(cfg.url, cfg.key);
               setSupabaseClient(client);
+
+              // Besucherzähler Logik
+              try {
+                const sessionKey = 'buchkompass_visited';
+                const hasVisited = sessionStorage.getItem(sessionKey);
+
+                if (!hasVisited) {
+                  // Inkrementieren oder neu anlegen in Supabase (Tabelle: visitors, ID: 1)
+                  const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
+                  const newCount = (currentData ? currentData.count : 0) + 1;
+                  
+                  await client.from('visitors').upsert({ id: 1, count: newCount });
+                  setVisitorCount(newCount);
+                  sessionStorage.setItem(sessionKey, 'true');
+                } else {
+                  // Nur auslesen
+                  const { data: currentData } = await client.from('visitors').select('count').eq('id', 1).single();
+                  if (currentData) {
+                    setVisitorCount(currentData.count);
+                  }
+                }
+              } catch (e) {
+                console.error("Fehler beim Besucherzähler:", e);
+              }
             }
           })
           .catch(err => console.error("Konnte Supabase Config nicht abrufen:", err));
@@ -1255,8 +1280,8 @@
                                     className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
                                       isPoppingRead ? 'animate-heart-pop' : ''
                                     } ${
-                                      read
-                                        ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
+                                      read 
+                                        ? 'bg-amber-600 text-white border-amber-700 shadow-sm' 
                                         : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-amber-600/40 hover:text-amber-700'
                                     }`}
                                     title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
@@ -1269,8 +1294,8 @@
                                     className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
                                       isPoppingFav ? 'animate-heart-pop' : ''
                                     } ${
-                                      fav
-                                        ? 'bg-burgundy-700 text-white border-burgundy-800 shadow-sm'
+                                      fav 
+                                        ? 'bg-burgundy-700 text-white border-burgundy-800 shadow-sm' 
                                         : 'bg-paper-50 text-ink-700 border-paper-300 hover:border-burgundy-600/40 hover:text-burgundy-700'
                                     }`}
                                     title={fav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
@@ -1295,7 +1320,6 @@
                               </div>
                             </div>
 
-                            {/* UNTEN LINKS: INFO-BUTTON / UNTEN RECHTS: SUCHEN & MELDEN */}
                             <div className="flex justify-between items-center pt-1">
                               <button
                                 onClick={() => setTechInfoBook(book)}
@@ -1303,7 +1327,6 @@
                                 title="Technische Details zur Empfehlung"
                               >
                                 <span>ℹ️</span>
-                            
                               </button>
 
                               <div className="flex items-center space-x-2">
@@ -1826,8 +1849,11 @@
             </div>
           )}
 
-          <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary">
-            BuchKompass &bull; Bene 2026
+          <footer className="bg-paper-50 border-t border-paper-300 py-3.5 text-center text-[11px] text-ink-700 font-literary flex items-center justify-center space-x-2">
+            <span>BuchKompass &bull; Bene 2026</span>
+            {visitorCount !== null && (
+              <span className="text-burgundy-700 font-semibold">&bull; Besuche: {visitorCount}</span>
+            )}
           </footer>
         </div>
       );
