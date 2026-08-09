@@ -267,7 +267,7 @@
       { id: 'st-t1', genreIds: ['thriller', 'cozy_crime'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Katz-und-Maus-Spiel', description: 'Ein nervenzerreißendes Verwirrspiel voller psychologischer Manipulation, Täuschung und unzuverlässiger Erzähler. Nichts ist, wie es scheint: Geheimnisse werden schrittweise enthüllt, während die Grenze zwischen Täter und Opfer im Strudel aus Wahn, Lügen und Paranoia vollkommen verschwimmt.' },
       { id: 'st-t2', genreIds: ['thriller'], icon: '🚨', category: 'Ermittlung', title: 'Serienmörder & Profiling', description: 'Ein erfahrenes Ermittlerteam taucht tief in die Psyche eines hochintelligenten Serientäters ein. Durch akribische Tatortanalysen, spurenmedizinische Rekonstruktionen und psychologisches Profiling versuchen die Ermittler das Muster zu knacken, bevor der Mörder erneut zuschlägt.' },
       { id: 'st-t3', genreIds: ['thriller'], icon: '⏳', category: 'Zeitdruck', title: 'Ticking-Clock-Szenario', description: 'Maximale Atemlosigkeit von der ersten Seite an: Ein unerbittlicher Countdown läuft gegen die Protagonisten. Ob eine Entführung, eine drohende Explosion oder eine Erpressung – den Charakteren bleiben nur wenige Stunden, um Rätsel zu lösen und Leben zu retten.' },
-      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehnte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
+      { id: 'st-t4', genreIds: ['thriller', 'cozy_crime'], icon: '📁', category: 'Cold Cases', title: 'Vergangene Geheimnisse', description: 'Ein Jahrzehte alter, längst zu den Akten gelegter Fall wird durch neue Indizien plötzlich neu aufgerollt. Die Ermittlungen stören das scheinbare Schweigen einer Dorfgemeinschaft oder einflussreicher Familien und bringen tief vergrabene Verbrechen ans Licht.' },
       { id: 'st-cc1', genreIds: ['cozy_crime', 'thriller'], icon: '🏝️', category: 'Trügerisch', title: 'Abgelegene Idylle & Cosy Crime', description: 'Ein charmantes Küstendorf, ein verschneites Landgut oder eine beschauliche Kleinstadt bietet die bunte Kulisse. Doch hinter der idyllischen Fassade geschehen rätselhafte Morde, die von cleveren Laiendetektiven mit viel Scharfsinn, Humor und einer Tasse Tee aufgeklärt werden.' },
       { id: 'st-cc2', genreIds: ['cozy_crime', 'thriller'], icon: '❄️', category: 'Kammerspiel', title: 'Isoliertes Setting', description: 'Eine Gruppe von Menschen ist durch einen Schneesturm, auf einer abgelegenen Insel oder in einem fahrenden Zug von der Außenwelt abgeschnitten. Als ein Mord geschieht, ist klar: Der Täter befindet sich unter den Anwesenden im Raum – und niemand kann entkommen.' },
       { id: 'st-dr1', genreIds: ['thriller'], icon: '🎭', category: 'Identität', title: 'Doppelleben & Täuschung', description: 'Protagonisten führen ein perfekt inszeniertes Doppelleben als bürgerliche Ehepartner, erfolgreiche Unternehmer oder unauffällige Nachbarn. Doch im Verborgenen betreiben sie illegale Machenschaften oder dunkle Rachefeldzüge, bis ein kleiner Fehler das Kartenhaus bedroht.' },
@@ -398,21 +398,31 @@
 
       const [step, setStep] = useState(1);
       const [typewriterText, setTypewriterText] = useState('');
+      const [showCursor, setShowCursor] = useState(true);
       const fullHeadline = "Was möchtest du lesen?";
 
       useEffect(() => {
         if (step === 1) {
           setTypewriterText('');
+          setShowCursor(true);
           let index = 0;
+          let cursorTimeout;
           const timer = setInterval(() => {
             if (index < fullHeadline.length) {
               setTypewriterText(fullHeadline.substring(0, index + 1));
               index++;
             } else {
               clearInterval(timer);
+              // Nach Satzende genau 3-mal blinken lassen (3 * 0.75s = 2250ms)
+              cursorTimeout = setTimeout(() => {
+                setShowCursor(false);
+              }, 2250);
             }
           }, 65);
-          return () => clearInterval(timer);
+          return () => {
+            clearInterval(timer);
+            if (cursorTimeout) clearTimeout(cursorTimeout);
+          };
         }
       }, [step]);
 
@@ -957,7 +967,9 @@
                 <div className="text-center min-h-[38px] flex items-center justify-center">
                   <h2 className="font-literary text-2xl font-bold text-ink-900 inline-flex items-center">
                     <span>{typewriterText}</span>
-                    <span className="inline-block w-0.5 h-6 ml-1 bg-burgundy-700 animate-cursor"></span>
+                    {showCursor && (
+                      <span className="inline-block w-0.5 h-6 ml-1 bg-burgundy-700 animate-cursor"></span>
+                    )}
                   </h2>
                 </div>
 
