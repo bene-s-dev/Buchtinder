@@ -550,6 +550,14 @@
 
       const [suckedWords, setSuckedWords] = useState(['Fantasy', 'Intrigen', 'Slow Burn', 'Dystopie']);
 
+      const [aiRecommendations, setAiRecommendations] = useState(null);
+      const [isLoadingAi, setIsLoadingAi] = useState(false);
+      const [isReloading, setIsReloading] = useState(false);
+      const [aiError, setAiError] = useState('');
+      const [loadingProgress, setLoadingProgress] = useState(0);
+      const [countdownSeconds, setCountdownSeconds] = useState(7);
+      const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
+
       useEffect(() => {
         if (isLoadingAi) {
           const interval = setInterval(() => {
@@ -875,14 +883,6 @@
         }
       };
 
-      const [aiRecommendations, setAiRecommendations] = useState(null);
-      const [isLoadingAi, setIsLoadingAi] = useState(false);
-      const [isReloading, setIsReloading] = useState(false);
-      const [aiError, setAiError] = useState('');
-      const [loadingProgress, setLoadingProgress] = useState(0);
-      const [countdownSeconds, setCountdownSeconds] = useState(7);
-      const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
-
       const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
       const [isDragging, setIsDragging] = useState(false);
       const dragStart = useRef({ x: 0, y: 0 });
@@ -1164,7 +1164,7 @@
           console.error("Supabase Error:", err);
           setAiError(`Fehler beim Laden der Bücher aus Supabase.`);
           if (!isReload) setAiRecommendations({ books: [] });
-        } font-sans {
+        } finally {
           if (progressInterval) clearInterval(progressInterval);
           if (phraseInterval) clearInterval(phraseInterval);
           setIsLoadingAi(false);
