@@ -145,40 +145,9 @@
       50% { opacity: 0; }
     }
 
-    /* SAUG-ANIMATIONEN IN DIE MITTE */
-    @keyframes suckInTL {
-      0% { top: 5%; left: 5%; opacity: 0; transform: translate(0, 0) scale(1) rotate(-12deg); }
-      25% { opacity: 0.95; }
-      80% { opacity: 0.9; }
-      100% { top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.05) rotate(90deg); }
-    }
-    @keyframes suckInTR {
-      0% { top: 5%; right: 5%; opacity: 0; transform: translate(0, 0) scale(1) rotate(12deg); }
-      25% { opacity: 0.95; }
-      80% { opacity: 0.9; }
-      100% { top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.05) rotate(-90deg); }
-    }
-    @keyframes suckInBL {
-      0% { bottom: 5%; left: 5%; opacity: 0; transform: translate(0, 0) scale(1) rotate(15deg); }
-      25% { opacity: 0.95; }
-      80% { opacity: 0.9; }
-      100% { top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.05) rotate(-75deg); }
-    }
-    @keyframes suckInBR {
-      0% { bottom: 5%; right: 5%; opacity: 0; transform: translate(0, 0) scale(1) rotate(-15deg); }
-      25% { opacity: 0.95; }
-      80% { opacity: 0.9; }
-      100% { top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.05) rotate(75deg); }
-    }
-
     .animate-cursor {
       animation: cursorBlink 0.75s infinite;
     }
-
-    .animate-suck-tl { animation: suckInTL 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-    .animate-suck-tr { animation: suckInTR 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.55s; }
-    .animate-suck-bl { animation: suckInBL 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.1s; }
-    .animate-suck-br { animation: suckInBR 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.65s; }
 
     .step-transition {
       animation: fadeInSmooth 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -278,7 +247,7 @@
       { id: 'st-f6', genreIds: ['fantasy'], icon: '🏛️', category: 'Akademie', title: 'Magische Ausbildung', description: 'Im Zentrum steht das aufregende Leben an einer elitären Zauberschule oder alten Universität. Neben strengen Prüfungen, verbotenen Zaubersprüchen und magischen Wettkämpfen entfalten sich tiefe Rivalitäten, heimliche Liebschaften und das Aufdecken uralter, in den Schulgemäuern vergrabener Geheimnisse.' },
       { id: 'st-ma1', genreIds: ['fantasy'], icon: '🔮', category: 'Schicksal', title: 'Uralte Prophezeiungen & Artefakte', description: 'Eine jahrtausendealte Vorhersage erwacht zu neuem Leben und fordert unwillige Helden heraus. Die Suche nach verschollenen, extrem mächtigen Artefakten wird zum Wettlauf gegen die Zeit, bevor eine Erwachende dunkle Macht die Welt in ewige Finsternis stürzt.' },
 
-      { id: 'st-rom1', genreIds: ['romantasy', 'dark_romance'], icon: '✨', category: 'Romantasy', title: 'Verbotene Magische Liebe', description: 'Eine hochexplosive Beziehungsdynamik zwischen zwei Figuren, die eigentlich Todfeinde sein müssten. Sie gehören verfeindeten Magierfraktionen, Rivalisierenden Höfen oder düsteren Orden an – doch je mehr sie sich bekämpfen, desto unkontrollierbarer wird die magische und emotionale Anziehungskraft zwischen ihnen.' },
+      { id: 'st-rom1', genreIds: ['romantasy', 'dark_romance'], icon: '✨', category: 'Romantasy', title: 'Verbotene Magische Liebe', description: 'Eine hochexplosive Beziehungsdynamik zwischen two Figuren, die eigentlich Todfeinde sein müssten. Sie gehören verfeindeten Magierfraktionen, Rivalisierenden Höfen oder düsteren Orden an – doch je mehr sie sich bekämpfen, desto unkontrollierbarer wird die magische und emotionale Anziehungskraft zwischen ihnen.' },
       { id: 'st-rom2', genreIds: ['romantasy', 'dark_romance'], icon: '👑', category: 'Romantasy', title: 'Höfische Magie & Bünde', description: 'Glanzvolle Ballfälle an den Höfen mächtiger Fae, Vampire oder Magier, bei denen hinter jedem Lächeln ein tödlicher Dolch lauert. Blutschwüre, unverbrüchliche Verträge und politische Zwangsheiraten verstricken die Hauptfiguren in ein gefährliches Spiel aus Leidenschaft und Erpressung.' },
 
       { id: 'st-t1', genreIds: ['thriller', 'cozy_crime'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Katz-und-Maus-Spiel', description: 'Ein nervenzerreißendes Verwirrspiel voller psychologischer Manipulation, Täuschung und unzuverlässiger Erzähler. Nichts ist, wie es scheint: Geheimnisse werden schrittweise enthüllt, während die Grenze zwischen Täter und Opfer im Strudel aus Wahn, Lügen und Paranoia vollkommen verschwimmt.' },
@@ -340,15 +309,6 @@
       '🔖 Erstausgaben werden durchgesehen...',
       '🕯️ Dachbodenfunde werden gesichtet...',
       '🏛️ StorySense™ gleicht deine gelesenen Muster ab...',
-    ];
-
-    const LITERARY_TERMS_POOL = [
-      'Fantasy', 'Slow Burn', 'Sci-Fi', 'Intrigen', 'Romantasy', 'Magiesysteme',
-      'Cozy Crime', 'Düster', 'Dark Romance', 'Heldenreise', 'Epik', 'Profiler',
-      'Akademie', 'Cold Cases', 'Kammerspiel', 'Dystopie', 'Cyberpunk', 'Verbotene Liebe',
-      'Drachen', 'Spionage', 'Mittelalter', 'Zeitreise', 'Rhetorik', 'Körpersprache',
-      'Philosophie', 'Kosmos', 'Autobiografie', 'Poesie', 'Satire', 'Slapstick',
-      'Enemies to Lovers', 'Found Family', 'Heist', 'Plot Twist', 'Morally Grey'
     ];
 
     const POPULAR_GENRES = [
@@ -548,25 +508,13 @@
       const [currentPage, setCurrentPage] = useState(1);
       const BOOKS_PER_PAGE = 4;
 
-      const [suckedWords, setSuckedWords] = useState(['Fantasy', 'Intrigen', 'Slow Burn', 'Dystopie']);
-
       const [aiRecommendations, setAiRecommendations] = useState(null);
       const [isLoadingAi, setIsLoadingAi] = useState(false);
       const [isReloading, setIsReloading] = useState(false);
       const [aiError, setAiError] = useState('');
       const [loadingProgress, setLoadingProgress] = useState(0);
-      const [countdownSeconds, setCountdownSeconds] = useState(7);
+      const [countdownSeconds, setCountdownSeconds] = useState(10);
       const [loadingPhraseIndex, setLoadingPhraseIndex] = useState(0);
-
-      useEffect(() => {
-        if (isLoadingAi) {
-          const interval = setInterval(() => {
-            const shuffled = [...LITERARY_TERMS_POOL].sort(() => 0.5 - Math.random());
-            setSuckedWords(shuffled.slice(0, 4));
-          }, 2200);
-          return () => clearInterval(interval);
-        }
-      }, [isLoadingAi]);
 
       const [favorites, setFavorites] = useState(() => {
         try {
@@ -604,8 +552,6 @@
       const [popBookKey, setPopBookKey] = useState(null);
       const [copyNotice, setCopyNotice] = useState('');
 
-      const [loadingPhase, setLoadingPhase] = useState(1);
-
       const activeCardRef = useRef(null);
 
       useEffect(() => {
@@ -640,7 +586,6 @@
       useEffect(() => {
         try {
           localStorage.setItem('buchtinder_already_read', JSON.stringify(alreadyRead));
-          // Synchronize alreadyRead IDs with implicitProfile
           const readDbIds = Array.from(new Set(alreadyRead.map(b => b.id).filter(Boolean)));
           setImplicitProfile(prev => ({
             ...prev,
@@ -715,7 +660,6 @@
         }
       };
 
-      // CSV EXPORT
       const handleExportCSV = () => {
         const csvRows = ["Type;ID_Date;Title_Name;Author_Genres;Genre_Moods;Year_Length;Era_Details;Extra_Description"];
 
@@ -731,7 +675,7 @@
 
         sessions.forEach(s => {
           const booksStr = (s.books || []).map(b => b.title).join('|');
-          csvRows.push(`SESSION;${s.id};"Sitzung #${s.sessionNumber}";"${(s.genres||[]).join('|')}";"${(s.moods||[]).join('|')}";"${s.timestamp}";"${booksStr.replace(/"/g, '""')}";""`);
+          csvRows.push(`SESSION;${s.id};"Suche #${s.sessionNumber}";"${(s.genres||[]).join('|')}";"${(s.moods||[]).join('|')}";"${s.timestamp}";"${booksStr.replace(/"/g, '""')}";""`);
         });
 
         const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csvRows.join("\n"));
@@ -743,7 +687,6 @@
         downloadAnchor.remove();
       };
 
-      // CSV IMPORT
       const handleImportCSV = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -952,31 +895,21 @@
         }
         setAiError('');
         setLoadingProgress(0);
-        setCountdownSeconds(7);
+        setCountdownSeconds(10);
         setLoadingPhraseIndex(0);
-        setLoadingPhase(1);
 
         const startTime = Date.now();
-        const TOTAL_DURATION = 11000;
-        const PHASE2_START = 4000;
-        const PHASE2_DURATION = 7000;
+        const TOTAL_DURATION = 10000;
 
         let progressInterval, phraseInterval;
 
         if (!isReload) {
-          setTimeout(() => {
-            setLoadingPhase(2);
-          }, PHASE2_START);
-
           progressInterval = setInterval(() => {
             const elapsedTime = Date.now() - startTime;
-            if (elapsedTime >= PHASE2_START) {
-              const phase2Elapsed = elapsedTime - PHASE2_START;
-              const progress = Math.min(Math.floor((phase2Elapsed / PHASE2_DURATION) * 100), 100);
-              const remainingSecs = Math.max(0, Math.ceil((PHASE2_DURATION - phase2Elapsed) / 1000));
-              setLoadingProgress(progress);
-              setCountdownSeconds(remainingSecs);
-            }
+            const progress = Math.min(Math.floor((elapsedTime / TOTAL_DURATION) * 100), 100);
+            const remainingSecs = Math.max(0, Math.ceil((TOTAL_DURATION - elapsedTime) / 1000));
+            setLoadingProgress(progress);
+            setCountdownSeconds(remainingSecs);
           }, 50);
 
           phraseInterval = setInterval(() => {
@@ -1029,13 +962,11 @@
             filteredBooks = retryRes.data || [];
           }
 
-          // IMMER BEREITS GELESENE BÜCHER AUSSCHLIESSEN (Egal ob Reload oder Neue Suche)
           if (alreadyRead.length > 0) {
             const excludeTitles = alreadyRead.map(b => b.title);
             filteredBooks = filteredBooks.filter(b => !excludeTitles.includes(b.title));
           }
 
-          // In der aktuellen Session bereits gezeigte Bücher ebenfalls ausschließen bei Reload
           if (isReload && sessionShownBooks.length > 0) {
             const shownTitles = sessionShownBooks.map(b => b.title);
             filteredBooks = filteredBooks.filter(b => !shownTitles.includes(b.title));
@@ -1058,7 +989,6 @@
             }
           }
 
-          // STORYSENSE™ PERSONALIZATION & SCORING ENGINE
           const topProfileGenres = Object.keys(implicitProfile.genreStats || {});
           const topProfileMoods = Object.keys(implicitProfile.moodStats || {});
           const topProfileMotifs = implicitProfile.topLikedMotifs || [];
@@ -1067,30 +997,56 @@
             let score = 0;
             let storySenseDetails = [];
 
-            // 1. Historische Genre-Präferenz
-            if (topProfileGenres.includes(b.genre)) {
-              score += 3;
-              storySenseDetails.push({ label: `Lieblings-Genre (${b.genre})`, points: 3 });
+            if (selectedGenres.includes(b.genre)) {
+              score += 4;
+              storySenseDetails.push({ label: `Aktuelles Such-Genre (${b.genre})`, points: 4 });
             }
 
-            // 2. Historische Motive-Präferenz (Titel / Kategorien)
+            if (Array.isArray(b.theme_ids) && likedList.length > 0) {
+              const matchedCurrentMotifs = b.theme_ids.filter(tId => likedList.some(l => l.id === tId));
+              if (matchedCurrentMotifs.length > 0) {
+                const pts = matchedCurrentMotifs.length * 3;
+                score += pts;
+                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}x Gewischte Motive`, points: pts });
+              }
+            }
+
+            if (selectedMoods.length > 0 && Array.isArray(b.moods) && b.moods.some(m => selectedMoods.includes(m))) {
+              score += 2;
+              storySenseDetails.push({ label: "Aktuelle Stimmung", points: 2 });
+            }
+
+            if (selectedLength !== 'Egal' && b.length === selectedLength) {
+              score += 1;
+              storySenseDetails.push({ label: `Umfang (${b.length})`, points: 1 });
+            }
+
+            if (selectedEra !== 'Egal' && b.era === selectedEra) {
+              score += 1;
+              storySenseDetails.push({ label: `Erschienen (${b.era})`, points: 1 });
+            }
+
+            if (topProfileGenres.includes(b.genre)) {
+              score += 2;
+              storySenseDetails.push({ label: `Lieblings-Genre Historie (${b.genre})`, points: 2 });
+            }
+
             if (Array.isArray(b.theme_ids)) {
-              const matchedMotifs = b.theme_ids.filter(tId => {
+              const matchedProfileMotifs = b.theme_ids.filter(tId => {
                 const themeObj = STORY_THEMES.find(st => st.id === tId);
                 return themeObj && (topProfileMotifs.includes(themeObj.title) || topProfileMotifs.includes(themeObj.category));
               });
 
-              if (matchedMotifs.length > 0) {
-                const pts = matchedMotifs.length * 2;
+              if (matchedProfileMotifs.length > 0) {
+                const pts = matchedProfileMotifs.length * 1.5;
                 score += pts;
-                storySenseDetails.push({ label: `${matchedMotifs.length}x Lieblingsmotive`, points: pts });
+                storySenseDetails.push({ label: `${matchedProfileMotifs.length}x Profil-Motive`, points: pts });
               }
             }
 
-            // 3. Historische Stimmungs-Präferenz
             if (Array.isArray(b.moods) && b.moods.some(m => topProfileMoods.includes(m))) {
-              score += 1.5;
-              storySenseDetails.push({ label: "Stimmungs-Match", points: 1.5 });
+              score += 1;
+              storySenseDetails.push({ label: "Profil-Stimmung", points: 1 });
             }
 
             return {
@@ -1100,7 +1056,6 @@
             };
           });
 
-          // Nach Score sortieren + leichter Zufallsfaktor bei Punktgleichheit
           scoredBooks.sort((a, b) => (b.storySenseScore + Math.random() * 0.5) - (a.storySenseScore + Math.random() * 0.5));
 
           const selectedBooks = scoredBooks.slice(0, 4).map(b => ({
@@ -1458,7 +1413,9 @@
                   <div className="w-full space-y-4 my-auto flex flex-col items-center">
                     
                     <div className="text-center space-y-1">
-                     <p className="text-s text-ink-700 font-semibold">Soll diese Handlung im Buch vorkommen?</p>
+                     <p className="text-s text-ink-700 font-semibold">
+                       Soll diese Handlung im Buch vorkommen? <span className="font-mono text-burgundy-700 font-bold ml-1">({currentIndex + 1}/{themesToSwipe.length})</span>
+                     </p>
                     </div>
 
                     <div className="relative w-full h-[440px] max-w-sm flex items-center justify-center my-2 touch-none">
@@ -1569,7 +1526,7 @@
               </div>
             )}
 
-            {/* STEP 3: RECOMMENDATIONS & NAHTLOSER ZWEIPHASIGER LADESCREEN */}
+            {/* STEP 3: RECOMMENDATIONS & LADESCREEN MIT PROZENTANZEIGE */}
             {step === 3 && (
               <div key="step-3" className="step-transition space-y-6">
                 {!hasNoBooksFound && (
@@ -1587,68 +1544,29 @@
 
                 {isLoadingAi && (
                   <div className="my-auto space-y-6">
-                    {/* PHASE 1: ERSTE 4 SEKUNDEN - ANIMATION OHNE INTERNEN HINTERGRUND UND MIT VERGRÖSSERTEM STRUDEL */}
-                    {loadingPhase === 1 && (
-                      <div className="space-y-4">
-                        <div className="relative w-full h-56 flex items-center justify-center pointer-events-none select-none">
-                          {/* VERGRÖSSERTER ZENTRALER STRUDEL */}
-                          <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-burgundy-700/60 via-amber-500/50 to-burgundy-900/60 animate-spin blur-xl opacity-75"></div>
-                          
-                          <div className="absolute w-14 h-14 rounded-full bg-paper-100/90 border border-paper-300 flex items-center justify-center shadow-md z-10">
-                            <span className="text-2xl animate-pulse">📖</span>
-                          </div>
-                          
-                          {/* SAUG-ANIMATIONEN IN DIE EXAKTE MITTE */}
-                          <div className="absolute inset-0">
-                            <span className="absolute animate-suck-tl text-[11px] font-bold text-burgundy-900 bg-white/90 px-2.5 py-1 rounded-full border border-burgundy-200 shadow-xs">
-                              {suckedWords[0]}
-                            </span>
-                            <span className="absolute animate-suck-tr text-[11px] font-bold text-amber-950 bg-white/90 px-2.5 py-1 rounded-full border border-amber-200 shadow-xs">
-                              {suckedWords[1]}
-                            </span>
-                            <span className="absolute animate-suck-bl text-[11px] font-bold text-ink-900 bg-white/90 px-2.5 py-1 rounded-full border border-paper-300 shadow-xs">
-                              {suckedWords[2]}
-                            </span>
-                            <span className="absolute animate-suck-br text-[11px] font-bold text-emerald-950 bg-white/90 px-2.5 py-1 rounded-full border border-emerald-200 shadow-xs">
-                              {suckedWords[3]}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-center">
-                          <p className="font-literary text-xs font-semibold text-burgundy-800">
-                            StorySense™ sucht Empfehlungen
+                    <div className="bg-white border border-paper-300 rounded-2xl p-6 text-center space-y-5 shadow-md animate-backdrop-in">
+                      <div className="space-y-3">
+                        <div className="text-3xl animate-bounce">📚</div>
+                        <div className="min-h-[44px] flex items-center justify-center px-2">
+                          <p className="font-literary text-ink-800 text-xs transition-all duration-300 leading-relaxed font-medium">
+                            {LOADING_PHRASES[loadingPhraseIndex]}
                           </p>
                         </div>
                       </div>
-                    )}
 
-                    {/* PHASE 2: NACH 4 SEKUNDEN ERSCHEINT DAS LADEFENSTER FÜR 7 SEKUNDEN */}
-                    {loadingPhase === 2 && (
-                      <div className="bg-white border border-paper-300 rounded-2xl p-6 text-center space-y-5 shadow-md animate-backdrop-in">
-                        <div className="space-y-3">
-                          <div className="text-3xl animate-bounce">📚</div>
-                          <div className="min-h-[44px] flex items-center justify-center px-2">
-                            <p className="font-literary text-ink-800 text-xs transition-all duration-300 leading-relaxed font-medium">
-                              {LOADING_PHRASES[loadingPhraseIndex]}
-                            </p>
-                          </div>
+                      <div className="space-y-2 max-w-xs mx-auto">
+                        <div className="flex justify-between items-center text-xs font-medium text-ink-700">
+                          <span>Einen Moment bitte... (noch ca. {countdownSeconds} Sek.)</span>
+                          <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
                         </div>
-
-                        <div className="space-y-2 max-w-xs mx-auto">
-                          <div className="flex justify-between items-center text-xs font-medium text-ink-700">
-                            <span>Einen Moment bitte... (noch ca. {countdownSeconds} Sek.)</span>
-                            <span className="font-mono text-sm font-bold text-burgundy-700">{loadingProgress}%</span>
-                          </div>
-                          <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
-                            <div 
-                              className="h-full bg-burgundy-700 rounded-full transition-all duration-300 ease-out shadow-sm"
-                              style={{ width: `${loadingProgress}%` }}
-                            ></div>
-                          </div>
+                        <div className="w-full h-2.5 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5">
+                          <div 
+                            className="h-full bg-burgundy-700 rounded-full transition-all duration-300 ease-out shadow-sm"
+                            style={{ width: `${loadingProgress}%` }}
+                          ></div>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 )}
 
@@ -1974,25 +1892,9 @@
                         </span>
                       </div>
 
-                      {/* AKTUELLE ANFRAGE / MATCH-GRÜNDE */}
+                      {/* DETAILS / PUNKTEAUFSCHLÜSSELUNG */}
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-burgundy-900 uppercase block">1. Aktuelle Anforderungs-Kriterien:</span>
-                        <div className="flex flex-wrap gap-1 pt-0.5">
-                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
-                            Genre: {techInfoBook.genre}
-                          </span>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
-                            Umfang: {techInfoBook.length}
-                          </span>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-white text-burgundy-900 border border-burgundy-200 rounded-md text-[10px] font-medium shadow-2xs">
-                            Erschienen: {techInfoBook.era}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* PERSONALISIERUNGS-BONUS */}
-                      <div className="space-y-1 border-t border-burgundy-200/60 pt-2">
-                        <span className="text-[10px] font-bold text-burgundy-900 uppercase block">2. Profil-Einfluss &amp; Historie-Bonus:</span>
+                        <span className="text-[10px] font-bold text-burgundy-900 uppercase block">Punkte-Aufschlüsselung:</span>
                         {techInfoBook.storySenseDetails && techInfoBook.storySenseDetails.length > 0 ? (
                           <div className="flex flex-wrap gap-1 pt-0.5">
                             {techInfoBook.storySenseDetails.map((detail, dIdx) => (
@@ -2004,7 +1906,7 @@
                           </div>
                         ) : (
                           <div className="flex items-center justify-between text-[10px] text-burgundy-800 italic bg-white/80 p-1.5 rounded border border-burgundy-200">
-                            <span>Kein gesonderter Historie-Bonus (Standard-Match)</span>
+                            <span>Standard-Match</span>
                             <span className="font-mono font-bold text-burgundy-700 bg-burgundy-100 px-1.5 py-0.5 rounded border border-burgundy-200 not-italic">0 Pts</span>
                           </div>
                         )}
@@ -2231,7 +2133,7 @@
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      🗓️ Sitzungen
+                      🗓️ Verlauf
                     </button>
                     <button
                       onClick={() => setDrawerTab('favorites')}
@@ -2315,7 +2217,7 @@
                               </div>
 
                               <div className="pt-1 flex items-center justify-between text-[11px] text-burgundy-700 font-bold">
-                                <span>Ergebnisse öffnen &amp; durchblättern ▶</span>
+                                <span>Ergebnisse öffnen &amp; durchblättern →</span>
                               </div>
                             </div>
                           ))
