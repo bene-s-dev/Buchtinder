@@ -313,7 +313,7 @@
       { id: 'st-sb4', genreIds: ['sachbuch'], icon: '🏛️', category: 'Geschichte', title: 'Historische Epochen', description: 'Packend aufbereitete Sachgeschichten über den Aufstieg und Fall großer Zivilisationen, entscheidende Schlachten, gesellschaftliche Revolutionen und kulturelle Blütezeiten vergangener Epochen.' },
       { id: 'st-sb5', genreIds: ['sachbuch'], icon: '🗣️', category: 'Rhetorik', title: 'Kommunikation & Sprache', description: 'Die Kunst des Überzeugens, Körpersprache und Konfliktlösung. Praktische Einblicke, wie Sprache wirkt, wie man in Verhandlungen erfolgreich argumentiert und zwischenmenschliche Verbindungen stärkt.' },
       { id: 'st-sb7', genreIds: ['sachbuch'], icon: '🌿', category: 'Umwelt', title: 'Ökologie & Natur', description: 'Tiefgehende Einblicke in die empfindlichen Ökosysteme der Erde, Artenvielfalt, Klimawandel und zukunftsfähige Konzepte zum Schutz unseres Heimatplaneten.' },
-      { id: 'st-na1', genreIds: ['sachbuch'], icon: '🌱', category: 'Naturwissen', title: 'Flora & Fauna', description: 'Faszinierende Sachverhalte über das Verhaltensmuster von Tieren, verblüffende botanische Netzwerke und die versteckten Wunder heimischer und exotic Ökosysteme.' },
+      { id: 'st-na1', genreIds: ['sachbuch'], icon: '🌱', category: 'Naturwissen', title: 'Flora & Fauna', description: 'Faszinierende Sachverhalte über das Verhaltensmuster von Tieren, verblüffende botanische Netzwerke und die versteckten Wunder heimischer und exotischer Ökosysteme.' },
       { id: 'st-na2', genreIds: ['sachbuch'], icon: '🌋', category: 'Geowissenschaften', title: 'Erde & Elemente', description: 'Die Naturgewalten unseres Planeten: Erdgeschichte, Vulkanismus, Plattentektonik und die Entstehung extremer Wetterphänomene verständlich und bildgewaltig erklärt.' },
 
       { id: 'st-hi1', genreIds: ['historisch'], icon: '👑', category: 'Panorama', title: 'Große Epochenporträts', description: 'Detailgetreue, meisterhaft recherchierte Epochengemälde vergangener Jahrhunderte. Das alltägliche Leben, politische Umbrüche und das Lebensgefühl einer Epoche werden durch authentische Schicksale lebendig.' },
@@ -1029,8 +1029,57 @@
             }
           }
 
-          const shuffled = filteredBooks.sort(() => 0.5 - Math.random());
-          const selectedBooks = shuffled.slice(0, 4).map(b => ({
+          // STORYSENSE™ PERSONALIZATION & SCORING ENGINE
+          const topProfileGenres = Object.keys(implicitProfile.genreStats || {});
+          const topProfileMoods = Object.keys(implicitProfile.moodStats || {});
+          const topProfileMotifs = implicitProfile.topLikedMotifs || [];
+
+          const scoredBooks = filteredBooks.map(b => {
+            let score = 0;
+            let learnedMatchReasons = [];
+
+            // 1. Historische Genre-Präferenz
+            if (topProfileGenres.includes(b.genre)) {
+              score += 3;
+              learnedMatchReasons.push(`Lieblings-Genre: ${b.genre}`);
+            }
+
+            // 2. Historische Motive-Präferenz (Titel / Kategorien)
+            if (Array.isArray(b.theme_ids)) {
+              const matchedMotifs = b.theme_ids.filter(tId => {
+                const themeObj = STORY_THEMES.find(st => st.id === tId);
+                return themeObj && (topProfileMotifs.includes(themeObj.title) || topProfileMotifs.includes(themeObj.category));
+              });
+
+              if (matchedMotifs.length > 0) {
+                score += matchedMotifs.length * 2;
+                learnedMatchReasons.push(`${matchedMotifs.length}x historische Lieblingsmotive`);
+              }
+            }
+
+            // 3. Historische Stimmungs-Präferenz
+            if (Array.isArray(b.moods) && b.moods.some(m => topProfileMoods.includes(m))) {
+              score += 1.5;
+              learnedMatchReasons.push("Passt zu deiner üblichen Stimmung");
+            }
+
+            // Basis-Match-Reason berechnen
+            let matchReason = b.match_reason || "StorySense™ Match: Passt zu deinen gewählten Kriterien.";
+            if (learnedMatchReasons.length > 0) {
+              matchReason += ` ✨ (StorySense™ Personalisierungs-Bonus: ${learnedMatchReasons.join(' & ')})`;
+            }
+
+            return {
+              ...b,
+              storySenseScore: score,
+              calculatedMatchReason: matchReason
+            };
+          });
+
+          // Nach Score sortieren + leichter Zufallsfaktor bei Punktgleichheit
+          scoredBooks.sort((a, b) => (b.storySenseScore + Math.random() * 0.5) - (a.storySenseScore + Math.random() * 0.5));
+
+          const selectedBooks = scoredBooks.slice(0, 4).map(b => ({
             id: b.id || 'db-internal-unknown',
             title: b.title,
             author: b.author,
@@ -1041,7 +1090,7 @@
             moods: b.moods || [],
             theme_ids: b.theme_ids || [],
             description: b.description,
-            matchReason: b.match_reason || "StorySense™ Match: Passt zu deinen bevorzugten Handlungs-Motiven."
+            matchReason: b.calculatedMatchReason
           }));
 
           setSessionShownBooks(prev => [...prev, ...selectedBooks]);
