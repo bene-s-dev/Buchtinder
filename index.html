@@ -834,6 +834,11 @@
 
       const hasNoBooksFound = aiRecommendations && !isLoadingAi && (!aiRecommendations.books || aiRecommendations.books.length === 0);
 
+      const getThemeTitle = (tId) => {
+        const found = STORY_THEMES.find(st => st.id === tId);
+        return found ? `${found.icon} ${found.title}` : tId;
+      };
+
       return (
         <div className="flex flex-col min-h-screen">
           <header className="bg-paper-50/90 backdrop-blur-md border-b border-paper-300 sticky top-0 z-40 px-4 py-3.5 shadow-sm">
@@ -1257,7 +1262,7 @@
                                     }`}
                                     title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
                                   >
-                                    <BookIcon filled={read} className="w-5 h-5" />
+                                    <BookIcon filled={read} className={`w-5 h-5 ${read ? 'text-white' : 'text-ink-700'}`} />
                                   </button>
 
                                   <button
@@ -1271,7 +1276,7 @@
                                     }`}
                                     title={fav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
                                   >
-                                    <HeartIcon filled={fav} className="w-5 h-5" />
+                                    <HeartIcon filled={fav} className={`w-5 h-5 ${fav ? 'text-white' : 'text-ink-700'}`} />
                                   </button>
                                 </div>
                               </div>
@@ -1380,7 +1385,7 @@
             >
               <div className="bg-white border border-paper-300 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 max-h-[90vh] flex flex-col justify-between">
                 <div className="space-y-3 overflow-y-auto custom-scrollbar pr-1">
-                  <div className="flex items-start justify-between pb-3 border-b border-paper-200">
+                  <div className="flex items-start justify-between pb-3">
                     <div>
                       <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Empfehlungs-Analyse</span>
                       <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{techInfoBook.title}</h3>
@@ -1406,31 +1411,25 @@
 
                     <div className="bg-burgundy-50 border border-burgundy-100 p-3 rounded-xl space-y-1">
                       <p className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px]">⚙️ Motiv- &amp; Stimmungs-Matching</p>
-                      <p><strong>Verknüpfte Motiv-IDs:</strong></p>
-                      <div className="flex flex-wrap gap-1 pt-0.5">
+                      <p><strong>Verknüpfte Motive:</strong></p>
+                      <div className="flex flex-col gap-1.5 pt-0.5">
                         {techInfoBook.theme_ids && techInfoBook.theme_ids.length > 0 ? (
                           techInfoBook.theme_ids.map((tId, idx) => (
-                            <code key={idx} className="bg-burgundy-100 text-burgundy-900 px-1.5 py-0.5 rounded text-[10px] font-mono">
-                              {tId}
-                            </code>
+                            <div key={idx} className="flex items-center space-x-1.5 bg-burgundy-100 text-burgundy-900 px-2 py-1 rounded-lg text-[11px] font-medium">
+                              <span>{getThemeTitle(tId)}</span>
+                              <span className="text-[9px] font-mono text-burgundy-700 opacity-75">({tId})</span>
+                            </div>
                           ))
                         ) : (
-                          <span className="text-ink-700 italic">Keine expliziten Motiv-Codes verknüpft</span>
+                          <span className="text-ink-700 italic">Keine expliziten Motive verknüpft</span>
                         )}
                       </div>
                       <p className="pt-2"><strong>Stimmungen:</strong> {techInfoBook.moods && techInfoBook.moods.length > 0 ? techInfoBook.moods.join(', ') : 'Standard'}</p>
                     </div>
-
-                    <div className="space-y-1">
-                      <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px]">💡 Algorithmus-Logik</p>
-                      <p className="text-ink-700 leading-relaxed">
-                        Dieses Buch wurde ausgewählt, weil es in Supabase den oben genannten Filtern (Genre, Umfang, Zeitraum) entspricht und durch dein User-Swipe-Profil bestätigt wurde.
-                      </p>
-                    </div>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-paper-200">
+                <div className="pt-3">
                   <button
                     onClick={() => setTechInfoBook(null)}
                     className="w-full py-2.5 bg-ink-900 hover:bg-ink-950 text-paper-50 text-xs font-bold rounded-xl transition shadow-sm"
