@@ -61,6 +61,10 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     
+    html {
+      scrollbar-gutter: stable;
+    }
+
     * {
       font-style: normal !important;
     }
@@ -136,7 +140,6 @@
       100% { opacity: 0; transform: translate(-50%, -12px); }
     }
 
-    /* Animationen: Schreibmaschine & Vergrößerte Magische Aura */
     @keyframes cursorBlink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
@@ -144,14 +147,14 @@
 
     @keyframes magicAura {
       0%, 100% {
-        transform: scale(0.92) rotate(0deg);
-        opacity: 0.6;
-        filter: blur(35px);
+        transform: scale(0.95) rotate(0deg);
+        opacity: 0.5;
+        filter: blur(20px);
       }
       50% {
-        transform: scale(1.15) rotate(4deg);
-        opacity: 0.9;
-        filter: blur(50px);
+        transform: scale(1.05) rotate(3deg);
+        opacity: 0.8;
+        filter: blur(28px);
       }
     }
 
@@ -416,7 +419,6 @@
               index++;
             } else {
               clearInterval(timer);
-              // Nach Satzende genau 3-mal blinken lassen (3 * 0.75s = 2250ms), dann sanft ausfaden
               cursorTimeout = setTimeout(() => {
                 setCursorFading(true);
                 removeTimeout = setTimeout(() => setShowCursor(false), 700);
@@ -470,6 +472,15 @@
           return saved ? JSON.parse(saved) : [];
         } catch (e) {
           return [];
+        }
+      });
+
+      const [lastSession, setLastSession] = useState(() => {
+        try {
+          const saved = localStorage.getItem('buchkompass_last_session');
+          return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+          return null;
         }
       });
 
@@ -633,7 +644,6 @@
             const { error } = await client.from('reports').insert([{
               book_title: reportingBook.title,
               book_author: reportingBook.author,
-              book_isbn: reportingBook.isbn || null,
               reasons: selectedReasons,
               comment: reportComment.trim() || null
             }]);
@@ -783,16 +793,9 @@
           }
 
           if (excludeAlreadyRead && alreadyRead.length > 0) {
-            const excludeIsbns = alreadyRead.map(b => b.isbn).filter(Boolean);
-            if (excludeIsbns.length > 0) {
-              query = query.not('isbn', 'in', `(${excludeIsbns.join(',')})`);
-            }
-          }
-
-          if (sessionShownBooks.length > 0) {
-            const shownIsbns = sessionShownBooks.map(b => b.isbn).filter(Boolean);
-            if (shownIsbns.length > 0) {
-              query = query.not('isbn', 'in', `(${shownIsbns.join(',')})`);
+            const excludeTitles = alreadyRead.map(b => b.title);
+            if (excludeTitles.length > 0) {
+              query = query.not('title', 'in', `(${excludeTitles.map(t => `"${t}"`).join(',')})`);
             }
           }
 
@@ -808,13 +811,7 @@
             if (selectedLength !== 'Egal') retryQuery = retryQuery.eq('length', selectedLength);
             if (selectedEra !== 'Egal') retryQuery = retryQuery.eq('era', selectedEra);
             const retryRes = await retryQuery;
-            
-            let retryBooks = retryRes.data || [];
-            if (sessionShownBooks.length > 0) {
-              const shownIsbns = sessionShownBooks.map(b => b.isbn).filter(Boolean);
-              retryBooks = retryBooks.filter(b => !shownIsbns.includes(b.isbn));
-            }
-            filteredBooks = retryBooks;
+            filteredBooks = retryRes.data || [];
           }
 
           if (filteredBooks.length === 0) {
@@ -846,8 +843,7 @@
             moods: b.moods || [],
             theme_ids: b.theme_ids || [],
             description: b.description,
-            matchReason: b.match_reason || "Enthält deine gewünschten Handlungs-Motive.",
-            isbn: b.isbn
+            matchReason: b.match_reason || "Enthält deine gewünschten Handlungs-Motive."
           }));
 
           setSessionShownBooks(prev => [...prev, ...selectedBooks]);
@@ -862,6 +858,18 @@
           }
 
           setAiRecommendations({ books: selectedBooks });
+
+          // Speichere die Sitzung im LocalStorage
+          const sessionData = {
+            timestamp: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            genres: selectedGenres,
+            moods: selectedMoods,
+            books: selectedBooks
+          };
+          setLastSession(sessionData);
+          try {
+            localStorage.setItem('buchkompass_last_session', JSON.stringify(sessionData));
+          } catch(e) {}
 
         } catch (err) {
           console.error("Supabase Error:", err);
@@ -950,7 +958,7 @@
                 <button 
                   onClick={() => setIsFavoritesOpen(true)}
                   className="p-2.5 rounded-xl bg-paper-100 hover:bg-paper-200 border border-paper-300 text-ink-800 transition-all duration-200 active:scale-95 relative flex items-center justify-center shadow-sm"
-                  title="Menü / Listen anzeigen"
+                  title="Menü / Profil anzeigen"
                 >
                   <span className="text-lg leading-none">☰</span>
                   {(favorites.length > 0 || alreadyRead.length > 0) && (
@@ -1258,9 +1266,8 @@
                 )}
 
                 {isLoadingAi && (
-                  <div className="relative my-auto">
-                    {/* Größere Magische Pulsier- & Schimmer-Aura im Hintergrund */}
-                    <div className="absolute -inset-8 sm:-inset-10 rounded-3xl bg-gradient-to-r from-burgundy-700/50 via-amber-500/45 to-burgundy-900/50 animate-aura -z-10"></div>
+                  <div className="relative my-auto overflow-hidden rounded-2xl p-1">
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-burgundy-700/40 via-amber-500/40 to-burgundy-900/40 animate-aura -z-10"></div>
 
                     <div className="bg-white/95 backdrop-blur-md border border-paper-300 rounded-2xl p-8 text-center space-y-6 shadow-xl relative z-10">
                       <div className="space-y-3">
@@ -1382,7 +1389,6 @@
                               </div>
                             </div>
 
-                            {/* Angepasste Button-Anordnung: Melden & Info links, Suchen ganz rechts unten */}
                             <div className="flex justify-between items-center pt-1">
                               <div className="flex items-center space-x-1.5">
                                 <button
@@ -1541,7 +1547,7 @@
             </div>
           )}
 
-          {/* TECH INFO MODAL */}
+          {/* TECH INFO MODAL (Ohne ISBN) */}
           {techInfoBook && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) setTechInfoBook(null); }}
@@ -1570,10 +1576,6 @@
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">DB-ID</span>
                           <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.id}</code>
-                        </div>
-                        <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
-                          <span className="text-ink-700 font-medium">ISBN</span>
-                          <code className="bg-paper-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-ink-900">{techInfoBook.isbn || 'Nicht hinterlegt'}</code>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">Genre</span>
@@ -1725,7 +1727,7 @@
             </div>
           )}
 
-          {/* DRAWER (FAVORITES & ALREADY READ) */}
+          {/* DRAWER (FAVORITES, ALREADY READ & PROFILE/LAST SESSION) */}
           {isFavoritesOpen && (
             <div 
               onClick={(e) => { if (e.target === e.currentTarget) handleCloseDrawer(); }}
@@ -1739,10 +1741,10 @@
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between pb-3">
+                  <div className="flex items-center justify-between pb-3 border-b border-paper-300">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xl">📚</span>
-                      <h2 className="font-literary font-bold text-lg text-ink-900">BuchKompass-Listen</h2>
+                      <span className="text-xl">👤</span>
+                      <h2 className="font-literary font-bold text-lg text-ink-900">Mein Profil &amp; Listen</h2>
                     </div>
                     <button
                       onClick={handleCloseDrawer}
@@ -1752,154 +1754,242 @@
                     </button>
                   </div>
 
-                  <div className="flex rounded-xl bg-paper-200 p-1 my-3 border border-paper-300">
+                  <div className="grid grid-cols-3 gap-1 rounded-xl bg-paper-200 p-1 my-3 border border-paper-300 text-center">
+                    <button
+                      onClick={() => setDrawerTab('profile')}
+                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
+                        drawerTab === 'profile' 
+                          ? 'bg-ink-900 text-white shadow-sm' 
+                          : 'text-ink-700 hover:text-ink-900'
+                      }`}
+                    >
+                      👤 Profil
+                    </button>
                     <button
                       onClick={() => setDrawerTab('favorites')}
-                      className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
+                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
                         drawerTab === 'favorites' 
                           ? 'bg-burgundy-700 text-white shadow-sm' 
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      ❤️ Favoriten ({favorites.length})
+                      ❤️ ({favorites.length})
                     </button>
                     <button
                       onClick={() => setDrawerTab('alreadyRead')}
-                      className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
+                      className={`py-1.5 text-xs font-bold rounded-lg transition ${
                         drawerTab === 'alreadyRead' 
                           ? 'bg-amber-600 text-white shadow-sm' 
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      📖 Schon gelesen ({alreadyRead.length})
+                      📖 ({alreadyRead.length})
                     </button>
                   </div>
-                </div>
-
-                {drawerTab === 'favorites' && favorites.length > 0 && (
-                  <div className="mb-2 space-y-2">
-                    <button
-                      onClick={handleShareFavorites}
-                      className="w-full py-2.5 px-3 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-medium rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
-                    >
-                      <ShareIcon className="w-4 h-4" />
-                      <span>Favoriten-Liste teilen / kopieren</span>
-                    </button>
-                    {copyNotice && (
-                      <p className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 p-1.5 rounded-lg text-center font-medium transition">
-                        ✓ {copyNotice}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {drawerTab === 'alreadyRead' && alreadyRead.length > 0 && (
-                  <div className="mb-2 space-y-2">
-                    <button
-                      onClick={() => {
-                        handleCloseDrawer();
-                        fetchAiBookRecommendations(likedThemes, dislikedThemes, true, true);
-                      }}
-                      className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
-                    >
-                      <span>🔄 Nochmal suchen (Bereits gelesene ausschließen)</span>
-                    </button>
-                  </div>
-                )}
-
-                <div className="bg-amber-50/80 border border-amber-200 p-2.5 rounded-xl my-1 text-[11px] text-amber-900 flex items-start space-x-2 leading-relaxed">
-                  <span className="text-sm flex-shrink-0">ℹ️</span>
-                  <p>
-                    <strong>Hinweis:</strong> Deine Listen werden im Browser gespeichert und gehen verloren wenn du Browserdaten löschst.
-                  </p>
                 </div>
 
                 <div className="flex-grow overflow-y-auto space-y-3 custom-scrollbar my-2 pr-1">
-                  {drawerTab === 'favorites' ? (
-                    favorites.length === 0 ? (
-                      <div className="text-center py-12 space-y-2">
-                        <div className="text-3xl opacity-50">💔</div>
-                        <p className="font-literary text-sm text-ink-800 font-medium">Noch keine Favoriten gespeichert.</p>
-                        <p className="text-xs text-ink-700 max-w-xs mx-auto">
-                          Tippe bei Empfehlungen auf das Herz-Symbol, um Bücher in deine Merkliste aufzunehmen.
-                        </p>
-                      </div>
-                    ) : (
-                      favorites.map((book, idx) => (
-                        <div 
-                          key={idx}
-                          className="bg-white border border-paper-300 rounded-xl p-3.5 shadow-sm space-y-2 relative transition hover:border-burgundy-600/30"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
-                                {book.genre} ({book.year})
-                              </span>
-                              <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">
-                                {book.title}
-                              </h4>
-                              <p className="text-xs text-ink-700 font-medium">
-                                von {book.author}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => toggleFavorite(book)}
-                              className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold transition flex-shrink-0 active:scale-95"
-                              title="Aus Favoriten entfernen"
-                            >
-                              ✕
-                            </button>
+                  
+                  {/* TAB: PROFIL & LETZTE SITZUNG */}
+                  {drawerTab === 'profile' && (
+                    <div className="space-y-4">
+                      <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-2 shadow-2xs">
+                        <h3 className="font-literary font-bold text-sm text-ink-900">Übersicht</h3>
+                        <div className="grid grid-cols-2 gap-2 pt-1 text-center">
+                          <div className="bg-paper-50 p-2.5 rounded-lg border border-paper-200">
+                            <span className="block text-lg font-bold text-burgundy-700">{favorites.length}</span>
+                            <span className="text-[10px] text-ink-700 font-semibold uppercase">Favoriten</span>
                           </div>
-                          {book.matchReason && (
-                            <p className="text-[11px] text-burgundy-900 bg-burgundy-50 p-2 rounded-lg">
-                              🎯 {book.matchReason}
+                          <div className="bg-paper-50 p-2.5 rounded-lg border border-paper-200">
+                            <span className="block text-lg font-bold text-amber-700">{alreadyRead.length}</span>
+                            <span className="text-[10px] text-ink-700 font-semibold uppercase">Gelesen</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-literary font-bold text-sm text-ink-900">Letzte Such-Sitzung</h3>
+                          {lastSession && (
+                            <span className="text-[10px] text-ink-700 font-medium">{lastSession.timestamp}</span>
+                          )}
+                        </div>
+
+                        {lastSession && lastSession.books && lastSession.books.length > 0 ? (
+                          <div className="space-y-3">
+                            <div className="bg-paper-50 border border-paper-200 p-2.5 rounded-xl text-xs space-y-1">
+                              <p className="text-ink-700"><strong>Genres:</strong> {lastSession.genres ? lastSession.genres.join(', ') : 'Keine'}</p>
+                              {lastSession.moods && lastSession.moods.length > 0 && (
+                                <p className="text-ink-700"><strong>Stimmungen:</strong> {lastSession.moods.join(', ')}</p>
+                              )}
+                            </div>
+
+                            <p className="text-xs font-semibold text-burgundy-800 uppercase tracking-wider">Vorschläge der Sitzung:</p>
+                            
+                            {lastSession.books.map((book, idx) => {
+                              const fav = isFavorite(book);
+                              const read = isAlreadyRead(book);
+                              return (
+                                <div key={idx} className="bg-white border border-paper-300 rounded-xl p-3 shadow-2xs space-y-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                      <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">{book.title}</h4>
+                                      <p className="text-xs text-ink-700">von {book.author}</p>
+                                    </div>
+                                    <div className="flex space-x-1">
+                                      <button
+                                        onClick={() => toggleFavorite(book)}
+                                        className={`p-1.5 rounded-lg border text-xs ${fav ? 'bg-burgundy-700 text-white' : 'bg-paper-50 text-ink-700'}`}
+                                      >
+                                        <HeartIcon filled={fav} className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => toggleAlreadyRead(book)}
+                                        className={`p-1.5 rounded-lg border text-xs ${read ? 'bg-amber-600 text-white' : 'bg-paper-50 text-ink-700'}`}
+                                      >
+                                        <BookIcon filled={read} className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="bg-white border border-paper-300 rounded-xl p-6 text-center text-xs text-ink-700 space-y-1">
+                            <p className="font-semibold">Keine gespeicherte Sitzung vorhanden.</p>
+                            <p className="text-[11px] text-ink-700">Starte eine Suche auf der Startseite, um dir hier Empfehlungen zu merken.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB: FAVORITEN */}
+                  {drawerTab === 'favorites' && (
+                    <>
+                      {favorites.length > 0 && (
+                        <div className="mb-2 space-y-2">
+                          <button
+                            onClick={handleShareFavorites}
+                            className="w-full py-2.5 px-3 bg-burgundy-700 hover:bg-burgundy-800 text-white text-xs font-medium rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
+                          >
+                            <ShareIcon className="w-4 h-4" />
+                            <span>Favoriten-Liste teilen / kopieren</span>
+                          </button>
+                          {copyNotice && (
+                            <p className="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 p-1.5 rounded-lg text-center font-medium transition">
+                              ✓ {copyNotice}
                             </p>
                           )}
                         </div>
-                      ))
-                    )
-                  ) : (
-                    alreadyRead.length === 0 ? (
-                      <div className="text-center py-12 space-y-2">
-                        <div className="text-3xl opacity-50">📖</div>
-                        <p className="font-literary text-sm text-ink-800 font-medium">Noch keine Bücher als gelesen markiert.</p>
-                        <p className="text-xs text-ink-700 max-w-xs mx-auto">
-                          Tippe bei Empfehlungen auf das Buch-Symbol, um gelesene Bücher zu markieren.
-                        </p>
-                      </div>
-                    ) : (
-                      alreadyRead.map((book, idx) => (
-                        <div 
-                          key={idx}
-                          className="bg-white border border-paper-300 rounded-xl p-3.5 shadow-sm space-y-2 relative transition hover:border-amber-600/30"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
-                                Schon gelesen &bull; {book.genre}
-                              </span>
-                              <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">
-                                {book.title}
-                              </h4>
-                              <p className="text-xs text-ink-700 font-medium">
-                                von {book.author}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => toggleAlreadyRead(book)}
-                              className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold transition flex-shrink-0 active:scale-95"
-                              title="Aus 'Schon gelesen' entfernen"
-                            >
-                              ✕
-                            </button>
-                          </div>
+                      )}
+
+                      {favorites.length === 0 ? (
+                        <div className="text-center py-12 space-y-2">
+                          <div className="text-3xl opacity-50">💔</div>
+                          <p className="font-literary text-sm text-ink-800 font-medium">Noch keine Favoriten gespeichert.</p>
+                          <p className="text-xs text-ink-700 max-w-xs mx-auto">
+                            Tippe bei Empfehlungen auf das Herz-Symbol, um Bücher in deine Merkliste aufzunehmen.
+                          </p>
                         </div>
-                      ))
-                    )
+                      ) : (
+                        favorites.map((book, idx) => (
+                          <div 
+                            key={idx}
+                            className="bg-white border border-paper-300 rounded-xl p-3.5 shadow-sm space-y-2 relative transition hover:border-burgundy-600/30"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
+                                  {book.genre} ({book.year})
+                                </span>
+                                <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">
+                                  {book.title}
+                                </h4>
+                                <p className="text-xs text-ink-700 font-medium">
+                                  von {book.author}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => toggleFavorite(book)}
+                                className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold transition flex-shrink-0 active:scale-95"
+                                title="Aus Favoriten entfernen"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                            {book.matchReason && (
+                              <p className="text-[11px] text-burgundy-900 bg-burgundy-50 p-2 rounded-lg">
+                                🎯 {book.matchReason}
+                              </p>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </>
                   )}
+
+                  {/* TAB: SCHON GELESEN */}
+                  {drawerTab === 'alreadyRead' && (
+                    <>
+                      {alreadyRead.length > 0 && (
+                        <div className="mb-2 space-y-2">
+                          <button
+                            onClick={() => {
+                              handleCloseDrawer();
+                              fetchAiBookRecommendations(likedThemes, dislikedThemes, true, true);
+                            }}
+                            className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center space-x-2 transition active:scale-95"
+                          >
+                            <span>🔄 Nochmal suchen (Bereits gelesene ausschließen)</span>
+                          </button>
+                        </div>
+                      )}
+
+                      {alreadyRead.length === 0 ? (
+                        <div className="text-center py-12 space-y-2">
+                          <div className="text-3xl opacity-50">📖</div>
+                          <p className="font-literary text-sm text-ink-800 font-medium">Noch keine Bücher als gelesen markiert.</p>
+                          <p className="text-xs text-ink-700 max-w-xs mx-auto">
+                            Tippe bei Empfehlungen auf das Buch-Symbol, um gelesene Bücher zu markieren.
+                          </p>
+                        </div>
+                      ) : (
+                        alreadyRead.map((book, idx) => (
+                          <div 
+                            key={idx}
+                            className="bg-white border border-paper-300 rounded-xl p-3.5 shadow-sm space-y-2 relative transition hover:border-amber-600/30"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
+                                  Schon gelesen &bull; {book.genre}
+                                </span>
+                                <h4 className="font-literary font-bold text-sm text-ink-900 leading-tight">
+                                  {book.title}
+                                </h4>
+                                <p className="text-xs text-ink-700 font-medium">
+                                  von {book.author}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => toggleAlreadyRead(book)}
+                                className="text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg text-xs font-bold transition flex-shrink-0 active:scale-95"
+                                title="Aus 'Schon gelesen' entfernen"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </>
+                  )}
+
                 </div>
 
-                <div className="pt-3">
+                <div className="pt-3 border-t border-paper-300">
                   <button
                     onClick={handleCloseDrawer}
                     className="w-full py-2.5 bg-ink-900 hover:bg-ink-950 text-paper-50 text-xs font-literary font-bold rounded-xl transition shadow-sm active:scale-98"
