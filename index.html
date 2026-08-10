@@ -1885,35 +1885,34 @@
 
                   <div className="space-y-3 text-xs text-ink-800">
 
-                    {/* 1. STORYSENSE™ MATCH-ANALYSE (OBERSTE KARTE) */}
+                    {/* 1. STORYSENSE™ MATCH-ANALYSE */}
                     <div className="bg-burgundy-50 border border-burgundy-200 p-3.5 rounded-xl space-y-2.5 shadow-2xs">
-                        <span className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px]">⚡ StorySense™-Score:</span>
-                        <span className="font-mono font-bold text-burgundy-900 text-xs px-2.5 py-0.5 bg-white rounded-md border border-burgundy-300 shadow-2xs">
-                          {techInfoBook.storySenseScore !== undefined ? techInfoBook.storySenseScore : 0} Pts
-                        </span>
-                      </div>
-
-                      {/* DETAILS / PUNKTEAUFSCHLÜSSELUNG */}
-                      <div className="space-y-1">
-                        {techInfoBook.storySenseDetails && techInfoBook.storySenseDetails.length > 0 ? (
-                          <div className="flex flex-wrap gap-1 pt-0.5">
-                            {techInfoBook.storySenseDetails.map((detail, dIdx) => (
-                              <span key={dIdx} className="inline-flex items-center px-2 py-0.5 bg-burgundy-700 text-white border border-burgundy-800 rounded-md text-[10px] font-semibold shadow-2xs">
-                                <span>{detail.label}</span>
-                                <span className="font-mono font-bold text-burgundy-900 bg-burgundy-100 px-1 rounded ml-1 text-[9px] border border-burgundy-200">+{detail.points} Pts</span>
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between text-[10px] text-burgundy-800 italic bg-white/80 p-1.5 rounded border border-burgundy-200">
-                            <span>Standard-Match</span>
-                            <span className="font-mono font-bold text-burgundy-700 bg-burgundy-100 px-1.5 py-0.5 rounded border border-burgundy-200 not-italic">0 Pts</span>
-                          </div>
-                        )}
-                      </div>
+                      <span className="font-bold text-burgundy-900 uppercase tracking-wider text-[10px]">⚡ StorySense™-Score:</span>
+                      <span className="font-mono font-bold text-burgundy-900 text-xs px-2.5 py-0.5 bg-white rounded-md border border-burgundy-300 shadow-2xs">
+                        {techInfoBook.storySenseScore !== undefined ? techInfoBook.storySenseScore : 0} Pts
+                      </span>
                     </div>
 
-                    {/* 2. DATENBANK-METADATEN (MITTERE KARTE) */}
+                    {/* DETAILS / PUNKTEAUFSCHLÜSSELUNG */}
+                    <div className="space-y-1">
+                      {techInfoBook.storySenseDetails && techInfoBook.storySenseDetails.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 pt-0.5">
+                          {techInfoBook.storySenseDetails.map((detail, dIdx) => (
+                            <span key={dIdx} className="inline-flex items-center px-2 py-0.5 bg-burgundy-700 text-white border border-burgundy-800 rounded-md text-[10px] font-semibold shadow-2xs">
+                              <span>{detail.label}</span>
+                              <span className="font-mono font-bold text-burgundy-900 bg-burgundy-100 px-1 rounded ml-1 text-[9px] border border-burgundy-200">+{detail.points} Pts</span>
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between text-[10px] text-burgundy-800 italic bg-white/80 p-1.5 rounded border border-burgundy-200">
+                          <span>Standard-Match</span>
+                          <span className="font-mono font-bold text-burgundy-700 bg-burgundy-100 px-1.5 py-0.5 rounded border border-burgundy-200 not-italic">0 Pts</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 2. DATENBANK-METADATEN */}
                     <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-1">
                       <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px] pb-1">📊 Datenbank-Metadaten</p>
                       <div className="space-y-1.5 pt-0.5">
@@ -1936,7 +1935,7 @@
                       </div>
                     </div>
 
-                    {/* 3. MOTIVE & STIMMUNGEN (UNTERSTE KARTE MIT EINZELNEN BADGES) */}
+                    {/* 3. MOTIVE & STIMMUNGEN */}
                     <div className="bg-paper-50 border border-paper-200 p-3 rounded-xl space-y-2">
                       <p className="font-bold text-ink-900 uppercase tracking-wider text-[10px]">🗳️ Motive &amp; Stimmungen</p>
                       
