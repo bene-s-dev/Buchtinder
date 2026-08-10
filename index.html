@@ -196,12 +196,12 @@
       </svg>
     );
 
-    const BookIcon = ({ filled = false, className = "w-5 h-5" }) => (
+    const BookIcon = ({ className = "w-5 h-5" }) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        fill={filled ? "currentColor" : "none"}
-        stroke={filled ? "white" : "currentColor"}
+        fill="none"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1633,7 +1633,7 @@
                                     }`}
                                     title={read ? "Aus 'Schon gelesen' entfernen" : "Zu 'Schon gelesen' hinzufügen"}
                                   >
-                                    <BookIcon filled={read} className="w-5 h-5 text-current" />
+                                    <BookIcon className={`w-5 h-5 ${read ? 'text-white' : 'text-ink-700'}`} />
                                   </button>
 
                                   <button
