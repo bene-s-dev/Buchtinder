@@ -187,6 +187,74 @@
       return str.charAt(0).toUpperCase() + str.slice(1);
     };
 
+    // Visuelles Diagramm für die StorySense Geschmacks-DNA
+    const StorySenseChart = ({ genreStats = {}, moodStats = {} }) => {
+      const allEntries = [
+        ...Object.entries(genreStats).map(([label, count]) => ({ label: capitalize(label), count, type: 'genre' })),
+        ...Object.entries(moodStats).map(([label, count]) => ({ label, count, type: 'mood' }))
+      ].sort((a, b) => b.count - a.count).slice(0, 5);
+
+      if (allEntries.length === 0) {
+        return (
+          <div className="bg-paper-50 border border-paper-200 p-3.5 rounded-xl text-center text-xs text-ink-700 italic">
+            Noch nicht genügend Daten für eine visuelle Analyse gesammelt.
+          </div>
+        );
+      }
+
+      const maxCount = Math.max(...allEntries.map(e => e.count), 1);
+
+      return (
+        <div className="bg-paper-50 border border-paper-200 rounded-xl p-3.5 space-y-3 shadow-2xs">
+          <div className="flex items-center justify-between pb-1 border-b border-paper-200">
+            <h4 className="font-literary font-bold text-[11px] text-ink-900 uppercase tracking-wider">
+              📊 StorySense™ Geschmacks-DNA
+            </h4>
+            <span className="text-[10px] text-ink-700 font-medium">Top-Verteilung</span>
+          </div>
+
+          <div className="space-y-2 pt-0.5">
+            {allEntries.map((entry, idx) => {
+              const percentage = Math.round((entry.count / maxCount) * 100);
+              const isGenre = entry.type === 'genre';
+
+              return (
+                <div key={idx} className="space-y-1">
+                  <div className="flex justify-between text-[11px] font-semibold text-ink-800">
+                    <span className="flex items-center space-x-1.5 truncate">
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isGenre ? 'bg-burgundy-700' : 'bg-amber-600'}`}></span>
+                      <span className="truncate">{entry.label}</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-ink-700 ml-1 flex-shrink-0">{entry.count}x</span>
+                  </div>
+                  
+                  <div className="w-full h-2 bg-paper-200 rounded-full overflow-hidden border border-paper-300 p-0.5 flex">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isGenre ? 'bg-burgundy-700' : 'bg-amber-600'
+                      }`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-center space-x-4 pt-1.5 border-t border-paper-200 text-[10px] font-medium text-ink-700">
+            <span className="flex items-center space-x-1">
+              <span className="w-2 h-2 rounded-full bg-burgundy-700 inline-block"></span>
+              <span>Genres</span>
+            </span>
+            <span className="flex items-center space-x-1">
+              <span className="w-2 h-2 rounded-full bg-amber-600 inline-block"></span>
+              <span>Stimmungen</span>
+            </span>
+          </div>
+        </div>
+      );
+    };
+
     const HeartIcon = ({ filled = false, className = "w-5 h-5" }) => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +321,7 @@
       { id: 'st-f6', genreIds: ['fantasy'], icon: '🏛️', category: 'Akademie', title: 'Magische Ausbildung', description: 'Im Zentrum steht das aufregende Leben an einer elitären Zauberschule oder alten Universität. Neben strengen Prüfungen, verbotenen Zaubersprüchen und magischen Wettkämpfen entfalten sich tiefe Rivalitäten, heimliche Liebschaften und das Aufdecken uralter, in den Schulgemäuern vergrabener Geheimnisse.' },
       { id: 'st-ma1', genreIds: ['fantasy'], icon: '🔮', category: 'Schicksal', title: 'Uralte Prophezeiungen & Artefakte', description: 'Eine jahrtausendealte Vorhersage erwacht zu neuem Leben und fordert unwillige Helden heraus. Die Suche nach verschollenen, extrem mächtigen Artefakten wird zum Wettlauf gegen die Zeit, bevor eine Erwachende dunkle Macht die Welt in ewige Finsternis stürzt.' },
 
-      { id: 'st-rom1', genreIds: ['romantasy', 'dark_romance'], icon: '✨', category: 'Romantasy', title: 'Verbotene Magische Liebe', description: 'Eine hochexplosive Beziehungsdynamik zwischen two Figuren, die eigentlich Todfeinde sein müssten. Sie gehören verfeindeten Magierfraktionen, Rivalisierenden Höfen oder düsteren Orden an – doch je mehr sie sich bekämpfen, desto unkontrollierbarer wird die magische und emotionale Anziehungskraft zwischen ihnen.' },
+      { id: 'st-rom1', genreIds: ['romantasy', 'dark_romance'], icon: '✨', category: 'Romantasy', title: 'Verbotene Magische Liebe', description: 'Eine hochexplosive Beziehungsdynamik zwischen zwei Figuren, die eigentlich Todfeinde sein müssten. Sie gehören verfeindeten Magierfraktionen, Rivalisierenden Höfen oder düsteren Orden an – doch je mehr sie sich bekämpfen, desto unkontrollierbarer wird die magische und emotionale Anziehungskraft zwischen ihnen.' },
       { id: 'st-rom2', genreIds: ['romantasy', 'dark_romance'], icon: '👑', category: 'Romantasy', title: 'Höfische Magie & Bünde', description: 'Glanzvolle Ballfälle an den Höfen mächtiger Fae, Vampire oder Magier, bei denen hinter jedem Lächeln ein tödlicher Dolch lauert. Blutschwüre, unverbrüchliche Verträge und politische Zwangsheiraten verstricken die Hauptfiguren in ein gefährliches Spiel aus Leidenschaft und Erpressung.' },
 
       { id: 'st-t1', genreIds: ['thriller', 'cozy_crime'], icon: '🧠', category: 'Psychologie', title: 'Psychologisches Katz-und-Maus-Spiel', description: 'Ein nervenzerreißendes Verwirrspiel voller psychologischer Manipulation, Täuschung und unzuverlässiger Erzähler. Nichts ist, wie es scheint: Geheimnisse werden schrittweise enthüllt, während die Grenze zwischen Täter und Opfer im Strudel aus Wahn, Lügen und Paranoia vollkommen verschwimmt.' },
@@ -829,7 +897,7 @@
           }, 1800);
         } catch (err) {
           alert("Fehler beim Absenden der Meldung.");
-        } finally {
+        } font-sans finally {
           setIsSubmittingReport(false);
         }
       };
@@ -2236,19 +2304,25 @@
                     </div>
                   )}
 
-                  {/* TAB: EXPERT SETTINGS (READ-ONLY LEARNED PROFILE + RESET & CSV) */}
+                  {/* TAB: EXPERT SETTINGS (READ-ONLY LEARNED PROFILE + VISUAL CHART + RESET & CSV) */}
                   {drawerTab === 'expert' && (
                     <div className="space-y-4">
                       {/* READ-ONLY IMPLICIT PROFILE */}
                       <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
-                        <div className="pb-2 flex items-center justify-between">
+                        <div className="pb-1 flex items-center justify-between">
                           <div>
                             <h3 className="font-literary font-bold text-sm text-ink-900">BuchKompass-Nutzerprofil</h3>
                           </div>
                           <span className="text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold">Aktiv</span>
                         </div>
 
-                        <div className="space-y-2 text-xs">
+                        {/* VISUELLES GESCHMACKS-DNA DIAGRAMM */}
+                        <StorySenseChart 
+                          genreStats={implicitProfile.genreStats} 
+                          moodStats={implicitProfile.moodStats} 
+                        />
+
+                        <div className="space-y-2 text-xs pt-1">
                           <div className="flex justify-between items-center bg-paper-50 p-2 rounded-lg border border-paper-200">
                             <span className="font-semibold text-ink-800">Gesamte Suchdurchläufe:</span>
                             <span className="font-bold text-burgundy-700">{implicitProfile.searchCount || 0}</span>
@@ -2329,7 +2403,7 @@
                       {/* CSV IMPORT & EXPORT */}
                       <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
                         <div className="pb-2">
-                          <h3 className="font-literary font-bold text-sm text-ink-900">Daten-Sicherung !!! AKTUELL OHNE FUNKTION !!!</h3>
+                          <h3 className="font-literary font-bold text-sm text-ink-900">Daten-Sicherung (CSV)</h3>
                           <p className="text-[11px] text-ink-700 font-normal">Sichere oder übertrage alle Sitzungen, Favoriten und das gelernte Profil.</p>
                         </div>
 
