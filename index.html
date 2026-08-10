@@ -644,8 +644,8 @@
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
         const formattedList = favorites
-  .map((b, i) => `${i + 1}. "${b.title}" von ${b.author}`)
-  .join('\n');
+          .map((b, i) => `${i + 1}. "${b.title}" von ${b.author}`)
+          .join('\n');
         const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde dein nächstes Buch auf https://buchkompass.benedrive.de`;
 
         if (navigator.share) {
