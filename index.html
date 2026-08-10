@@ -897,7 +897,7 @@
           }, 1800);
         } catch (err) {
           alert("Fehler beim Absenden der Meldung.");
-        } font-sans finally {
+        } finally {
           setIsSubmittingReport(false);
         }
       };
@@ -2419,7 +2419,7 @@
                             <label className="text-[11px] font-bold text-ink-800 block mb-1.5">CSV-Datei importieren:</label>
                             <input 
                               type="file" 
-                              accept=".csv"
+                              accept=".csv, text/csv, application/vnd.ms-excel"
                               onChange={handleImportCSV}
                               className="block w-full text-xs text-ink-700 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-paper-200 file:text-ink-800 hover:file:bg-paper-300 cursor-pointer"
                             />
