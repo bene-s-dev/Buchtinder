@@ -1275,7 +1275,7 @@
                         <button
                           key={g.id}
                           onClick={() => toggleGenre(g.id)}
-                          className={`p-3 rounded-xl text-left text-xs font-medium transition-all duration-200 border flex items-center justify-between ${
+                          className={`p-3 rounded-xl text-left text-xs font-medium transition-all duration-200 border flex items-center justify-between uppercase ${
                             isSelected 
                               ? 'bg-burgundy-700 border-burgundy-800 text-white font-semibold shadow-sm scale-[1.01]' 
                               : 'bg-white border-paper-300 text-ink-800 hover:border-burgundy-600/40 hover:bg-paper-50'
@@ -1293,11 +1293,11 @@
                       <select
                         onChange={handleRareGenreSelect}
                         value=""
-                        className="w-full p-2.5 rounded-xl border border-paper-300 bg-white text-xs text-ink-800 font-medium focus:outline-none focus:border-burgundy-700 shadow-2xs"
+                        className="w-full p-2.5 rounded-xl border border-paper-300 bg-white text-xs text-ink-800 font-medium uppercase focus:outline-none focus:border-burgundy-700 shadow-2xs"
                       >
-                        <option value="" disabled>Weitere Genres</option>
+                        <option value="" disabled className="normal-case">Weitere Genres</option>
                         {availableRareGenres.map(rg => (
-                          <option key={rg.id} value={rg.id}>
+                          <option key={rg.id} value={rg.id} className="uppercase">
                             {rg.name}
                           </option>
                         ))}
@@ -1311,7 +1311,7 @@
                         <span 
                           key={rg.id} 
                           onClick={() => toggleGenre(rg.id)}
-                          className="inline-flex items-center space-x-1 px-2.5 py-1 bg-burgundy-700 text-white text-[11px] font-semibold rounded-lg cursor-pointer shadow-2xs hover:bg-burgundy-800 transition"
+                          className="inline-flex items-center space-x-1 px-2.5 py-1 bg-burgundy-700 text-white text-[11px] font-semibold rounded-lg cursor-pointer uppercase shadow-2xs hover:bg-burgundy-800 transition"
                         >
                           <span>{rg.name}</span>
                           <span className="ml-1 text-xs">✕</span>
@@ -1611,7 +1611,7 @@
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex-grow">
                                   <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">
-                                    Empfehlung #{globalIdx + 1} &bull; {book.genre} ({book.year})
+                                    Empfehlung #{globalIdx + 1} &bull; <span className="uppercase">{book.genre}</span> ({book.year})
                                   </span>
                                   <h3 className="font-literary font-bold text-lg text-ink-900 leading-tight mt-0.5">
                                     {book.title}
@@ -1922,7 +1922,7 @@
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">Genre</span>
-                          <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[11px] font-semibold rounded-md border border-paper-300">{techInfoBook.genre}</span>
+                          <span className="inline-block px-2 py-0.5 bg-paper-200 text-ink-800 text-[11px] font-semibold uppercase rounded-md border border-paper-300">{techInfoBook.genre}</span>
                         </div>
                         <div className="flex items-center justify-between bg-white border border-paper-300 px-2.5 py-1.5 rounded-lg">
                           <span className="text-ink-700 font-medium">Umfang</span>
@@ -2196,7 +2196,7 @@
                               <div className="space-y-1.5">
                                 <div className="flex flex-wrap gap-1">
                                   {session.genres && session.genres.map((g, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-burgundy-700 text-white text-[10px] font-semibold rounded-md">
+                                    <span key={i} className="px-2 py-0.5 bg-burgundy-700 text-white text-[10px] font-semibold uppercase rounded-md">
                                       {g}
                                     </span>
                                   ))}
@@ -2268,7 +2268,7 @@
                             <div className="flex flex-wrap gap-1">
                               {Object.keys(implicitProfile.genreStats || {}).length > 0 ? (
                                 Object.entries(implicitProfile.genreStats).map(([g, count]) => (
-                                  <span key={g} className="px-2 py-0.5 bg-burgundy-50 border border-burgundy-200 text-burgundy-900 text-[10px] font-bold rounded-md">
+                                  <span key={g} className="px-2 py-0.5 bg-burgundy-50 border border-burgundy-200 text-burgundy-900 text-[10px] font-bold uppercase rounded-md">
                                     {g} ({count}x)
                                   </span>
                                 ))
