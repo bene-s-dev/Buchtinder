@@ -1001,7 +1001,7 @@
 
             if (selectedGenres.includes(b.genre)) {
               score += 4;
-              storySenseDetails.push({ label: `Aktuelles Such-Genre (${b.genre})`, points: 4 });
+              storySenseDetails.push({ label: `Genre (${b.genre})`, points: 4 });
             }
 
             if (Array.isArray(b.theme_ids) && likedList.length > 0) {
@@ -1009,7 +1009,7 @@
               if (matchedCurrentMotifs.length > 0) {
                 const pts = matchedCurrentMotifs.length * 3;
                 score += pts;
-                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}x Gewischte Motive`, points: pts });
+                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}x Handlungen`, points: pts });
               }
             }
 
@@ -1030,7 +1030,7 @@
 
             if (topProfileGenres.includes(b.genre)) {
               score += 2;
-              storySenseDetails.push({ label: `Lieblings-Genre Historie (${b.genre})`, points: 2 });
+              storySenseDetails.push({ label: `Lieblings-Genre (${b.genre})`, points: 2 });
             }
 
             if (Array.isArray(b.theme_ids)) {
@@ -1042,7 +1042,7 @@
               if (matchedProfileMotifs.length > 0) {
                 const pts = matchedProfileMotifs.length * 1.5;
                 score += pts;
-                storySenseDetails.push({ label: `${matchedProfileMotifs.length}x Profil-Motive`, points: pts });
+                storySenseDetails.push({ label: `${matchedProfileMotifs.length}x Lieblings-Motive`, points: pts });
               }
             }
 
