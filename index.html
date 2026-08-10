@@ -2145,7 +2145,7 @@
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      ❤️ ({favorites.length})
+                      ❤️ Favoriten ({favorites.length})
                     </button>
                     <button
                       onClick={() => setDrawerTab('alreadyRead')}
@@ -2155,7 +2155,7 @@
                           : 'text-ink-700 hover:text-ink-900'
                       }`}
                     >
-                      📖 ({alreadyRead.length})
+                      📖 Gelesen ({alreadyRead.length})
                     </button>
                   </div>
                 </div>
@@ -2212,7 +2212,7 @@
 
                                   {session.likedThemes && session.likedThemes.map((t, i) => (
                                     <span key={i} className="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-200 text-[10px] font-medium rounded-md">
-                                      ✨ {t}
+                                       {t}
                                     </span>
                                   ))}
                                 </div>
@@ -2302,7 +2302,7 @@
                               {(implicitProfile.topLikedMotifs || []).length > 0 ? (
                                 implicitProfile.topLikedMotifs.map((motif, i) => (
                                   <span key={i} className="px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-900 text-[10px] font-medium rounded-md">
-                                    ✨ {motif}
+                                     {motif}
                                   </span>
                                 ))
                               ) : (
