@@ -1001,7 +1001,7 @@
 
             if (selectedGenres.includes(b.genre)) {
               score += 4;
-              storySenseDetails.push({ label: `Genre (${b.genre} aus aktueller Suche im Buch)`, points: 4 });
+              storySenseDetails.push({ label: `Genre (${b.genre}) aus aktueller Suche im Buch`, points: 4 });
             }
 
             if (Array.isArray(b.theme_ids) && likedList.length > 0) {
@@ -1009,7 +1009,7 @@
               if (matchedCurrentMotifs.length > 0) {
                 const pts = matchedCurrentMotifs.length * 3;
                 score += pts;
-                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}mal Handlungen aus aktueller Suche im Buch`, points: pts });
+                storySenseDetails.push({ label: `${matchedCurrentMotifs.length} mal Handlungen aus aktueller Suche im Buch`, points: pts });
               }
             }
 
