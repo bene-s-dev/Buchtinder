@@ -643,7 +643,7 @@
 
       const handleShareFavorites = () => {
         if (favorites.length === 0) return;
-       const formattedList = favorites
+        const formattedList = favorites
   .map((b, i) => `${i + 1}. "${b.title}" von ${b.author}`)
   .join('\n');
         const text = `📚 Meine Buch-Favoriten auf BuchKompass:\n\n${formattedList}\n\nFinde dein nächstes Buch auf https://buchkompass.benedrive.de`;
@@ -823,7 +823,7 @@
           }, 1800);
         } catch (err) {
           alert("Fehler beim Absenden der Meldung.");
-        } finally {
+        } font-sans finally {
           setIsSubmittingReport(false);
         }
       };
@@ -1869,7 +1869,7 @@
             >
               <div className="bg-white border border-paper-300 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 max-h-[90vh] flex flex-col justify-between">
                 <div className="space-y-3 overflow-y-auto custom-scrollbar pr-1">
-                  <div className="flex items-start justify-between pb-3 border-b border-paper-200">
+                  <div className="flex items-start justify-between pb-3">
                     <div>
                       <span className="text-[10px] font-bold text-burgundy-700 uppercase tracking-wider block">Empfehlungs-Analyse</span>
                       <h3 className="font-literary font-bold text-base text-ink-900 leading-tight">{techInfoBook.title}</h3>
@@ -2176,7 +2176,7 @@
                               onClick={() => openSessionFromProfile(session)}
                               className="bg-white border border-paper-300 hover:border-burgundy-600/50 rounded-xl p-3.5 shadow-2xs space-y-2.5 cursor-pointer transition active:scale-[0.99] group"
                             >
-                              <div className="flex items-center justify-between border-b border-paper-200 pb-2">
+                              <div className="flex items-center justify-between pb-2">
                                 <div>
                                   <span className="font-literary font-bold text-sm text-ink-900 group-hover:text-burgundy-700 transition">
                                     Suche #{sessions.length - sIdx}
@@ -2236,7 +2236,7 @@
                     <div className="space-y-4">
                       {/* READ-ONLY IMPLICIT PROFILE */}
                       <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
-                        <div className="border-b border-paper-200 pb-2 flex items-center justify-between">
+                        <div className="pb-2 flex items-center justify-between">
                           <div>
                             <h3 className="font-literary font-bold text-sm text-ink-900">BuchKompass-Nutzerprofil</h3>
                           </div>
@@ -2323,7 +2323,7 @@
 
                       {/* CSV IMPORT & EXPORT */}
                       <div className="bg-white border border-paper-300 rounded-xl p-4 space-y-3 shadow-2xs">
-                        <div className="border-b border-paper-200 pb-2">
+                        <div className="pb-2">
                           <h3 className="font-literary font-bold text-sm text-ink-900">Daten-Sicherung (CSV)</h3>
                           <p className="text-[11px] text-ink-700 font-normal">Sichere oder übertrage alle Sitzungen, Favoriten und das gelernte Profil.</p>
                         </div>
