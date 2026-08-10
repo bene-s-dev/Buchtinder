@@ -1001,7 +1001,7 @@
 
             if (selectedGenres.includes(b.genre)) {
               score += 4;
-              storySenseDetails.push({ label: `Genre (${b.genre})`, points: 4 });
+              storySenseDetails.push({ label: `Genre (${b.genre} aus aktueller Suche im Buch)`, points: 4 });
             }
 
             if (Array.isArray(b.theme_ids) && likedList.length > 0) {
@@ -1009,13 +1009,13 @@
               if (matchedCurrentMotifs.length > 0) {
                 const pts = matchedCurrentMotifs.length * 3;
                 score += pts;
-                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}x Handlungen aus aktueller Suche im Buch`, points: pts });
+                storySenseDetails.push({ label: `${matchedCurrentMotifs.length}mal Handlungen aus aktueller Suche im Buch`, points: pts });
               }
             }
 
             if (selectedMoods.length > 0 && Array.isArray(b.moods) && b.moods.some(m => selectedMoods.includes(m))) {
               score += 2;
-              storySenseDetails.push({ label: "Aktuelle Stimmung", points: 2 });
+              storySenseDetails.push({ label: "Stimmung aus aktueller Suche im Buch", points: 2 });
             }
 
             if (selectedLength !== 'Egal' && b.length === selectedLength) {
